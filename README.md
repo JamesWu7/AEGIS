@@ -1,5 +1,5 @@
-<p align="left">
-  <img src="inst/assets/AEGIS_Logo.jpg" alt="AEGIS logo" width="320"/>
+<p align="center">
+  <img src="inst/assets/AEGIS_Logo.jpg" alt="AEGIS logo" width="460"/>
 </p>
 
 # AEGIS
@@ -91,14 +91,14 @@ plot_compare(obj, "heatmap")
 
 Use the following text directly in a manuscript:
 
-> Wu J (2026). *AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics*. R package version 0.1.0. GitHub: https://github.com/JamesWu7/AEGIS
+> Wu X (2026). *AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics*. R package version 0.1.0. GitHub: https://github.com/JamesWu7/AEGIS
 
 BibTeX:
 
 ```bibtex
 @Manual{Wu2026AEGIS,
   title = {AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics},
-  author = {James Wu},
+  author = {Xinjie Wu},
   year = {2026},
   note = {R package version 0.1.0},
   url = {https://github.com/JamesWu7/AEGIS}
