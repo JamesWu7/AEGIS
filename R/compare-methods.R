@@ -9,15 +9,29 @@
 #' @export
 compare_methods <- function(x) {
   assert_is_aegis(x)
+  if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {
+    stop("`x$deconv` must be a non-empty list.", call. = FALSE)
+  }
 
   methods <- names(x$deconv)
   if (length(methods) < 2L) {
     stop("At least two methods are required for comparison.", call. = FALSE)
   }
+  spots <- colnames(x$seu)
+
+  for (method in methods) {
+    mat <- x$deconv[[method]]
+    if (!is.matrix(mat) || !is.numeric(mat) || nrow(mat) == 0L || ncol(mat) == 0L) {
+      stop(sprintf("Method '%s' must be a non-empty numeric matrix.", method), call. = FALSE)
+    }
+    if (!identical(rownames(mat), spots)) {
+      stop(sprintf("Method '%s' rownames are not aligned to Seurat spots.", method), call. = FALSE)
+    }
+  }
 
   pairs <- utils::combn(methods, 2, simplify = FALSE)
 
-  pairwise_celltype <- dplyr::bind_rows(lapply(pairs, function(p) {
+  pairwise_celltype_cor <- dplyr::bind_rows(lapply(pairs, function(p) {
     m1 <- p[[1]]
     m2 <- p[[2]]
     mat1 <- x$deconv[[m1]]
@@ -35,21 +49,22 @@ compare_methods <- function(x) {
         method_2 = m2,
         celltype = ct,
         correlation = cor_val,
+        n_spots = nrow(mat1),
         stringsAsFactors = FALSE
       )
     }))
   }))
 
-  if (nrow(pairwise_celltype) == 0L) {
+  if (nrow(pairwise_celltype_cor) == 0L) {
     stop("No overlapping cell types found across methods.", call. = FALSE)
   }
-  pairwise_celltype <- tidyr::drop_na(pairwise_celltype, "correlation")
+  pairwise_celltype_cor <- tidyr::drop_na(pairwise_celltype_cor, "correlation")
 
-  pairwise_summary <- pairwise_celltype |>
+  pairwise_summary <- pairwise_celltype_cor |>
     dplyr::group_by(.data$method_1, .data$method_2) |>
     dplyr::summarise(
       mean_correlation = mean(.data$correlation, na.rm = TRUE),
-      n_celltypes = dplyr::n(),
+      n_shared_celltypes = dplyr::n(),
       .groups = "drop"
     )
 
@@ -64,45 +79,61 @@ compare_methods <- function(x) {
     heatmap_matrix[m2, m1] <- v
   }
 
-  celltype_agreement <- pairwise_celltype |>
+  celltype_agreement <- pairwise_celltype_cor |>
     dplyr::group_by(.data$celltype) |>
     dplyr::summarise(
       average_agreement = mean(.data$correlation, na.rm = TRUE),
+      median_agreement = stats::median(.data$correlation, na.rm = TRUE),
+      n_pairs = dplyr::n(),
       .groups = "drop"
     )
 
-  # Spot-level agreement from cross-method SD over available cell types.
-  spots <- colnames(x$seu)
+  # Spot-level agreement from cross-method mean absolute deviation over cell types.
   all_ct <- sort(unique(unlist(lapply(x$deconv, colnames))))
 
   spot_agreement <- data.frame(
     spot = spots,
-    mean_sd = NA_real_,
+    mean_mad = NA_real_,
     agreement = NA_real_,
     stringsAsFactors = FALSE
   )
 
-  mean_sd <- vapply(spots, function(s) {
-    ct_sd <- vapply(all_ct, function(ct) {
+  mean_mad <- vapply(spots, function(s) {
+    ct_dev <- vapply(all_ct, function(ct) {
       vals <- vapply(x$deconv, function(mat) {
         if (ct %in% colnames(mat)) mat[s, ct] else NA_real_
       }, numeric(1))
       vals <- vals[is.finite(vals)]
       if (length(vals) < 2L) return(NA_real_)
-      stats::sd(vals)
+      mean(abs(vals - mean(vals)))
     }, numeric(1))
-    mean(ct_sd, na.rm = TRUE)
+    mean(ct_dev, na.rm = TRUE)
   }, numeric(1))
 
-  spot_agreement$mean_sd <- mean_sd
-  spot_agreement$agreement <- 1 / (1 + mean_sd)
+  spot_agreement$mean_mad <- mean_mad
+  spot_agreement$agreement <- 1 / (1 + mean_mad)
+
+  compared_celltypes <- dplyr::bind_rows(lapply(pairs, function(p) {
+    m1 <- p[[1]]
+    m2 <- p[[2]]
+    shared_ct <- intersect(colnames(x$deconv[[m1]]), colnames(x$deconv[[m2]]))
+    data.frame(
+      method_1 = m1,
+      method_2 = m2,
+      shared_celltypes = paste(shared_ct, collapse = ";"),
+      stringsAsFactors = FALSE
+    )
+  }))
 
   x$consensus$comparison <- list(
-    pairwise_celltype = pairwise_celltype,
+    pairwise_celltype_cor = pairwise_celltype_cor,
+    pairwise_celltype = pairwise_celltype_cor,
     pairwise_summary = pairwise_summary,
     heatmap_matrix = heatmap_matrix,
     celltype_agreement = celltype_agreement,
-    spot_agreement = spot_agreement
+    spot_agreement = spot_agreement,
+    compared_celltypes = compared_celltypes,
+    summary = pairwise_summary
   )
 
   x

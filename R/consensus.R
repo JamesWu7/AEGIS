@@ -9,53 +9,67 @@
 #' @export
 compute_consensus <- function(x) {
   assert_is_aegis(x)
+  if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {
+    stop("`x$deconv` must be a non-empty list.", call. = FALSE)
+  }
 
   methods <- names(x$deconv)
-  if (length(methods) == 0L) {
-    stop("No deconvolution methods available in `x$deconv`.", call. = FALSE)
-  }
-
   spots <- colnames(x$seu)
-  all_celltypes <- sort(unique(unlist(lapply(x$deconv, colnames))))
-
-  consensus <- matrix(NA_real_, nrow = length(spots), ncol = length(all_celltypes),
-    dimnames = list(spots, all_celltypes)
-  )
-  disagreement <- consensus
-
-  for (ct in all_celltypes) {
-    vals_by_method <- lapply(x$deconv, function(mat) {
-      if (ct %in% colnames(mat)) {
-        mat[spots, ct]
-      } else {
-        rep(NA_real_, length(spots))
-      }
-    })
-    vals_mat <- do.call(cbind, vals_by_method)
-
-    consensus[, ct] <- rowMeans(vals_mat, na.rm = TRUE)
-    disagreement[, ct] <- apply(vals_mat, 1, stats::sd, na.rm = TRUE)
+  if (is.null(spots) || length(spots) == 0L) {
+    stop("Seurat object has no spot names.", call. = FALSE)
+  }
+  for (method in methods) {
+    mat <- x$deconv[[method]]
+    if (!is.matrix(mat) || !is.numeric(mat) || nrow(mat) == 0L || ncol(mat) == 0L) {
+      stop(sprintf("Method '%s' must be a non-empty numeric matrix.", method), call. = FALSE)
+    }
+    if (!identical(rownames(mat), spots)) {
+      stop(sprintf("Method '%s' rownames are not aligned to Seurat spots.", method), call. = FALSE)
+    }
   }
 
-  consensus[!is.finite(consensus)] <- 0
+  shared_celltypes <- Reduce(intersect, lapply(x$deconv, colnames))
+  if (length(shared_celltypes) == 0L) {
+    stop("No shared cell types found across methods for consensus.", call. = FALSE)
+  }
+  shared_celltypes <- sort(shared_celltypes)
+
+  values_by_method <- lapply(methods, function(method) {
+    x$deconv[[method]][spots, shared_celltypes, drop = FALSE]
+  })
+  names(values_by_method) <- methods
+  arr <- simplify2array(values_by_method)
+
+  consensus <- apply(arr, c(1, 2), mean)
+  disagreement <- apply(arr, c(1, 2), stats::sd)
+
+  rownames(consensus) <- spots
+  colnames(consensus) <- shared_celltypes
+  rownames(disagreement) <- spots
+  colnames(disagreement) <- shared_celltypes
+
+  consensus[!is.finite(consensus)] <- NA_real_
   disagreement[!is.finite(disagreement)] <- NA_real_
 
   rs <- rowSums(consensus)
-  rs[rs <= 0] <- 1
+  rs[!is.finite(rs) | rs <= 0] <- 1
   consensus <- consensus / rs
 
   mean_sd <- rowMeans(disagreement, na.rm = TRUE)
+  mean_sd[!is.finite(mean_sd)] <- NA_real_
   spot_confidence <- data.frame(
     spot = spots,
-    mean_sd = mean_sd,
+    mean_disagreement = mean_sd,
     confidence = 1 / (1 + mean_sd),
     stringsAsFactors = FALSE
   )
 
+  ct_sd <- colMeans(disagreement, na.rm = TRUE)
+  ct_sd[!is.finite(ct_sd)] <- NA_real_
   celltype_stability <- data.frame(
-    celltype = all_celltypes,
-    mean_sd = colMeans(disagreement, na.rm = TRUE),
-    stability = 1 / (1 + colMeans(disagreement, na.rm = TRUE)),
+    celltype = shared_celltypes,
+    mean_disagreement = ct_sd,
+    stability = 1 / (1 + ct_sd),
     stringsAsFactors = FALSE
   )
 
@@ -64,6 +78,7 @@ compute_consensus <- function(x) {
     method_disagreement = disagreement,
     spot_confidence = spot_confidence,
     celltype_stability = celltype_stability,
+    shared_celltypes = shared_celltypes,
     methods = methods
   )
 
