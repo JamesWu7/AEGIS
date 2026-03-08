@@ -30,6 +30,23 @@ obj <- audit_basic(obj)
 - [Human lymph node demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
 - [Complete tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
 
+## Key Functions
+
+- `load_10x_lymphnode()`: load the Human Lymph Node 10x spatial dataset into a Seurat object.
+- `simulate_deconv_results()`: generate realistic mock method outputs (spot-by-celltype proportions).
+- `as_aegis()`: validate inputs and create the internal `aegis` S3 object.
+- `audit_basic()`: compute per-spot and per-method basic quality metrics.
+
+## Example Figures
+
+### Spatial transcriptomics slice (Human Lymph Node)
+
+![Human Lymph Node slice](inst/assets/figures/readme-slice.png)
+
+### Basic audit (dominance)
+
+![Dominance spatial map](inst/assets/figures/readme-dominance.png)
+
 ## Citation
 
 ```r
@@ -47,20 +64,3 @@ BibTeX:
   url = {https://github.com/JamesWu7/AEGIS}
 }
 ```
-
-## Key Functions
-
-- `load_10x_lymphnode()`: load the Human Lymph Node 10x spatial dataset into a Seurat object.
-- `simulate_deconv_results()`: generate realistic mock method outputs (spot-by-celltype proportions).
-- `as_aegis()`: validate inputs and create the internal `aegis` S3 object.
-- `audit_basic()`: compute per-spot and per-method basic quality metrics.
-
-## Example Figures
-
-### Spatial transcriptomics slice (Human Lymph Node)
-
-![Human Lymph Node slice](inst/assets/figures/readme-slice.png)
-
-### Basic audit (dominance)
-
-![Dominance spatial map](inst/assets/figures/readme-dominance.png)
