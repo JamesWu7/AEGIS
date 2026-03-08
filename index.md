@@ -2,6 +2,13 @@
 
 ![AEGIS logo](inst/assets/AEGIS_Logo.jpg)
 
+**AEGIS**: **A**udit and **E**valuate deconvolution outputs in
+**G**rid-based Spatial transcriptomics.
+
+[![R-CMD-check](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
+[![docs](https://img.shields.io/badge/docs-pkgdown-1f6fb2)](https://jameswu7.github.io/AEGIS/)
+
 AEGIS is an R package for basic auditing of spatial deconvolution
 outputs on Seurat spatial objects, with a minimal and reproducible Human
 Lymph Node workflow.
@@ -20,8 +27,13 @@ library(AEGIS)
 
 seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
-obj <- as_aegis(seu, deconv)
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
+obj <- as_aegis(seu, deconv, markers = markers)
 obj <- audit_basic(obj)
+obj <- audit_marker(obj)
+obj <- audit_spatial(obj)
+obj <- compare_methods(obj)
+obj <- compute_consensus(obj)
 ```
 
 ## Complete Tutorials
@@ -43,6 +55,14 @@ obj <- audit_basic(obj)
   validate inputs and create the internal `aegis` S3 object.
 - [`audit_basic()`](https://jameswu7.github.io/AEGIS/reference/audit_basic.md):
   compute per-spot and per-method basic quality metrics.
+- [`audit_marker()`](https://jameswu7.github.io/AEGIS/reference/audit_marker.md):
+  quantify marker-expression support and method concordance.
+- [`audit_spatial()`](https://jameswu7.github.io/AEGIS/reference/audit_spatial.md):
+  compute neighborhood-based local inconsistency metrics.
+- [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md):
+  summarize cross-method agreement by cell type and spot.
+- [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md):
+  aggregate shared cell types and derive confidence/stability.
 
 ## Example Figures
 
