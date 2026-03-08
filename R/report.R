@@ -16,13 +16,25 @@ render_report <- function(x, output_file = "aegis_report.html") {
     dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
   }
 
+  render_env <- new.env(parent = baseenv())
+  render_env$params <- list(aegis_obj = x)
+  render_env$audit_basic <- audit_basic
+  render_env$audit_marker <- audit_marker
+  render_env$audit_spatial <- audit_spatial
+  render_env$compare_methods <- compare_methods
+  render_env$compute_consensus <- compute_consensus
+  render_env$plot_audit <- plot_audit
+  render_env$plot_compare <- plot_compare
+  render_env$head <- utils::head
+  render_env$sessionInfo <- utils::sessionInfo
+
   if (rmarkdown::pandoc_available()) {
     rendered <- rmarkdown::render(
       input = template,
       output_file = basename(output_file),
       output_dir = out_dir,
       params = list(aegis_obj = x),
-      envir = new.env(parent = baseenv()),
+      envir = render_env,
       quiet = TRUE
     )
     return(normalizePath(rendered, winslash = "/", mustWork = TRUE))
@@ -35,13 +47,20 @@ render_report <- function(x, output_file = "aegis_report.html") {
     )
   }
 
-  env <- new.env(parent = baseenv())
-  env$params <- list(aegis_obj = x)
-  md_file <- tempfile(fileext = ".md")
-  knitr::knit(input = template, output = md_file, envir = env, quiet = TRUE)
+  old_wd <- getwd()
+  on.exit(setwd(old_wd), add = TRUE)
+  setwd(out_dir)
+
+  md_file <- tempfile(pattern = "aegis_report_", fileext = ".md", tmpdir = out_dir)
+  knitr::knit(
+    input = template,
+    output = md_file,
+    envir = render_env,
+    quiet = TRUE
+  )
   markdown::markdownToHTML(
     file = md_file,
-    output = output_file,
+    output = basename(output_file),
     options = c("use_xhtml", "base64_images")
   )
 

@@ -56,7 +56,7 @@ plot_audit(x, type = "marker")
 
 ```{r spatial-audit-table}
 if (is.null(x$audit$spatial)) x <- audit_spatial(x)
-knitr::kable(head(x$audit$spatial$method_summary, 12))
+knitr::kable(utils::head(x$audit$spatial$method_summary, 12))
 ```
 
 ```{r spatial-audit-plot}
@@ -78,7 +78,7 @@ plot_compare(x, type = "heatmap")
 
 ```{r consensus-table}
 if (is.null(x$consensus$result)) x <- compute_consensus(x)
-knitr::kable(head(x$consensus$result$celltype_stability, 12))
+knitr::kable(utils::head(x$consensus$result$celltype_stability, 12))
 ```
 
 ```{r consensus-plot}
@@ -88,5 +88,5 @@ plot_compare(x, type = "consensus_map")
 # Session Info
 
 ```{r session-info}
-sessionInfo()
+utils::sessionInfo()
 ```
