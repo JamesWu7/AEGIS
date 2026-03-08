@@ -28,6 +28,7 @@ render_report <- function(
   render_env$compute_consensus <- compute_consensus
   render_env$plot_audit <- plot_audit
   render_env$plot_compare <- plot_compare
+  render_env$format_report_table <- format_report_table
   render_env$head <- utils::head
   render_env$sessionInfo <- utils::sessionInfo
 
