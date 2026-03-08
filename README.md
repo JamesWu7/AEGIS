@@ -36,9 +36,9 @@ obj <- compute_consensus(obj)
 
 ## Complete Tutorials
 
-- [Overview tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-overview.Rmd)
-- [Human lymph node demo](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-demo-human-lymph-node.Rmd)
-- [Complete tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd)
+- [Overview tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
+- [Human lymph node demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
+- [Complete tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
 
 ## Key Functions
 
