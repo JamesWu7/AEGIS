@@ -10,6 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
+library(Seurat)
 ```
 
 ## Load authoritative raw files
@@ -34,6 +35,12 @@ if (!all(file.exists(file.path(raw_dir, required)))) {
 
 seu <- load_10x_lymphnode(data_dir = raw_dir)
 seu
+```
+
+## Spatial transcriptomics slice example
+
+```{r, fig.width=7, fig.height=6}
+Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
 ```
 
 ## Simulate deconvolution and run AEGIS

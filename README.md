@@ -1,26 +1,25 @@
 <p align="left">
-  <img src="inst/assets/AEGIS_Logo.jpg" alt="AEGIS logo" width="180"/>
+  <img src="inst/assets/AEGIS_Logo.jpg" alt="AEGIS logo" width="320"/>
 </p>
 
 # AEGIS
 
 AEGIS is an R package MVP for auditing, comparing, and summarizing spatial deconvolution outputs on Seurat spatial objects, with an end-to-end Human Lymph Node workflow and HTML reporting.
 
+Repository: [JamesWu7/AEGIS](https://github.com/JamesWu7/AEGIS)
+
 ## Installation
 
-### Core install
+### Install from GitHub with devtools
 
 ```r
-# from local source
-install.packages(".", repos = NULL, type = "source")
-
-# or with remotes/devtools if preferred
-# remotes::install_local(".")
+install.packages("devtools")
+devtools::install_github("JamesWu7/AEGIS")
 ```
 
 ### Dependencies
 
-Dependencies are declared in `DESCRIPTION` (`Seurat`, `ggplot2`, `dplyr`, `tidyr`, `Matrix`, `rmarkdown`, `patchwork`, `stats`, `utils`) and are handled by normal R package installation.
+Dependencies are declared in `DESCRIPTION` (`Seurat`, `ggplot2`, `dplyr`, `tidyr`, `Matrix`, `rmarkdown`, `patchwork`, `stats`, `utils`) and are handled by package installation.
 
 ### Current MVP scope
 
@@ -58,27 +57,59 @@ plot_compare(obj, "heatmap")
 
 ## Example Figures
 
+### Spatial transcriptomics slice (Human Lymph Node)
+
+![Human Lymph Node slice](inst/assets/figures/readme-slice.png)
+
 ### Spatial audit (dominance)
 
-![Dominance spatial map](man/figures/readme-dominance.png)
+![Dominance spatial map](inst/assets/figures/readme-dominance.png)
 
 ### Method comparison (agreement heatmap)
 
-![Method agreement heatmap](man/figures/readme-heatmap.png)
+![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
 
 ### Consensus confidence
 
-![Consensus confidence map](man/figures/readme-consensus.png)
+![Consensus confidence map](inst/assets/figures/readme-consensus.png)
 
-## Key Functions
+## Data and Asset Locations
 
-- `load_10x_lymphnode()`: robust loader from current authoritative raw files
-- `simulate_deconv_results()`: method-specific simulated deconvolution outputs
-- `as_aegis()`: validated S3 object constructor
-- `audit_basic()`, `audit_marker()`, `audit_spatial()`: audit suite
-- `compare_methods()`, `compute_consensus()`: agreement and consensus
-- `plot_audit()`, `plot_compare()`: publication-friendly figures
-- `render_report()`: standalone HTML report from template
+- Example Seurat object: `data/aegis_example.rda`
+- Marker list: `inst/extdata/marker_list.rds`
+- Metrics summary: `inst/extdata/V1_Human_Lymph_Node_metrics_summary.csv`
+- Package logo: `inst/assets/AEGIS_Logo.jpg`
+- README/demo figures: `inst/assets/figures/`
+
+## Complete Tutorials
+
+- `vignettes/AEGIS-overview.Rmd`
+- `vignettes/AEGIS-demo-human-lymph-node.Rmd`
+- `vignettes/AEGIS-complete-tutorial.Rmd`
+
+## Citation (Manuscript-ready)
+
+Use the following text directly in a manuscript:
+
+> Wu J (2026). *AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics*. R package version 0.1.0. GitHub: https://github.com/JamesWu7/AEGIS
+
+BibTeX:
+
+```bibtex
+@Manual{Wu2026AEGIS,
+  title = {AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics},
+  author = {James Wu},
+  year = {2026},
+  note = {R package version 0.1.0},
+  url = {https://github.com/JamesWu7/AEGIS}
+}
+```
+
+In R:
+
+```r
+citation("AEGIS")
+```
 
 ## Demo and Report Generation
 

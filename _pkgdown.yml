@@ -1,0 +1,52 @@
+url: https://jameswu7.github.io/AEGIS/
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#1f6fb2"
+
+navbar:
+  structure:
+    left: [home, intro, reference, articles, tutorials, news]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github
+      href: https://github.com/JamesWu7/AEGIS
+      aria-label: GitHub repository
+
+home:
+  title: AEGIS
+  description: Auditing and consensus toolkit for spatial deconvolution on Seurat objects.
+
+reference:
+  - title: Data input
+    contents:
+      - load_10x_lymphnode
+      - aegis_example
+      - aegis_default_markers
+  - title: Core object and simulation
+    contents:
+      - as_aegis
+      - is_aegis
+      - simulate_deconv_results
+  - title: Audit and comparison
+    contents:
+      - audit_basic
+      - audit_marker
+      - audit_spatial
+      - compare_methods
+      - compute_consensus
+  - title: Visualization and reporting
+    contents:
+      - plot_audit
+      - plot_compare
+      - render_report
+      - build_aegis_example_data
+
+articles:
+  - title: Tutorials
+    navbar: Tutorials
+    contents:
+      - AEGIS-overview
+      - AEGIS-demo-human-lymph-node
+      - AEGIS-complete-tutorial

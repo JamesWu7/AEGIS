@@ -3,6 +3,11 @@
 ^README\\.Rmd$
 ^data-raw$
 ^tools$
+^docs$
+^pkgdown$
+^\\.github$
+^_pkgdown\\.yml$
+^aegis_demo_report\\.html$
 ^\\.git$
 ^\\.gitattributes$
 ^\\.DS_Store$

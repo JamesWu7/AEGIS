@@ -10,6 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
+library(Seurat)
 ```
 
 ## Purpose
@@ -45,6 +46,10 @@ obj <- compute_consensus(obj)
 
 ## Audit workflow
 
+```{r, fig.width=7, fig.height=6}
+Seurat::SpatialFeaturePlot(aegis_example, features = "nCount_Spatial")
+```
+
 ```{r, fig.width=8, fig.height=5}
 plot_audit(obj, "dominance")
 ```
@@ -66,3 +71,13 @@ render_report(obj, output_file = "aegis_report.html")
 ```
 
 The report is based on `inst/templates/aegis_report.Rmd` and renders in headless environments.
+
+## Tutorial and citation
+
+- Full tutorial: `vignettes/AEGIS-complete-tutorial.Rmd`
+- Repository: <https://github.com/JamesWu7/AEGIS>
+- Citation:
+
+```{r eval=FALSE}
+citation("AEGIS")
+```
