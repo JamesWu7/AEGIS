@@ -27,13 +27,8 @@ library(AEGIS)
 
 seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
-markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
-obj <- as_aegis(seu, deconv, markers = markers)
+obj <- as_aegis(seu, deconv)
 obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
 ```
 
 ## Complete Tutorials
@@ -55,14 +50,6 @@ obj <- compute_consensus(obj)
   validate inputs and create the internal `aegis` S3 object.
 - [`audit_basic()`](https://jameswu7.github.io/AEGIS/reference/audit_basic.md):
   compute per-spot and per-method basic quality metrics.
-- [`audit_marker()`](https://jameswu7.github.io/AEGIS/reference/audit_marker.md):
-  quantify marker-expression support and method concordance.
-- [`audit_spatial()`](https://jameswu7.github.io/AEGIS/reference/audit_spatial.md):
-  compute neighborhood-based local inconsistency metrics.
-- [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md):
-  summarize cross-method agreement by cell type and spot.
-- [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md):
-  aggregate shared cell types and derive confidence/stability.
 
 ## Example Figures
 
