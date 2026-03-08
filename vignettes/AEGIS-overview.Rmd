@@ -8,76 +8,23 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
-library(Seurat)
 ```
 
 ## Purpose
 
-AEGIS is an MVP package for auditing and comparing spatial deconvolution outputs on Seurat spatial objects.
+AEGIS provides a minimal, reproducible workflow for spatial deconvolution audit on Seurat objects.
 
-## Object structure
-
-An `aegis` object is a lightweight S3 list:
-
-- `seu`: Seurat spatial object
-- `deconv`: named list of method result matrices
-- `markers`: marker list
-- `audit`: audit outputs (`basic`, `marker`, `spatial`)
-- `consensus`: comparison and consensus outputs
-- `meta`: run metadata
-
-## Quick workflow on built-in example data
+## P2 workflow
 
 ```{r}
 data("aegis_example", package = "AEGIS")
-markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 
 deconv <- simulate_deconv_results(aegis_example, seed = 123)
-obj <- as_aegis(aegis_example, deconv, markers = markers)
-
+obj <- as_aegis(aegis_example, deconv)
 obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
-```
 
-## Audit workflow
-
-```{r, fig.width=7, fig.height=6}
-Seurat::SpatialFeaturePlot(aegis_example, features = "nCount_Spatial")
-```
-
-```{r, fig.width=8, fig.height=5}
-plot_audit(obj, "dominance")
-```
-
-```{r, fig.width=8, fig.height=5}
-plot_audit(obj, "marker")
-```
-
-## Comparison workflow
-
-```{r, fig.width=6, fig.height=5}
-plot_compare(obj, "heatmap")
-```
-
-## Report generation
-
-```{r eval=FALSE}
-render_report(obj, output_file = "aegis_report.html")
-```
-
-The report is based on `inst/templates/aegis_report.Rmd` and renders in headless environments.
-
-## Tutorial and citation
-
-- Full tutorial: `vignettes/AEGIS-complete-tutorial.Rmd`
-- Repository: <https://github.com/JamesWu7/AEGIS>
-- Citation:
-
-```{r eval=FALSE}
-citation("AEGIS")
+knitr::kable(obj$audit$basic$summary)
 ```

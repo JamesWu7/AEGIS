@@ -26,9 +26,27 @@ obj <- audit_basic(obj)
 
 ## Complete Tutorials
 
-- [Overview tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-overview.Rmd)
-- [Human lymph node demo](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-demo-human-lymph-node.Rmd)
-- [Complete tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd)
+- [Overview tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
+- [Human lymph node demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
+- [Complete tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+
+## Citation
+
+```r
+citation("AEGIS")
+```
+
+BibTeX:
+
+```bibtex
+@Manual{Wu2026AEGIS,
+  title = {AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics},
+  author = {Xinjie Wu},
+  year = {2026},
+  note = {R package version 0.1.0},
+  url = {https://github.com/JamesWu7/AEGIS}
+}
+```
 
 ## Key Functions
 

@@ -8,86 +8,45 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
 library(Seurat)
 ```
 
-## 1. Purpose
-
-This tutorial is a complete, end-to-end AEGIS workflow for spatial transcriptomics deconvolution auditing.
-
-## 2. Inputs
-
-- Primary input is a Seurat spatial object.
-- Built-in example object: `aegis_example`.
-- Marker list: `inst/extdata/marker_list.rds`.
+## 1. Load example Seurat object
 
 ```{r}
 data("aegis_example", package = "AEGIS")
-markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
+seu <- aegis_example
 ```
 
-## 3. Slice visualization (spatial group section)
-
-```{r, fig.width=7, fig.height=6}
-Seurat::SpatialFeaturePlot(aegis_example, features = "nCount_Spatial")
-```
-
-## 4. Simulate methods and create AEGIS object
+## 2. Simulate method outputs
 
 ```{r}
 deconv <- simulate_deconv_results(
-  aegis_example,
+  seu,
   methods = c("RCTD", "SPOTlight", "cell2location"),
   seed = 2026
 )
+```
 
-obj <- as_aegis(aegis_example, deconv, markers = markers)
+## 3. Construct aegis object
+
+```{r}
+obj <- as_aegis(seu, deconv)
 obj
 ```
 
-## 5. Run quality audits
+## 4. Run basic audit
 
 ```{r}
 obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
+knitr::kable(obj$audit$basic$summary)
 ```
 
-```{r, fig.width=8, fig.height=5}
-plot_audit(obj, "dominance")
-```
-
-```{r, fig.width=8, fig.height=5}
-plot_audit(obj, "marker")
-```
-
-## 6. Compare methods and compute consensus
+## 5. Inspect spot-level metrics
 
 ```{r}
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
+head(obj$audit$basic$spot_metrics)
 ```
-
-```{r, fig.width=6, fig.height=5}
-plot_compare(obj, "heatmap")
-```
-
-```{r, fig.width=7, fig.height=5}
-plot_compare(obj, "consensus_map")
-```
-
-## 7. Render standalone report
-
-```{r eval=FALSE}
-render_report(obj, output_file = "aegis_tutorial_report.html")
-```
-
-## 8. Citation and repository
-
-```{r eval=FALSE}
-citation("AEGIS")
-```
-
-Repository: <https://github.com/JamesWu7/AEGIS>

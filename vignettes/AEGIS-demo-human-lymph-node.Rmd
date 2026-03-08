@@ -1,5 +1,5 @@
 ---
-title: "AEGIS Demo: Human Lymph Node"
+title: "AEGIS Demo Human Lymph Node"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{AEGIS Demo Human Lymph Node}
@@ -8,33 +8,34 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
 library(Seurat)
 ```
 
-## Load authoritative raw files
+## Demo data source
 
-This demo expects the authoritative files in the package source root:
+This vignette uses the built-in Human Lymph Node example object (`aegis_example`) so it can render in CI, pkgdown, and source builds.
+
+```{r}
+data("aegis_example", package = "AEGIS")
+seu <- aegis_example
+seu
+```
+
+## Optional: load directly from authoritative raw files
+
+If you are in the repository root and have these raw files available:
 
 - `V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5`
 - `V1_Human_Lymph_Node_spatial.tar.gz`
 - `V1_Human_Lymph_Node_metrics_summary.csv`
 
-```{r}
-raw_dir <- normalizePath(".", mustWork = TRUE)
-required <- c(
-  "V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5",
-  "V1_Human_Lymph_Node_spatial.tar.gz",
-  "V1_Human_Lymph_Node_metrics_summary.csv"
-)
+then you can load from disk with:
 
-if (!all(file.exists(file.path(raw_dir, required)))) {
-  knitr::knit_exit()
-}
-
-seu <- load_10x_lymphnode(data_dir = raw_dir)
-seu
+```{r eval=FALSE}
+seu <- load_10x_lymphnode(data_dir = ".")
 ```
 
 ## Spatial transcriptomics slice example
@@ -46,30 +47,13 @@ Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
 ## Simulate deconvolution and run AEGIS
 
 ```{r}
-markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
-
 deconv <- simulate_deconv_results(seu, seed = 2026)
-obj <- as_aegis(seu, deconv, markers = markers)
-
+obj <- as_aegis(seu, deconv)
 obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
 ```
 
-## Example outputs
+## Basic audit output
 
-```{r, fig.width=8, fig.height=5}
-plot_audit(obj, "entropy")
-```
-
-```{r, fig.width=6, fig.height=5}
-plot_compare(obj, "heatmap")
-```
-
-## Render report
-
-```{r eval=FALSE}
-render_report(obj, output_file = "aegis_demo_report.html")
+```{r}
+knitr::kable(obj$audit$basic$summary)
 ```
