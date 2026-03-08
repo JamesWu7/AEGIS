@@ -4,12 +4,21 @@
 \alias{plot_compare}
 \title{Plot method comparison and consensus outputs}
 \usage{
-plot_compare(x, type = c("heatmap", "spot_agreement", "consensus_map"))
+plot_compare(
+  x,
+  type = c("heatmap", "spot_agreement", "consensus_map"),
+  palette = "nature",
+  base_size = 12
+)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
 
 \item{type}{One of \code{heatmap}, \code{spot_agreement}, \code{consensus_map}.}
+
+\item{palette}{Palette family: \code{nature}, \code{viridis}, \code{scico}, or \code{brewer}.}
+
+\item{base_size}{Base font size for the plot theme.}
 }
 \value{
 A ggplot object.

@@ -29,7 +29,6 @@ Imports:
     tidyr,
     Matrix,
     rmarkdown,
-    patchwork,
     stats,
     utils
 Suggests:

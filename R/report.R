@@ -4,10 +4,14 @@
 #'
 #' @param x An `aegis` object.
 #' @param output_file Output HTML path.
+#' @param title Report title.
 #'
 #' @return Path to rendered HTML report.
 #' @export
-render_report <- function(x, output_file = "aegis_report.html") {
+render_report <- function(
+    x,
+    output_file = "aegis_report.html",
+    title = "AEGIS Deconvolution Audit Report") {
   assert_is_aegis(x)
   template <- resolve_template()
   output_file <- normalizePath(output_file, winslash = "/", mustWork = FALSE)
@@ -32,7 +36,7 @@ render_report <- function(x, output_file = "aegis_report.html") {
       input = template,
       output_file = basename(output_file),
       output_dir = out_dir,
-      params = list(aegis_obj = x),
+      params = list(aegis_obj = x, title = title),
       envir = render_env,
       quiet = TRUE
     )
@@ -51,7 +55,7 @@ render_report <- function(x, output_file = "aegis_report.html") {
   setwd(out_dir)
 
   fallback_env <- new.env(parent = render_env)
-  fallback_env$params <- list(aegis_obj = x)
+  fallback_env$params <- list(aegis_obj = x, title = title)
 
   md_file <- tempfile(pattern = "aegis_report_", fileext = ".md", tmpdir = out_dir)
   knitr::knit(

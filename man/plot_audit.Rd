@@ -6,13 +6,28 @@
 \usage{
 plot_audit(
   x,
-  type = c("sumdev", "dominance", "entropy", "marker", "smoothness")
+  type = c("sumdev", "dominance", "entropy", "marker", "smoothness"),
+  method = NULL,
+  cell_type = NULL,
+  palette = "nature",
+  point_size = NULL,
+  base_size = 12
 )
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
 
 \item{type}{One of \code{sumdev}, \code{dominance}, \code{entropy}, \code{marker}, \code{smoothness}.}
+
+\item{method}{Optional method name to subset to one deconvolution method.}
+
+\item{cell_type}{Optional cell type for marker/smoothness views.}
+
+\item{palette}{Palette family: \code{nature}, \code{viridis}, \code{scico}, or \code{brewer}.}
+
+\item{point_size}{Optional spatial point size. Auto-selected when \code{NULL}.}
+
+\item{base_size}{Base font size for the plot theme.}
 }
 \value{
 A ggplot object.

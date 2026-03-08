@@ -9,7 +9,7 @@ test_that("render_report creates an HTML report", {
   obj <- compute_consensus(obj)
 
   out <- tempfile(fileext = ".html")
-  report_path <- render_report(obj, output_file = out)
+  report_path <- render_report(obj, output_file = out, title = "AEGIS Test Report")
   expect_true(file.exists(report_path))
   expect_gt(file.info(report_path)$size, 0)
 })

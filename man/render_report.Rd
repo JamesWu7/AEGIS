@@ -4,12 +4,18 @@
 \alias{render_report}
 \title{Render an AEGIS HTML report}
 \usage{
-render_report(x, output_file = "aegis_report.html")
+render_report(
+  x,
+  output_file = "aegis_report.html",
+  title = "AEGIS Deconvolution Audit Report"
+)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
 
 \item{output_file}{Output HTML path.}
+
+\item{title}{Report title.}
 }
 \value{
 Path to rendered HTML report.
