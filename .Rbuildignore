@@ -5,7 +5,7 @@
 ^tools$
 ^docs$
 ^pkgdown$
-^\\.github$
+^\\.github($|/)
 ^_pkgdown\\.yml$
 ^aegis_demo_report\\.html$
 ^\\.git$

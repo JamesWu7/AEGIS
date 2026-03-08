@@ -1,6 +1,6 @@
 Package: AEGIS
 Type: Package
-Title: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics
+Title: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics
 Version: 0.1.0
 Author: AEGIS Team [aut, cre]
 Maintainer: AEGIS Team <team@example.org>
@@ -13,7 +13,7 @@ Description: A lightweight MVP package for auditing and comparing spatial transc
     methods, compute a consensus estimate, generate figures, and render an HTML
     report.
 License: MIT + file LICENSE
-URL: https://jameswu7.github.io/AEGIS, https://github.com/JamesWu7/AEGIS
+URL: https://github.com/JamesWu7/AEGIS
 BugReports: https://github.com/JamesWu7/AEGIS/issues
 Encoding: UTF-8
 LazyData: true

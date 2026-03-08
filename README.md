@@ -8,7 +8,6 @@
 
 [![R-CMD-check](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
-[![docs](https://img.shields.io/badge/docs-pkgdown-1f6fb2)](https://jameswu7.github.io/AEGIS/)
 
 AEGIS is an R package for basic auditing of spatial deconvolution outputs on Seurat spatial objects, with a minimal and reproducible Human Lymph Node workflow.
 
@@ -37,9 +36,9 @@ obj <- compute_consensus(obj)
 
 ## Complete Tutorials
 
-- [Overview tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
-- [Human lymph node demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
-- [Complete tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+- [Overview tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-overview.Rmd)
+- [Human lymph node demo](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-demo-human-lymph-node.Rmd)
+- [Complete tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd)
 
 ## Key Functions
 
@@ -72,7 +71,7 @@ BibTeX:
 
 ```bibtex
 @Manual{Wu2026AEGIS,
-  title = {AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics},
+  title = {AEGIS: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics},
   author = {Xinjie Wu},
   year = {2026},
   note = {R package version 0.1.0},

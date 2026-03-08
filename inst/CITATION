@@ -1,18 +1,11 @@
 citHeader("To cite AEGIS in manuscripts, use:")
 
-citEntry(
+bibentry(
+  bibtype = "Manual",
   key = "Wu2026AEGIS",
-  entry = "Manual",
-  title = "AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics",
-  author = personList(
-    as.person("Xinjie Wu")
-  ),
+  title = "AEGIS: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics",
+  author = c(person(given = "Xinjie", family = "Wu")),
   year = "2026",
   note = "R package version 0.1.0",
-  url = "https://github.com/JamesWu7/AEGIS",
-  textVersion = paste(
-    "Wu X (2026). AEGIS: Audit and Evaluate deconvolution outputs in Grid-based",
-    "Spatial transcriptomics. R package version 0.1.0.",
-    "https://github.com/JamesWu7/AEGIS"
-  )
+  url = "https://github.com/JamesWu7/AEGIS"
 )

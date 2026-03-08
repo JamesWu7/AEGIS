@@ -17,7 +17,6 @@ render_report <- function(x, output_file = "aegis_report.html") {
   }
 
   render_env <- new.env(parent = baseenv())
-  render_env$params <- list(aegis_obj = x)
   render_env$audit_basic <- audit_basic
   render_env$audit_marker <- audit_marker
   render_env$audit_spatial <- audit_spatial
@@ -51,11 +50,14 @@ render_report <- function(x, output_file = "aegis_report.html") {
   on.exit(setwd(old_wd), add = TRUE)
   setwd(out_dir)
 
+  fallback_env <- new.env(parent = render_env)
+  fallback_env$params <- list(aegis_obj = x)
+
   md_file <- tempfile(pattern = "aegis_report_", fileext = ".md", tmpdir = out_dir)
   knitr::knit(
     input = template,
     output = md_file,
-    envir = render_env,
+    envir = fallback_env,
     quiet = TRUE
   )
   markdown::markdownToHTML(
