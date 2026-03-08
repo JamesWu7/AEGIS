@@ -6,20 +6,23 @@
 \usage{
 simulate_deconv_results(
   seu,
-  methods = c("RCTD", "SPOTlight", "cell2location"),
   cell_types = c("B_cell", "T_cell", "NK_cell", "Plasma", "Myeloid", "Endothelial",
     "Stromal"),
-  seed = 123
+  methods = c("RCTD", "SPOTlight", "cell2location"),
+  seed = 123,
+  noise_scale = 0.05
 )
 }
 \arguments{
 \item{seu}{A Seurat object.}
 
-\item{methods}{Character vector of method names.}
-
 \item{cell_types}{Character vector of cell types.}
 
+\item{methods}{Character vector of method names.}
+
 \item{seed}{Random seed for reproducibility.}
+
+\item{noise_scale}{Numeric scale for method-specific perturbation.}
 }
 \value{
 A named list of numeric matrices (spot-by-celltype proportions).

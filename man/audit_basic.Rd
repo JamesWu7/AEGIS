@@ -4,12 +4,12 @@
 \alias{audit_basic}
 \title{Run basic quality audits on deconvolution matrices}
 \usage{
-audit_basic(x, detection_threshold = 0.05)
+audit_basic(x, threshold = 0.05)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
 
-\item{detection_threshold}{Numeric threshold for counting detected cell types.}
+\item{threshold}{Numeric threshold for counting detected cell types.}
 }
 \value{
 The modified \code{aegis} object with \code{x$audit$basic} populated.

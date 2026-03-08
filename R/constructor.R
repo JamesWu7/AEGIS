@@ -35,6 +35,9 @@ as_aegis <- function(seu, deconv, markers = NULL, meta = NULL) {
   if (is.null(spots) || anyDuplicated(spots)) {
     stop("Seurat spot names (`colnames(seu)`) must be present and unique.", call. = FALSE)
   }
+  if (length(spots) == 0L) {
+    stop("Seurat object must contain at least one spot.", call. = FALSE)
+  }
 
   deconv_aligned <- lapply(seq_along(deconv), function(i) {
     method <- method_names[[i]]
@@ -43,12 +46,24 @@ as_aegis <- function(seu, deconv, markers = NULL, meta = NULL) {
   })
   names(deconv_aligned) <- method_names
 
-  if (!is.null(markers) && !is.list(markers)) {
-    stop("`markers` must be NULL or a named list.", call. = FALSE)
+  if (!is.null(markers)) {
+    if (!is.list(markers)) {
+      stop("`markers` must be NULL or a named list.", call. = FALSE)
+    }
+    marker_names <- names(markers)
+    if (length(markers) > 0L && (is.null(marker_names) || any(trimws(marker_names) == ""))) {
+      stop("`markers`, when supplied, must be a named list.", call. = FALSE)
+    }
   }
 
-  if (!is.null(meta) && !is.list(meta)) {
-    stop("`meta` must be NULL or a list.", call. = FALSE)
+  if (is.null(meta)) {
+    meta <- list()
+  } else if (is.list(meta)) {
+    meta <- meta
+  } else if (is.atomic(meta) || is.data.frame(meta)) {
+    meta <- as.list(meta)
+  } else {
+    stop("`meta` must be NULL, a list, or coercible to a list.", call. = FALSE)
   }
 
   out <- list(
@@ -57,7 +72,7 @@ as_aegis <- function(seu, deconv, markers = NULL, meta = NULL) {
     markers = markers,
     audit = list(),
     consensus = list(),
-    meta = c(list(created_at = as.character(Sys.time())), meta %||% list())
+    meta = meta
   )
 
   class(out) <- "aegis"

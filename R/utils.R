@@ -23,6 +23,16 @@ assert_is_aegis <- function(x, arg = "x") {
 coerce_to_numeric_matrix <- function(obj, method_name) {
   if (is.data.frame(obj)) {
     obj <- as.matrix(obj)
+  } else if (!is.matrix(obj)) {
+    obj <- tryCatch(
+      as.matrix(obj),
+      error = function(e) {
+        stop(
+          sprintf("Method '%s': value must be a matrix/data.frame or coercible to matrix.", method_name),
+          call. = FALSE
+        )
+      }
+    )
   }
 
   if (!is.matrix(obj)) {
@@ -42,6 +52,18 @@ coerce_to_numeric_matrix <- function(obj, method_name) {
 
   if (anyDuplicated(rownames(obj))) {
     stop(sprintf("Method '%s': duplicated row names are not allowed.", method_name), call. = FALSE)
+  }
+  if (nrow(obj) == 0L || ncol(obj) == 0L) {
+    stop(sprintf("Method '%s': matrices with zero rows or zero columns are not allowed.", method_name), call. = FALSE)
+  }
+  if (is.null(colnames(obj))) {
+    stop(sprintf("Method '%s': column names are required.", method_name), call. = FALSE)
+  }
+  if (anyNA(colnames(obj)) || any(trimws(colnames(obj)) == "")) {
+    stop(sprintf("Method '%s': missing/empty column names are not allowed.", method_name), call. = FALSE)
+  }
+  if (anyDuplicated(colnames(obj))) {
+    stop(sprintf("Method '%s': duplicated column names are not allowed.", method_name), call. = FALSE)
   }
 
   suppressWarnings(storage.mode(obj) <- "double")
@@ -76,18 +98,20 @@ align_matrix_to_spots <- function(mat, spots, method_name) {
 
   extra_spots <- setdiff(rownames(mat), spots)
   if (length(extra_spots) > 0) {
-    warning(
+    preview <- paste(utils::head(extra_spots, 5L), collapse = ", ")
+    stop(
       sprintf(
-        "Method '%s': dropping %d rows not present in Seurat object.",
+        "Method '%s': %d extra rows are not present in Seurat object (e.g. %s).",
         method_name,
-        length(extra_spots)
+        length(extra_spots),
+        preview
       ),
       call. = FALSE
     )
-    mat <- mat[setdiff(rownames(mat), extra_spots), , drop = FALSE]
   }
 
   if (!identical(rownames(mat), spots)) {
+    # Explicitly reorder rows to match Seurat spot order.
     warning(
       sprintf("Method '%s': reordering rows to match Seurat spot order.", method_name),
       call. = FALSE
