@@ -1,0 +1,15 @@
+test_that("render_report creates an HTML report", {
+  data("aegis_example", package = "AEGIS")
+  deconv <- simulate_deconv_results(aegis_example, seed = 41)
+  obj <- as_aegis(aegis_example, deconv, markers = aegis_default_markers())
+  obj <- audit_basic(obj)
+  obj <- audit_marker(obj)
+  obj <- audit_spatial(obj)
+  obj <- compare_methods(obj)
+  obj <- compute_consensus(obj)
+
+  out <- tempfile(fileext = ".html")
+  report_path <- render_report(obj, output_file = out)
+  expect_true(file.exists(report_path))
+  expect_gt(file.info(report_path)$size, 0)
+})

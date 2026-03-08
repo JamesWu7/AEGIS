@@ -1,0 +1,11 @@
+^.*\\.Rproj$
+^\\.Rproj\\.user$
+^README\\.Rmd$
+^data-raw$
+^tools$
+^\\.git$
+^\\.gitattributes$
+^\\.DS_Store$
+^\\.\\.?Rcheck$
+^V1_Human_Lymph_Node_filtered_feature_bc_matrix\\.h5$
+^V1_Human_Lymph_Node_spatial\\.tar\\.gz$

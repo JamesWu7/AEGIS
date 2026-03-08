@@ -1,0 +1,38 @@
+Package: AEGIS
+Type: Package
+Title: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics
+Version: 0.1.0
+Author: AEGIS Team [aut, cre]
+Maintainer: AEGIS Team <team@example.org>
+Authors@R: c(
+    person(given = "AEGIS", family = "Team", role = c("aut", "cre"), email = "team@example.org")
+    )
+Description: A lightweight MVP package for auditing and comparing spatial transcriptomics
+    deconvolution outputs on Seurat objects. It provides utilities to load 10x
+    Visium data, simulate deconvolution matrices, run quality audits, compare
+    methods, compute a consensus estimate, generate figures, and render an HTML
+    report.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.2.0)
+Imports:
+    Seurat,
+    ggplot2,
+    dplyr,
+    tidyr,
+    Matrix,
+    rmarkdown,
+    patchwork,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    markdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
