@@ -7,7 +7,6 @@
 
 [![R-CMD-check](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
-[![docs](https://img.shields.io/badge/docs-pkgdown-1f6fb2)](https://jameswu7.github.io/AEGIS/)
 
 AEGIS is an R package for basic auditing of spatial deconvolution
 outputs on Seurat spatial objects, with a minimal and reproducible Human
@@ -27,18 +26,23 @@ library(AEGIS)
 
 seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
-obj <- as_aegis(seu, deconv)
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
+obj <- as_aegis(seu, deconv, markers = markers)
 obj <- audit_basic(obj)
+obj <- audit_marker(obj)
+obj <- audit_spatial(obj)
+obj <- compare_methods(obj)
+obj <- compute_consensus(obj)
 ```
 
 ## Complete Tutorials
 
 - [Overview
-  tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
+  tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-overview.Rmd)
 - [Human lymph node
-  demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
+  demo](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-demo-human-lymph-node.Rmd)
 - [Complete
-  tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+  tutorial](https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd)
 
 ## Key Functions
 
@@ -50,6 +54,14 @@ obj <- audit_basic(obj)
   validate inputs and create the internal `aegis` S3 object.
 - [`audit_basic()`](https://jameswu7.github.io/AEGIS/reference/audit_basic.md):
   compute per-spot and per-method basic quality metrics.
+- [`audit_marker()`](https://jameswu7.github.io/AEGIS/reference/audit_marker.md):
+  quantify marker-expression support and method concordance.
+- [`audit_spatial()`](https://jameswu7.github.io/AEGIS/reference/audit_spatial.md):
+  compute neighborhood-based local inconsistency metrics.
+- [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md):
+  summarize cross-method agreement by cell type and spot.
+- [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md):
+  aggregate shared cell types and derive confidence/stability.
 
 ## Example Figures
 
@@ -75,7 +87,7 @@ BibTeX:
 
 ``` bibtex
 @Manual{Wu2026AEGIS,
-  title = {AEGIS: Audit and Evaluate deconvolution outputs in Grid-based Spatial transcriptomics},
+  title = {AEGIS: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics},
   author = {Xinjie Wu},
   year = {2026},
   note = {R package version 0.1.0},
