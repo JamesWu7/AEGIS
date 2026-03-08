@@ -37,9 +37,21 @@ plot_audit <- function(x, type = c("sumdev", "dominance", "entropy", "marker", "
     if (is.null(x$audit$marker$concordance)) {
       stop("Marker audit not found. Run audit_marker() first.", call. = FALSE)
     }
+    dat <- x$audit$marker$concordance
+    if (nrow(dat) == 0L) {
+      stop("Marker concordance table is empty.", call. = FALSE)
+    }
 
-    p <- ggplot2::ggplot(x$audit$marker$concordance,
-      ggplot2::aes(x = .data$celltype, y = .data$correlation, fill = .data$method)
+    y_col <- if ("correlation" %in% colnames(dat)) {
+      "correlation"
+    } else if ("pearson_cor" %in% colnames(dat)) {
+      "pearson_cor"
+    } else {
+      stop("Marker concordance table must contain `correlation` or `pearson_cor`.", call. = FALSE)
+    }
+
+    p <- ggplot2::ggplot(dat,
+      ggplot2::aes(x = .data$celltype, y = .data[[y_col]], fill = .data$method)
     ) +
       ggplot2::geom_col(position = ggplot2::position_dodge(width = 0.75), width = 0.7) +
       ggplot2::coord_flip() +
