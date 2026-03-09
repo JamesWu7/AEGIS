@@ -6,3 +6,5 @@
 - Added example data, vignettes, and test coverage for core workflow.
 - Updated README with enlarged logo, devtools installation, citation text, and repository link.
 - Added tutorial expansion, spatial slice example figure, and pkgdown/R-CMD-check workflows.
+- Added unified `run_aegis()` one-call workflow for single-sample and multi-sample usage.
+- Updated tutorials to include multi-sample end-to-end examples.

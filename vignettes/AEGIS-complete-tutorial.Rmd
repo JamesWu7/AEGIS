@@ -30,12 +30,7 @@ deconv_sim <- simulate_deconv_results(
   seed = 2026
 )
 
-obj_sim <- as_aegis(seu, deconv_sim, markers = markers)
-obj_sim <- audit_basic(obj_sim)
-obj_sim <- audit_marker(obj_sim)
-obj_sim <- audit_spatial(obj_sim)
-obj_sim <- compare_methods(obj_sim)
-obj_sim <- compute_consensus(obj_sim)
+obj_sim <- run_aegis(seu, deconv = deconv_sim, markers = markers)
 ```
 
 ```{r}
@@ -114,31 +109,61 @@ cell2location <- read_cell2location(tmp_cell2location)
 ### 3.3 Build AEGIS Object from Real Inputs
 
 ```{r}
-obj_real <- as_aegis(
+obj_real <- run_aegis(
   seu_small,
   deconv = list(
     RCTD = rctd,
     SPOTlight = spotlight,
     cell2location = cell2location
-  )
+  ),
+  do_marker = FALSE,
+  do_spatial = FALSE
 )
-obj_real <- audit_basic(obj_real)
-obj_real <- compare_methods(obj_real)
-obj_real <- compute_consensus(obj_real)
 ```
 
 ```{r}
 knitr::kable(obj_real$audit$basic$summary)
 ```
 
-## 4. Optional Report Generation
+## 4. Multi-sample Workflow (P6)
+
+```{r}
+spots_all <- colnames(seu)
+n_half <- floor(length(spots_all) / 2)
+
+seu_list <- list(
+  sample1 = suppressWarnings(seu[, spots_all[seq_len(n_half)]]),
+  sample2 = suppressWarnings(seu[, spots_all[seq.int(n_half + 1L, length(spots_all))]])
+)
+
+deconv_nested <- list(
+  sample1 = simulate_deconv_results(seu_list$sample1, methods = c("RCTD", "SPOTlight"), seed = 333),
+  sample2 = simulate_deconv_results(seu_list$sample2, methods = c("RCTD", "SPOTlight"), seed = 444)
+)
+
+obj_multi <- run_aegis(
+  seu_list,
+  deconv = deconv_nested,
+  markers = markers
+)
+
+sample_summary <- summarize_by_sample(obj_multi)
+knitr::kable(sample_summary)
+```
+
+```{r eval=FALSE}
+render_report_batch(obj_multi, output_dir = "reports")
+```
+
+## 5. Optional Report Generation
 
 ```{r eval=FALSE}
 render_report(obj_sim, output_file = "aegis_report.html")
 ```
 
-## 5. Summary
+## 6. Summary
 
 - Use `simulate_deconv_results()` for reproducible demos and method development.
 - Use `read_rctd()`, `read_spotlight()`, `read_cell2location()` for external exports.
-- Use the same downstream pipeline (`audit_*`, `compare_methods`, `compute_consensus`) in both paths.
+- Use `run_aegis()` as the unified pipeline entry for single-sample and multi-sample analysis.
+- Use `summarize_by_sample()` and `render_report_batch()` for multi-sample projects.

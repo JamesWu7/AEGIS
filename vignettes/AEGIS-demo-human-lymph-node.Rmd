@@ -50,12 +50,7 @@ Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 deconv <- simulate_deconv_results(seu, seed = 2026)
 
-obj <- as_aegis(seu, deconv, markers = markers)
-obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
+obj <- run_aegis(seu, deconv = deconv, markers = markers)
 ```
 
 ```{r}
@@ -72,7 +67,28 @@ plot_audit(obj, type = "dominance", method = "RCTD")
 plot_compare(obj, type = "heatmap")
 ```
 
+## Multi-sample Example (Two Sections from the Demo Object)
+
+```{r}
+spots_all <- colnames(seu)
+n_half <- floor(length(spots_all) / 2)
+
+seu_list <- list(
+  section_A = suppressWarnings(seu[, spots_all[seq_len(n_half)]]),
+  section_B = suppressWarnings(seu[, spots_all[seq.int(n_half + 1L, length(spots_all))]])
+)
+
+deconv_nested <- list(
+  section_A = simulate_deconv_results(seu_list$section_A, methods = c("RCTD", "SPOTlight"), seed = 91),
+  section_B = simulate_deconv_results(seu_list$section_B, methods = c("RCTD", "SPOTlight"), seed = 92)
+)
+
+obj_multi <- run_aegis(seu_list, deconv = deconv_nested, markers = markers)
+knitr::kable(summarize_by_sample(obj_multi))
+```
+
 ## Notes
 
 - AEGIS can run with simulated outputs or imported real exported tables.
 - AEGIS does not execute external deconvolution methods.
+- Multi-sample projects can use `run_aegis()` + `summarize_by_sample()` + `render_report_batch()`.

@@ -32,6 +32,7 @@ reference:
       - read_cell2location
   - title: Core object and simulation
     contents:
+      - run_aegis
       - as_aegis
       - as_aegis_multi
       - is_aegis

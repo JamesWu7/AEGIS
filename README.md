@@ -25,6 +25,12 @@ AEGIS now supports two primary workflows:
 1. Simulated method outputs for development and demos (`simulate_deconv_results()`).
 2. Real exported outputs from external methods (`read_rctd()`, `read_spotlight()`, `read_cell2location()`).
 
+For day-to-day use, the recommended minimal API is:
+
+1. `load_10x_lymphnode()` or `load_10x_spatial_set()`
+2. `run_aegis()`
+3. `plot_audit()` / `plot_compare()` / `render_report()`
+
 ## Quick Start (Simulated)
 
 ```r
@@ -33,12 +39,7 @@ library(AEGIS)
 seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
-obj <- as_aegis(seu, deconv, markers = markers)
-obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- compute_consensus(obj)
+obj <- run_aegis(seu, deconv = deconv, markers = markers)
 ```
 
 ## Import Real Deconvolution Results (P5)
@@ -81,12 +82,7 @@ deconv_nested <- list(
   sample2 = list(RCTD = rctd2, SPOTlight = spotlight2)
 )
 
-obj_multi <- as_aegis_multi(seu_list, deconv = deconv_nested, markers = markers)
-obj_multi <- audit_basic(obj_multi)
-obj_multi <- audit_marker(obj_multi)
-obj_multi <- audit_spatial(obj_multi)
-obj_multi <- compare_methods(obj_multi)
-obj_multi <- compute_consensus(obj_multi)
+obj_multi <- run_aegis(seu_list, deconv = deconv_nested, markers = markers)
 
 summary_tbl <- summarize_by_sample(obj_multi)
 render_report_batch(obj_multi, output_dir = "reports")
@@ -96,7 +92,7 @@ render_report_batch(obj_multi, output_dir = "reports")
 
 - [Overview tutorial (object model + workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
 - [Human lymph node demo (end-to-end demo)](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
-- [Complete tutorial (simulated + real import)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+- [Complete tutorial (simulated + real import + multi-sample)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
 
 ## Key Functions
 
@@ -111,6 +107,7 @@ render_report_batch(obj_multi, output_dir = "reports")
 - `audit_spatial()`: compute neighborhood-based local inconsistency metrics.
 - `compare_methods()`: summarize cross-method agreement by cell type and spot.
 - `compute_consensus()`: aggregate shared cell types and derive confidence/stability.
+- `run_aegis()`: one-call pipeline for single-sample or multi-sample workflows.
 
 ## Example Figures
 
