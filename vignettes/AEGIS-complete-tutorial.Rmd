@@ -11,42 +11,134 @@ vignette: >
 options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
-library(Seurat)
 ```
 
-## 1. Load example Seurat object
+## 1. Load Example Seurat Object
 
 ```{r}
 data("aegis_example", package = "AEGIS")
 seu <- aegis_example
 ```
 
-## 2. Simulate method outputs
+## 2. Simulated Workflow (Development Path)
 
 ```{r}
-deconv <- simulate_deconv_results(
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
+deconv_sim <- simulate_deconv_results(
   seu,
   methods = c("RCTD", "SPOTlight", "cell2location"),
   seed = 2026
 )
-```
 
-## 3. Construct aegis object
+obj_sim <- as_aegis(seu, deconv_sim, markers = markers)
+obj_sim <- audit_basic(obj_sim)
+obj_sim <- audit_marker(obj_sim)
+obj_sim <- audit_spatial(obj_sim)
+obj_sim <- compare_methods(obj_sim)
+obj_sim <- compute_consensus(obj_sim)
+```
 
 ```{r}
-obj <- as_aegis(seu, deconv)
-obj
+knitr::kable(obj_sim$audit$basic$summary)
 ```
 
-## 4. Run basic audit
+```{r, fig.width=7, fig.height=5}
+plot_audit(obj_sim, type = "entropy", method = "SPOTlight")
+```
+
+## 3. Real Import Workflow (P5 Path)
+
+This section mimics exported backend result files and imports them using the new readers.
 
 ```{r}
-obj <- audit_basic(obj)
-knitr::kable(obj$audit$basic$summary)
+spots <- colnames(seu)[1:8]
+seu_small <- suppressWarnings(seu[, spots])
 ```
 
-## 5. Inspect spot-level metrics
+### 3.1 Build Example Exported Files
 
 ```{r}
-head(obj$audit$basic$spot_metrics)
+tmp_rctd <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    barcode = spots,
+    B_cell = c(0.5, 0.2, 0.4, 0.3, 0.1, 0.2, 0.4, 0.5),
+    T_cell = c(0.3, 0.6, 0.4, 0.4, 0.7, 0.6, 0.3, 0.3),
+    Myeloid = c(0.2, 0.2, 0.2, 0.3, 0.2, 0.2, 0.3, 0.2),
+    check.names = FALSE
+  ),
+  tmp_rctd,
+  row.names = FALSE
+)
+
+tmp_spotlight <- tempfile(fileext = ".tsv")
+utils::write.table(
+  data.frame(
+    spot_id = spots,
+    B_cell = c(0.4, 0.3, 0.5, 0.3, 0.2, 0.3, 0.4, 0.4),
+    T_cell = c(0.4, 0.5, 0.3, 0.4, 0.6, 0.5, 0.4, 0.3),
+    Myeloid = c(0.2, 0.2, 0.2, 0.3, 0.2, 0.2, 0.2, 0.3),
+    sample = "S1",
+    check.names = FALSE
+  ),
+  tmp_spotlight,
+  sep = "\t",
+  quote = FALSE,
+  row.names = FALSE
+)
+
+tmp_cell2location <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    spot = spots,
+    B_cell = c(15, 8, 12, 10, 5, 7, 9, 11),
+    T_cell = c(12, 18, 10, 13, 20, 16, 12, 10),
+    Myeloid = c(5, 6, 4, 8, 5, 7, 6, 9),
+    x = seq_along(spots),
+    y = rev(seq_along(spots)),
+    check.names = FALSE
+  ),
+  tmp_cell2location,
+  row.names = FALSE
+)
 ```
+
+### 3.2 Import and Standardize
+
+```{r}
+rctd <- read_rctd(tmp_rctd)
+spotlight <- read_spotlight(tmp_spotlight)
+cell2location <- read_cell2location(tmp_cell2location)
+```
+
+### 3.3 Build AEGIS Object from Real Inputs
+
+```{r}
+obj_real <- as_aegis(
+  seu_small,
+  deconv = list(
+    RCTD = rctd,
+    SPOTlight = spotlight,
+    cell2location = cell2location
+  )
+)
+obj_real <- audit_basic(obj_real)
+obj_real <- compare_methods(obj_real)
+obj_real <- compute_consensus(obj_real)
+```
+
+```{r}
+knitr::kable(obj_real$audit$basic$summary)
+```
+
+## 4. Optional Report Generation
+
+```{r eval=FALSE}
+render_report(obj_sim, output_file = "aegis_report.html")
+```
+
+## 5. Summary
+
+- Use `simulate_deconv_results()` for reproducible demos and method development.
+- Use `read_rctd()`, `read_spotlight()`, `read_cell2location()` for external exports.
+- Use the same downstream pipeline (`audit_*`, `compare_methods`, `compute_consensus`) in both paths.

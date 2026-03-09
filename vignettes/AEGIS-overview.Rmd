@@ -15,16 +15,67 @@ library(AEGIS)
 
 ## Purpose
 
-AEGIS provides a minimal, reproducible workflow for spatial deconvolution audit on Seurat objects.
+AEGIS is designed to audit and compare spatial deconvolution outputs on Seurat spatial objects.
 
-## P2 workflow
+Current MVP workflows:
+
+1. Simulate deconvolution outputs for demos and method development.
+2. Import real exported results from RCTD/SPOTlight/cell2location.
+3. Run a unified audit/comparison/consensus pipeline on the standardized matrices.
+
+## AEGIS Object Structure
+
+`as_aegis()` creates a lightweight S3 object:
+
+- `seu`: Seurat object
+- `deconv`: named list of spot-by-celltype matrices
+- `markers`: optional marker list
+- `audit`: audit results (`basic`, `marker`, `spatial`)
+- `consensus`: comparison + consensus outputs
+- `meta`: user metadata list
+
+## Simulated Workflow
 
 ```{r}
 data("aegis_example", package = "AEGIS")
 
 deconv <- simulate_deconv_results(aegis_example, seed = 123)
-obj <- as_aegis(aegis_example, deconv)
+obj <- as_aegis(aegis_example, deconv, markers = aegis_default_markers())
 obj <- audit_basic(obj)
+obj <- audit_marker(obj)
+obj <- audit_spatial(obj)
+obj <- compare_methods(obj)
+obj <- compute_consensus(obj)
 
 knitr::kable(obj$audit$basic$summary)
 ```
+
+## Real Import Workflow
+
+AEGIS imports exported tables and does not run external deconvolution backends.
+
+```{r}
+spots <- colnames(aegis_example)[1:6]
+
+tmp_rctd <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    barcode = spots,
+    B_cell = c(0.5, 0.3, 0.2, 0.6, 0.1, 0.4),
+    T_cell = c(0.3, 0.4, 0.4, 0.2, 0.7, 0.4),
+    Myeloid = c(0.2, 0.3, 0.4, 0.2, 0.2, 0.2),
+    check.names = FALSE
+  ),
+  tmp_rctd,
+  row.names = FALSE
+)
+
+rctd <- read_rctd(tmp_rctd)
+obj_real <- as_aegis(aegis_example[, spots], deconv = list(RCTD = rctd))
+obj_real <- audit_basic(obj_real)
+knitr::kable(obj_real$audit$basic$summary)
+```
+
+## Next Steps
+
+See the demo and complete tutorials for full end-to-end examples and multi-method import workflows.

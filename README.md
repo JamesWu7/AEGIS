@@ -18,7 +18,14 @@ install.packages("devtools")
 devtools::install_github("JamesWu7/AEGIS")
 ```
 
-## Quick Start
+## Workflow at a Glance
+
+AEGIS now supports two primary workflows:
+
+1. Simulated method outputs for development and demos (`simulate_deconv_results()`).
+2. Real exported outputs from external methods (`read_rctd()`, `read_spotlight()`, `read_cell2location()`).
+
+## Quick Start (Simulated)
 
 ```r
 library(AEGIS)
@@ -34,7 +41,7 @@ obj <- compare_methods(obj)
 obj <- compute_consensus(obj)
 ```
 
-## Import Real Deconvolution Results
+## Import Real Deconvolution Results (P5)
 
 AEGIS imports exported result tables from external methods. It does **not** install or run RCTD/SPOTlight/cell2location backends.
 
@@ -53,20 +60,27 @@ obj <- as_aegis(
     cell2location = cell2location
   )
 )
+
+obj <- audit_basic(obj)
+obj <- compare_methods(obj)
+obj <- compute_consensus(obj)
 ```
 
 For cell2location, export posterior abundance/proportion tables to csv/tsv/txt first, then import with `read_cell2location()`.
 
 ## Complete Tutorials
 
-- [Overview tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
-- [Human lymph node demo](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
-- [Complete tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+- [Overview tutorial (object model + workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
+- [Human lymph node demo (end-to-end demo)](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
+- [Complete tutorial (simulated + real import)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
 
 ## Key Functions
 
 - `load_10x_lymphnode()`: load the Human Lymph Node 10x spatial dataset into a Seurat object.
 - `simulate_deconv_results()`: generate realistic mock method outputs (spot-by-celltype proportions).
+- `read_rctd()`: import exported RCTD result tables/RDS and standardize to spot-by-celltype.
+- `read_spotlight()`: import exported SPOTlight result tables/RDS and standardize to spot-by-celltype.
+- `read_cell2location()`: import exported cell2location tables/RDS (abundance or proportion) and standardize.
 - `as_aegis()`: validate inputs and create the internal `aegis` S3 object.
 - `audit_basic()`: compute per-spot and per-method basic quality metrics.
 - `audit_marker()`: quantify marker-expression support and method concordance.

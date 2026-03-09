@@ -1,5 +1,5 @@
 ---
-title: "AEGIS Demo Human Lymph Node"
+title: "AEGIS Demo: Human Lymph Node"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{AEGIS Demo Human Lymph Node}
@@ -14,9 +14,9 @@ library(AEGIS)
 library(Seurat)
 ```
 
-## Demo data source
+## Demo Data Source
 
-This vignette uses the built-in Human Lymph Node example object (`aegis_example`) so it can render in CI, pkgdown, and source builds.
+This tutorial uses the built-in Human Lymph Node example object (`aegis_example`) so it can run in CI and pkgdown builds.
 
 ```{r}
 data("aegis_example", package = "AEGIS")
@@ -24,36 +24,55 @@ seu <- aegis_example
 seu
 ```
 
-## Optional: load directly from authoritative raw files
+## Optional: Load from Authoritative Raw Files
 
-If you are in the repository root and have these raw files available:
+If you are in repository root and have the authoritative raw files:
 
 - `V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5`
 - `V1_Human_Lymph_Node_spatial.tar.gz`
 - `V1_Human_Lymph_Node_metrics_summary.csv`
 
-then you can load from disk with:
+you can load directly with:
 
 ```{r eval=FALSE}
 seu <- load_10x_lymphnode(data_dir = ".")
 ```
 
-## Spatial transcriptomics slice example
+## Tissue Context
 
 ```{r, fig.width=7, fig.height=6}
 Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
 ```
 
-## Simulate deconvolution and run AEGIS
+## End-to-End AEGIS Workflow (Simulated Inputs)
 
 ```{r}
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 deconv <- simulate_deconv_results(seu, seed = 2026)
-obj <- as_aegis(seu, deconv)
-obj <- audit_basic(obj)
-```
 
-## Basic audit output
+obj <- as_aegis(seu, deconv, markers = markers)
+obj <- audit_basic(obj)
+obj <- audit_marker(obj)
+obj <- audit_spatial(obj)
+obj <- compare_methods(obj)
+obj <- compute_consensus(obj)
+```
 
 ```{r}
 knitr::kable(obj$audit$basic$summary)
 ```
+
+## Example Plots
+
+```{r, fig.width=7, fig.height=5}
+plot_audit(obj, type = "dominance", method = "RCTD")
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_compare(obj, type = "heatmap")
+```
+
+## Notes
+
+- AEGIS can run with simulated outputs or imported real exported tables.
+- AEGIS does not execute external deconvolution methods.
