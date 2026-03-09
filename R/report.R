@@ -12,6 +12,9 @@ render_report <- function(
     x,
     output_file = "aegis_report.html",
     title = "AEGIS Deconvolution Audit Report") {
+  if (is_multi_sample_context(x)) {
+    stop("Multi-sample object detected. Use render_report_batch() or split_aegis_by_sample().", call. = FALSE)
+  }
   assert_is_aegis(x)
   template <- resolve_template()
   output_file <- normalizePath(output_file, winslash = "/", mustWork = FALSE)

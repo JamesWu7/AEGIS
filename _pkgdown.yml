@@ -22,6 +22,8 @@ reference:
   - title: Data input
     contents:
       - load_10x_lymphnode
+      - load_10x_spatial_set
+      - merge_spatial_seurat_list
       - aegis_example
       - aegis_default_markers
       - align_deconv_to_seurat
@@ -31,7 +33,11 @@ reference:
   - title: Core object and simulation
     contents:
       - as_aegis
+      - as_aegis_multi
       - is_aegis
+      - is_aegis_multi
+      - split_aegis_by_sample
+      - summarize_by_sample
       - simulate_deconv_results
   - title: Audit and comparison
     contents:
@@ -45,6 +51,7 @@ reference:
       - plot_audit
       - plot_compare
       - render_report
+      - render_report_batch
       - build_aegis_example_data
 
 articles:

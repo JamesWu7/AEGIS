@@ -10,6 +10,40 @@
 #' @return The modified `aegis` object with `x$audit$marker` populated.
 #' @export
 audit_marker <- function(x, markers = x$markers, assay = "Spatial") {
+  if (is_multi_sample_context(x)) {
+    sample_results <- iterate_aegis_samples(x, function(obj) audit_marker(obj, markers = markers, assay = assay))
+    by_sample <- lapply(sample_results, function(obj) obj$audit$marker)
+
+    concordance <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$concordance %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    marker_usage <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$marker_usage %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    summary_tbl <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$summary_table %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+
+    x$audit$marker <- list(
+      by_sample = by_sample,
+      concordance = concordance,
+      marker_usage = marker_usage,
+      summary = summary_tbl,
+      summary_table = summary_tbl,
+      assay = assay
+    )
+    return(x)
+  }
+
   assert_is_aegis(x)
   assert_is_seurat(x$seu, "x$seu")
 

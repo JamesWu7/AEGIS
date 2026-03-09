@@ -2,6 +2,7 @@
 #'
 #' @param x An `aegis` object.
 #' @param type One of `heatmap`, `spot_agreement`, `consensus_map`.
+#' @param sample Optional sample ID for multi-sample objects.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param base_size Base font size for the plot theme.
 #'
@@ -10,8 +11,26 @@
 plot_compare <- function(
     x,
     type = c("heatmap", "spot_agreement", "consensus_map"),
+    sample = NULL,
     palette = "nature",
     base_size = 12) {
+  if (is_multi_sample_context(x)) {
+    sample_objs <- split_aegis_by_sample(x)
+    if (is.null(sample)) {
+      stop("Multi-sample object detected. Please provide `sample` for `plot_compare()`.", call. = FALSE)
+    }
+    if (!(sample %in% names(sample_objs))) {
+      stop(sprintf("Sample '%s' not found. Available: %s", sample, paste(names(sample_objs), collapse = ", ")), call. = FALSE)
+    }
+    return(plot_compare(
+      x = sample_objs[[sample]],
+      type = type,
+      sample = NULL,
+      palette = palette,
+      base_size = base_size
+    ))
+  }
+
   assert_is_aegis(x)
   type <- match.arg(type)
 

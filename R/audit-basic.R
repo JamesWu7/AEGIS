@@ -8,6 +8,33 @@
 #' @return The modified `aegis` object with `x$audit$basic` populated.
 #' @export
 audit_basic <- function(x, threshold = 0.05) {
+  if (is_multi_sample_context(x)) {
+    sample_results <- iterate_aegis_samples(x, function(obj) audit_basic(obj, threshold = threshold))
+    by_sample <- lapply(sample_results, function(obj) obj$audit$basic)
+
+    spot_metrics <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$spot_metrics %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    summary <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$summary_table %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+
+    x$audit$basic <- list(
+      by_sample = by_sample,
+      spot_metrics = spot_metrics,
+      summary = summary,
+      summary_table = summary,
+      threshold = threshold
+    )
+    return(x)
+  }
+
   assert_is_aegis(x)
   if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {
     stop("`x$deconv` must be a non-empty list of deconvolution matrices.", call. = FALSE)

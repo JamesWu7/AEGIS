@@ -9,6 +9,46 @@
 #' @return The modified `aegis` object with `x$audit$spatial` populated.
 #' @export
 audit_spatial <- function(x, k = 6L) {
+  if (is_multi_sample_context(x)) {
+    sample_results <- iterate_aegis_samples(x, function(obj) audit_spatial(obj, k = k))
+    by_sample <- lapply(sample_results, function(obj) obj$audit$spatial)
+
+    spot_metrics <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$spot_metrics %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    detail <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$detail %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    method_summary <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$method_summary %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    summary <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$summary %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+
+    x$audit$spatial <- list(
+      by_sample = by_sample,
+      spot_metrics = spot_metrics,
+      detail = detail,
+      method_summary = method_summary,
+      summary = summary,
+      params = list(k = k)
+    )
+    return(x)
+  }
+
   assert_is_aegis(x)
   assert_is_seurat(x$seu, "x$seu")
   if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {

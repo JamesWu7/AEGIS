@@ -8,6 +8,7 @@ plot_audit(
   x,
   type = c("sumdev", "dominance", "entropy", "marker", "smoothness"),
   method = NULL,
+  sample = NULL,
   cell_type = NULL,
   palette = "nature",
   point_size = NULL,
@@ -20,6 +21,8 @@ plot_audit(
 \item{type}{One of \code{sumdev}, \code{dominance}, \code{entropy}, \code{marker}, \code{smoothness}.}
 
 \item{method}{Optional method name to subset to one deconvolution method.}
+
+\item{sample}{Optional sample ID for multi-sample objects.}
 
 \item{cell_type}{Optional cell type for marker/smoothness views.}
 

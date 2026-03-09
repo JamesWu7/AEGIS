@@ -68,6 +68,30 @@ obj <- compute_consensus(obj)
 
 For cell2location, export posterior abundance/proportion tables to csv/tsv/txt first, then import with `read_cell2location()`.
 
+## Multi-sample Workflow (P6)
+
+```r
+seu_list <- load_10x_spatial_set(
+  paths = c("sample1_dir", "sample2_dir"),
+  sample_ids = c("sample1", "sample2")
+)
+
+deconv_nested <- list(
+  sample1 = list(RCTD = rctd1, SPOTlight = spotlight1),
+  sample2 = list(RCTD = rctd2, SPOTlight = spotlight2)
+)
+
+obj_multi <- as_aegis_multi(seu_list, deconv = deconv_nested, markers = markers)
+obj_multi <- audit_basic(obj_multi)
+obj_multi <- audit_marker(obj_multi)
+obj_multi <- audit_spatial(obj_multi)
+obj_multi <- compare_methods(obj_multi)
+obj_multi <- compute_consensus(obj_multi)
+
+summary_tbl <- summarize_by_sample(obj_multi)
+render_report_batch(obj_multi, output_dir = "reports")
+```
+
 ## Complete Tutorials
 
 - [Overview tutorial (object model + workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)

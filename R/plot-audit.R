@@ -3,6 +3,7 @@
 #' @param x An `aegis` object.
 #' @param type One of `sumdev`, `dominance`, `entropy`, `marker`, `smoothness`.
 #' @param method Optional method name to subset to one deconvolution method.
+#' @param sample Optional sample ID for multi-sample objects.
 #' @param cell_type Optional cell type for marker/smoothness views.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param point_size Optional spatial point size. Auto-selected when `NULL`.
@@ -14,10 +15,31 @@ plot_audit <- function(
     x,
     type = c("sumdev", "dominance", "entropy", "marker", "smoothness"),
     method = NULL,
+    sample = NULL,
     cell_type = NULL,
     palette = "nature",
     point_size = NULL,
     base_size = 12) {
+  if (is_multi_sample_context(x)) {
+    sample_objs <- split_aegis_by_sample(x)
+    if (is.null(sample)) {
+      stop("Multi-sample object detected. Please provide `sample` for `plot_audit()`.", call. = FALSE)
+    }
+    if (!(sample %in% names(sample_objs))) {
+      stop(sprintf("Sample '%s' not found. Available: %s", sample, paste(names(sample_objs), collapse = ", ")), call. = FALSE)
+    }
+    return(plot_audit(
+      x = sample_objs[[sample]],
+      type = type,
+      method = method,
+      sample = NULL,
+      cell_type = cell_type,
+      palette = palette,
+      point_size = point_size,
+      base_size = base_size
+    ))
+  }
+
   assert_is_aegis(x)
   type <- match.arg(type)
 

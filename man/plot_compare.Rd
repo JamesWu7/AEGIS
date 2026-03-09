@@ -7,6 +7,7 @@
 plot_compare(
   x,
   type = c("heatmap", "spot_agreement", "consensus_map"),
+  sample = NULL,
   palette = "nature",
   base_size = 12
 )
@@ -15,6 +16,8 @@ plot_compare(
 \item{x}{An \code{aegis} object.}
 
 \item{type}{One of \code{heatmap}, \code{spot_agreement}, \code{consensus_map}.}
+
+\item{sample}{Optional sample ID for multi-sample objects.}
 
 \item{palette}{Palette family: \code{nature}, \code{viridis}, \code{scico}, or \code{brewer}.}
 

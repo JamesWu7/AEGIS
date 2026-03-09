@@ -8,6 +8,33 @@
 #' @return Modified `aegis` object with `x$consensus$result` populated.
 #' @export
 compute_consensus <- function(x) {
+  if (is_multi_sample_context(x)) {
+    sample_results <- iterate_aegis_samples(x, compute_consensus)
+    by_sample <- lapply(sample_results, function(obj) obj$consensus$result)
+
+    spot_confidence <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$spot_confidence %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    celltype_stability <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$celltype_stability %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    shared_celltypes <- lapply(by_sample, function(z) z$shared_celltypes %||% character())
+
+    x$consensus$result <- list(
+      by_sample = by_sample,
+      spot_confidence = spot_confidence,
+      celltype_stability = celltype_stability,
+      shared_celltypes = shared_celltypes
+    )
+    return(x)
+  }
+
   assert_is_aegis(x)
   if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {
     stop("`x$deconv` must be a non-empty list.", call. = FALSE)

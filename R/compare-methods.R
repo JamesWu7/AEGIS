@@ -8,6 +8,46 @@
 #' @return Modified `aegis` object with `x$consensus$comparison` populated.
 #' @export
 compare_methods <- function(x) {
+  if (is_multi_sample_context(x)) {
+    sample_results <- iterate_aegis_samples(x, compare_methods)
+    by_sample <- lapply(sample_results, function(obj) obj$consensus$comparison)
+
+    pairwise_celltype_cor <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$pairwise_celltype_cor %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    pairwise_summary <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$pairwise_summary %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    spot_agreement <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$spot_agreement %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+    celltype_agreement <- dplyr::bind_rows(lapply(names(by_sample), function(sid) {
+      tbl <- by_sample[[sid]]$celltype_agreement %||% data.frame()
+      if (nrow(tbl) == 0L) return(tbl)
+      tbl$sample_id <- sid
+      tbl
+    }))
+
+    x$consensus$comparison <- list(
+      by_sample = by_sample,
+      pairwise_celltype_cor = pairwise_celltype_cor,
+      pairwise_summary = pairwise_summary,
+      spot_agreement = spot_agreement,
+      celltype_agreement = celltype_agreement,
+      summary = pairwise_summary
+    )
+    return(x)
+  }
+
   assert_is_aegis(x)
   if (is.null(x$deconv) || !is.list(x$deconv) || length(x$deconv) == 0L) {
     stop("`x$deconv` must be a non-empty list.", call. = FALSE)
