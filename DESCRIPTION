@@ -13,7 +13,8 @@ Description: A lightweight MVP package for auditing and comparing spatial transc
     methods, compute a consensus estimate, generate figures, and render an HTML
     report.
 License: MIT + file LICENSE
-URL: https://github.com/JamesWu7/AEGIS
+URL: https://github.com/JamesWu7/AEGIS,
+    https://jameswu7.github.io/AEGIS/
 BugReports: https://github.com/JamesWu7/AEGIS/issues
 Encoding: UTF-8
 LazyData: true

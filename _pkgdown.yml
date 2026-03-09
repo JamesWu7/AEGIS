@@ -24,6 +24,10 @@ reference:
       - load_10x_lymphnode
       - aegis_example
       - aegis_default_markers
+      - align_deconv_to_seurat
+      - read_rctd
+      - read_spotlight
+      - read_cell2location
   - title: Core object and simulation
     contents:
       - as_aegis
