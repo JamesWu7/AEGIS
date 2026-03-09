@@ -14,23 +14,6 @@
 as_aegis <- function(seu, deconv, markers = NULL, meta = NULL) {
   assert_is_seurat(seu, "seu")
 
-  if (!is.list(deconv) || length(deconv) == 0L) {
-    stop("`deconv` must be a non-empty named list.", call. = FALSE)
-  }
-
-  method_names <- names(deconv)
-  if (is.null(method_names)) {
-    stop("`deconv` must be a named list with non-empty method names.", call. = FALSE)
-  }
-
-  if (anyNA(method_names) || any(trimws(method_names) == "")) {
-    stop("`deconv` contains empty method names. Every method must be named.", call. = FALSE)
-  }
-
-  if (anyDuplicated(method_names)) {
-    stop("`deconv` method names must be unique.", call. = FALSE)
-  }
-
   spots <- colnames(seu)
   if (is.null(spots) || anyDuplicated(spots)) {
     stop("Seurat spot names (`colnames(seu)`) must be present and unique.", call. = FALSE)
@@ -39,12 +22,7 @@ as_aegis <- function(seu, deconv, markers = NULL, meta = NULL) {
     stop("Seurat object must contain at least one spot.", call. = FALSE)
   }
 
-  deconv_aligned <- lapply(seq_along(deconv), function(i) {
-    method <- method_names[[i]]
-    mat <- coerce_to_numeric_matrix(deconv[[i]], method)
-    align_matrix_to_spots(mat, spots, method)
-  })
-  names(deconv_aligned) <- method_names
+  deconv_aligned <- validate_deconv_list(deconv, seurat_spots = spots)
 
   if (!is.null(markers)) {
     if (!is.list(markers)) {

@@ -34,6 +34,29 @@ obj <- compare_methods(obj)
 obj <- compute_consensus(obj)
 ```
 
+## Import Real Deconvolution Results
+
+AEGIS imports exported result tables from external methods. It does **not** install or run RCTD/SPOTlight/cell2location backends.
+
+```r
+seu <- load_10x_lymphnode()
+
+rctd <- read_rctd("path/to/rctd_output.csv")
+spotlight <- read_spotlight("path/to/spotlight_output.tsv")
+cell2location <- read_cell2location("path/to/cell2location_output.csv")
+
+obj <- as_aegis(
+  seu,
+  deconv = list(
+    RCTD = rctd,
+    SPOTlight = spotlight,
+    cell2location = cell2location
+  )
+)
+```
+
+For cell2location, export posterior abundance/proportion tables to csv/tsv/txt first, then import with `read_cell2location()`.
+
 ## Complete Tutorials
 
 - [Overview tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)

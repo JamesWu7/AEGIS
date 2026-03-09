@@ -1,0 +1,4 @@
+spot_id	B_cell	T_cell	NK_cell	sample
+AAAC-1	0.6	0.2	0.2	S1
+AAAC-2	0.2	0.6	0.2	S1
+AAAC-3	0.1	0.1	0.8	S1
