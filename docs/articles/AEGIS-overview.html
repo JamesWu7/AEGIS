@@ -36,7 +36,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo Human Lymph Node</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo: Human Lymph Node</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Complete Tutorial</a></li>
   </ul>
 </li>
@@ -72,19 +72,52 @@
 <div class="section level2">
 <h2 id="purpose">Purpose<a class="anchor" aria-label="anchor" href="#purpose"></a>
 </h2>
-<p>AEGIS provides a minimal, reproducible workflow for spatial
-deconvolution audit on Seurat objects.</p>
+<p>AEGIS is designed to audit and compare spatial deconvolution outputs
+on Seurat spatial objects.</p>
+<p>Current MVP workflows:</p>
+<ol style="list-style-type: decimal">
+<li>Simulate deconvolution outputs for demos and method
+development.</li>
+<li>Import real exported results from RCTD/SPOTlight/cell2location.</li>
+<li>Run a unified audit/comparison/consensus pipeline on the
+standardized matrices.</li>
+<li>Run single-sample or multi-sample analysis through one entry point
+(<code><a href="../reference/run_aegis.html">run_aegis()</a></code>).</li>
+</ol>
 </div>
 <div class="section level2">
-<h2 id="p2-workflow">P2 workflow<a class="anchor" aria-label="anchor" href="#p2-workflow"></a>
+<h2 id="aegis-object-structure">AEGIS Object Structure<a class="anchor" aria-label="anchor" href="#aegis-object-structure"></a>
+</h2>
+<p><code><a href="../reference/as_aegis.html">as_aegis()</a></code> creates a lightweight S3 object:</p>
+<ul>
+<li>
+<code>seu</code>: Seurat object</li>
+<li>
+<code>deconv</code>: named list of spot-by-celltype matrices</li>
+<li>
+<code>markers</code>: optional marker list</li>
+<li>
+<code>audit</code>: audit results (<code>basic</code>,
+<code>marker</code>, <code>spatial</code>)</li>
+<li>
+<code>consensus</code>: comparison + consensus outputs</li>
+<li>
+<code>meta</code>: user metadata list</li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="simulated-workflow">Simulated Workflow<a class="anchor" aria-label="anchor" href="#simulated-workflow"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"aegis_example"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">deconv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">aegis_example</span>, seed <span class="op">=</span> <span class="fl">123</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required namespace: SeuratObject</span></span>
-<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span><span class="va">aegis_example</span>, <span class="va">deconv</span><span class="op">)</span></span>
-<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
+<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">aegis_example</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="va">deconv</span>,</span>
+<span>  markers <span class="op">=</span> <span class="fu"><a href="../reference/aegis_default_markers.html">aegis_default_markers</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
@@ -147,6 +180,178 @@ deconvolution audit on Seurat objects.</p>
 </tbody>
 </table>
 </div>
+<div class="section level2">
+<h2 id="real-import-workflow">Real Import Workflow<a class="anchor" aria-label="anchor" href="#real-import-workflow"></a>
+</h2>
+<p>AEGIS imports exported tables and does not run external deconvolution
+backends.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">aegis_example</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">tmp_rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.6</span>, <span class="fl">0.1</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_rctd</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="va">tmp_rctd</span><span class="op">)</span></span>
+<span><span class="va">obj_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">aegis_example</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>RCTD <span class="op">=</span> <span class="va">rctd</span><span class="op">)</span>,</span>
+<span>  do_marker <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_spatial <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_compare <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_consensus <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Not validating Centroids objects</span></span>
+<span><span class="co">#&gt; Not validating Centroids objects</span></span>
+<span><span class="co">#&gt; Warning: Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Not validating FOV objects</span></span>
+<span><span class="co">#&gt; Warning: Not validating Seurat objects</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_real</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="5%">
+<col width="6%">
+<col width="9%">
+<col width="11%">
+<col width="15%">
+<col width="12%">
+<col width="10%">
+<col width="17%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">method</th>
+<th align="right">n_spots</th>
+<th align="right">n_celltypes</th>
+<th align="right">zero_fraction</th>
+<th align="right">near_zero_fraction</th>
+<th align="right">mean_dominance</th>
+<th align="right">mean_entropy</th>
+<th align="right">mean_n_detected_types</th>
+<th align="right">mean_sum_dev</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="left">RCTD</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5</td>
+<td align="right">0.9967471</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr></tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="multi-sample-workflow">Multi-sample Workflow<a class="anchor" aria-label="anchor" href="#multi-sample-workflow"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spots_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">aegis_example</span><span class="op">)</span></span>
+<span><span class="va">n_half</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">seu_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  sample1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">aegis_example</span><span class="op">[</span>, <span class="va">spots_all</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_half</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  sample2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">aegis_example</span><span class="op">[</span>, <span class="va">spots_all</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq.int</a></span><span class="op">(</span><span class="va">n_half</span> <span class="op">+</span> <span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">deconv_nested</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  sample1 <span class="op">=</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">seu_list</span><span class="op">$</span><span class="va">sample1</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>,</span>
+<span>  sample2 <span class="op">=</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">seu_list</span><span class="op">$</span><span class="va">sample2</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">seu_list</span>, deconv <span class="op">=</span> <span class="va">deconv_nested</span>, markers <span class="op">=</span> <span class="fu"><a href="../reference/aegis_default_markers.html">aegis_default_markers</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="../reference/summarize_by_sample.html">summarize_by_sample</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="6%">
+<col width="5%">
+<col width="6%">
+<col width="12%">
+<col width="10%">
+<col width="8%">
+<col width="17%">
+<col width="13%">
+<col width="17%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">sample_id</th>
+<th align="right">n_spots</th>
+<th align="left">method</th>
+<th align="left">methods_available</th>
+<th align="right">mean_dominance</th>
+<th align="right">mean_entropy</th>
+<th align="right">mean_local_inconsistency</th>
+<th align="right">mean_spot_agreement</th>
+<th align="right">mean_consensus_confidence</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">sample1</td>
+<td align="right">600</td>
+<td align="left">RCTD</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3771202</td>
+<td align="right">1.545049</td>
+<td align="right">0.0940288</td>
+<td align="right">0.9738783</td>
+<td align="right">0.9634940</td>
+</tr>
+<tr class="even">
+<td align="left">sample1</td>
+<td align="right">600</td>
+<td align="left">SPOTlight</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3098760</td>
+<td align="right">1.703894</td>
+<td align="right">0.0719510</td>
+<td align="right">0.9738783</td>
+<td align="right">0.9634940</td>
+</tr>
+<tr class="odd">
+<td align="left">sample2</td>
+<td align="right">600</td>
+<td align="left">RCTD</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3774935</td>
+<td align="right">1.550962</td>
+<td align="right">0.0958053</td>
+<td align="right">0.9741903</td>
+<td align="right">0.9639251</td>
+</tr>
+<tr class="even">
+<td align="left">sample2</td>
+<td align="right">600</td>
+<td align="left">SPOTlight</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3085310</td>
+<td align="right">1.700376</td>
+<td align="right">0.0739535</td>
+<td align="right">0.9741903</td>
+<td align="right">0.9639251</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
+<p>See the demo and complete tutorials for full end-to-end examples,
+including multi-sample reporting.</p>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
@@ -154,7 +359,7 @@ deconvolution audit on Seurat objects.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by AEGIS Team.</p>
+  <p>Developed by Xinjie Wu.</p>
 </div>
 
 <div class="pkgdown-footer-right">

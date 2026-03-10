@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **AEGIS Team**. Author, maintainer.
+- **Xinjie Wu**. Author, maintainer.
 
 ## Citation
 

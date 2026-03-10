@@ -1,9 +1,9 @@
-# AEGIS Demo Human Lymph Node
+# AEGIS Demo: Human Lymph Node
 
-## Demo data source
+## Demo Data Source
 
-This vignette uses the built-in Human Lymph Node example object
-(`aegis_example`) so it can render in CI, pkgdown, and source builds.
+This tutorial uses the built-in Human Lymph Node example object
+(`aegis_example`) so it can run in CI and pkgdown builds.
 
 ``` r
 data("aegis_example", package = "AEGIS")
@@ -16,21 +16,21 @@ seu
 #>  1 spatial field of view present: slice1
 ```
 
-## Optional: load directly from authoritative raw files
+## Optional: Load from Authoritative Raw Files
 
-If you are in the repository root and have these raw files available:
+If you are in repository root and have the authoritative raw files:
 
 - `V1_Human_Lymph_Node_filtered_feature_bc_matrix.h5`
 - `V1_Human_Lymph_Node_spatial.tar.gz`
 - `V1_Human_Lymph_Node_metrics_summary.csv`
 
-then you can load from disk with:
+you can load directly with:
 
 ``` r
 seu <- load_10x_lymphnode(data_dir = ".")
 ```
 
-## Spatial transcriptomics slice example
+## Tissue Context
 
 ``` r
 Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
@@ -38,15 +38,14 @@ Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
 
 ![](AEGIS-demo-human-lymph-node_files/figure-html/unnamed-chunk-4-1.png)
 
-## Simulate deconvolution and run AEGIS
+## End-to-End AEGIS Workflow (Simulated Inputs)
 
 ``` r
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 deconv <- simulate_deconv_results(seu, seed = 2026)
-obj <- as_aegis(seu, deconv)
-obj <- audit_basic(obj)
-```
 
-## Basic audit output
+obj <- run_aegis(seu, deconv = deconv, markers = markers)
+```
 
 ``` r
 knitr::kable(obj$audit$basic$summary)
@@ -57,3 +56,53 @@ knitr::kable(obj$audit$basic$summary)
 | RCTD          |    1200 |           7 |     0.1015476 |          0.2575000 |      0.3695554 |     1.557445 |              5.197500 |            0 |
 | SPOTlight     |    1200 |           7 |     0.0410714 |          0.1664286 |      0.3073309 |     1.702981 |              5.835000 |            0 |
 | cell2location |    1200 |           7 |     0.0896429 |          0.2244048 |      0.3407826 |     1.617544 |              5.429167 |            0 |
+
+## Example Plots
+
+``` r
+plot_audit(obj, type = "dominance", method = "RCTD")
+```
+
+![](AEGIS-demo-human-lymph-node_files/figure-html/unnamed-chunk-7-1.png)
+
+``` r
+plot_compare(obj, type = "heatmap")
+```
+
+![](AEGIS-demo-human-lymph-node_files/figure-html/unnamed-chunk-8-1.png)
+
+## Multi-sample Example (Two Sections from the Demo Object)
+
+``` r
+spots_all <- colnames(seu)
+n_half <- floor(length(spots_all) / 2)
+
+seu_list <- list(
+  section_A = suppressWarnings(seu[, spots_all[seq_len(n_half)]]),
+  section_B = suppressWarnings(seu[, spots_all[seq.int(n_half + 1L, length(spots_all))]])
+)
+
+deconv_nested <- list(
+  section_A = simulate_deconv_results(seu_list$section_A, methods = c("RCTD", "SPOTlight"), seed = 91),
+  section_B = simulate_deconv_results(seu_list$section_B, methods = c("RCTD", "SPOTlight"), seed = 92)
+)
+
+obj_multi <- run_aegis(seu_list, deconv = deconv_nested, markers = markers)
+knitr::kable(summarize_by_sample(obj_multi))
+```
+
+| sample_id | n_spots | method    | methods_available | mean_dominance | mean_entropy | mean_local_inconsistency | mean_spot_agreement | mean_consensus_confidence |
+|:----------|--------:|:----------|:------------------|---------------:|-------------:|-------------------------:|--------------------:|--------------------------:|
+| section_A |     600 | RCTD      | RCTD;SPOTlight    |      0.3722973 |     1.543771 |                0.0958448 |           0.9736577 |                 0.9631872 |
+| section_A |     600 | SPOTlight | RCTD;SPOTlight    |      0.3078233 |     1.701391 |                0.0722292 |           0.9736577 |                 0.9631872 |
+| section_B |     600 | RCTD      | RCTD;SPOTlight    |      0.3762560 |     1.543987 |                0.0958485 |           0.9736896 |                 0.9632311 |
+| section_B |     600 | SPOTlight | RCTD;SPOTlight    |      0.3108974 |     1.698998 |                0.0734852 |           0.9736896 |                 0.9632311 |
+
+## Notes
+
+- AEGIS can run with simulated outputs or imported real exported tables.
+- AEGIS does not execute external deconvolution methods.
+- Multi-sample projects can use
+  [`run_aegis()`](https://jameswu7.github.io/AEGIS/reference/run_aegis.md) +
+  [`summarize_by_sample()`](https://jameswu7.github.io/AEGIS/reference/summarize_by_sample.md) +
+  [`render_report_batch()`](https://jameswu7.github.io/AEGIS/reference/render_report_batch.md).

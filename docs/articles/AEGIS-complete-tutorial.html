@@ -36,7 +36,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo Human Lymph Node</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo: Human Lymph Node</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Complete Tutorial</a></li>
   </ul>
 </li>
@@ -70,41 +70,27 @@
     
     
 <div class="section level2">
-<h2 id="load-example-seurat-object">1. Load example Seurat object<a class="anchor" aria-label="anchor" href="#load-example-seurat-object"></a>
+<h2 id="load-example-seurat-object">1. Load Example Seurat Object<a class="anchor" aria-label="anchor" href="#load-example-seurat-object"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"aegis_example"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span></span>
 <span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="va">aegis_example</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="simulate-method-outputs">2. Simulate method outputs<a class="anchor" aria-label="anchor" href="#simulate-method-outputs"></a>
+<h2 id="simulated-workflow-development-path">2. Simulated Workflow (Development Path)<a class="anchor" aria-label="anchor" href="#simulated-workflow-development-path"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">deconv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"marker_list.rds"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">deconv_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span></span>
 <span>  <span class="va">seu</span>,</span>
 <span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span>, <span class="st">"cell2location"</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">2026</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="construct-aegis-object">3. Construct aegis object<a class="anchor" aria-label="anchor" href="#construct-aegis-object"></a>
-</h2>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required namespace: SeuratObject</span></span>
+<span></span>
+<span><span class="va">obj_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">seu</span>, deconv <span class="op">=</span> <span class="va">deconv_sim</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span><span class="va">seu</span>, <span class="va">deconv</span><span class="op">)</span></span>
-<span><span class="va">obj</span></span>
-<span><span class="co">#&gt; &lt;aegis&gt;</span></span>
-<span><span class="co">#&gt;   Spots: 1200</span></span>
-<span><span class="co">#&gt;   Genes: 36601</span></span>
-<span><span class="co">#&gt;   Methods: 3 (RCTD, SPOTlight, cell2location)</span></span>
-<span><span class="co">#&gt;   Marker sets: none</span></span>
-<span><span class="co">#&gt;   Audits: none</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="run-basic-audit">4. Run basic audit<a class="anchor" aria-label="anchor" href="#run-basic-audit"></a>
-</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_sim</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="10%">
@@ -164,26 +150,269 @@
 </tr>
 </tbody>
 </table>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_sim</span>, type <span class="op">=</span> <span class="st">"entropy"</span>, method <span class="op">=</span> <span class="st">"SPOTlight"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="inspect-spot-level-metrics">5. Inspect spot-level metrics<a class="anchor" aria-label="anchor" href="#inspect-spot-level-metrics"></a>
+<h2 id="real-import-workflow-p5-path">3. Real Import Workflow (P5 Path)<a class="anchor" aria-label="anchor" href="#real-import-workflow-p5-path"></a>
 </h2>
+<p>This section mimics exported backend result files and imports them
+using the new readers.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">obj</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">spot_metrics</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                      spot method      sum_dev dominance</span></span>
-<span><span class="co">#&gt; AAACAATCTACTAGCA-1...1 AAACAATCTACTAGCA-1   RCTD 1.110223e-16 0.6302157</span></span>
-<span><span class="co">#&gt; AAACACCAATAACTGC-1...2 AAACACCAATAACTGC-1   RCTD 0.000000e+00 0.3194496</span></span>
-<span><span class="co">#&gt; AAACATTTCCCGGATT-1...3 AAACATTTCCCGGATT-1   RCTD 0.000000e+00 0.3418494</span></span>
-<span><span class="co">#&gt; AAACCGGGTAGGTACC-1...4 AAACCGGGTAGGTACC-1   RCTD 0.000000e+00 0.3862453</span></span>
-<span><span class="co">#&gt; AAACGAAGAACATACC-1...5 AAACGAAGAACATACC-1   RCTD 1.110223e-16 0.4352017</span></span>
-<span><span class="co">#&gt; AAACGAGACGGTTGAT-1...6 AAACGAGACGGTTGAT-1   RCTD 0.000000e+00 0.2999716</span></span>
-<span><span class="co">#&gt;                         entropy n_detected_types</span></span>
-<span><span class="co">#&gt; AAACAATCTACTAGCA-1...1 1.008560                4</span></span>
-<span><span class="co">#&gt; AAACACCAATAACTGC-1...2 1.556175                5</span></span>
-<span><span class="co">#&gt; AAACATTTCCCGGATT-1...3 1.659650                5</span></span>
-<span><span class="co">#&gt; AAACCGGGTAGGTACC-1...4 1.385390                5</span></span>
-<span><span class="co">#&gt; AAACGAAGAACATACC-1...5 1.585926                6</span></span>
-<span><span class="co">#&gt; AAACGAGACGGTTGAT-1...6 1.814070                7</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span>
+<span><span class="va">seu_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="build-example-exported-files">3.1 Build Example Exported Files<a class="anchor" aria-label="anchor" href="#build-example-exported-files"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tmp_rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_rctd</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tsv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
+<span>    sample <span class="op">=</span> <span class="st">"S1"</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_spotlight</span>,</span>
+<span>  sep <span class="op">=</span> <span class="st">"\t"</span>,</span>
+<span>  quote <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    spot <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fl">11</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">18</span>, <span class="fl">10</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">16</span>, <span class="fl">12</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">6</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span>,</span>
+<span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_cell2location</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="import-and-standardize">3.2 Import and Standardize<a class="anchor" aria-label="anchor" href="#import-and-standardize"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="va">tmp_rctd</span><span class="op">)</span></span>
+<span><span class="va">spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_spotlight.html">read_spotlight</a></span><span class="op">(</span><span class="va">tmp_spotlight</span><span class="op">)</span></span>
+<span><span class="va">cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_cell2location.html">read_cell2location</a></span><span class="op">(</span><span class="va">tmp_cell2location</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: cell2location: dropped likely metadata numeric columns: x, y</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="build-aegis-object-from-real-inputs">3.3 Build AEGIS Object from Real Inputs<a class="anchor" aria-label="anchor" href="#build-aegis-object-from-real-inputs"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">obj_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">seu_small</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    RCTD <span class="op">=</span> <span class="va">rctd</span>,</span>
+<span>    SPOTlight <span class="op">=</span> <span class="va">spotlight</span>,</span>
+<span>    cell2location <span class="op">=</span> <span class="va">cell2location</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  do_marker <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  do_spatial <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_real</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="10%">
+<col width="6%">
+<col width="9%">
+<col width="10%">
+<col width="14%">
+<col width="11%">
+<col width="9%">
+<col width="16%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">method</th>
+<th align="right">n_spots</th>
+<th align="right">n_celltypes</th>
+<th align="right">zero_fraction</th>
+<th align="right">near_zero_fraction</th>
+<th align="right">mean_dominance</th>
+<th align="right">mean_entropy</th>
+<th align="right">mean_n_detected_types</th>
+<th align="right">mean_sum_dev</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">RCTD</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5125000</td>
+<td align="right">0.9992982</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">SPOTlight</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.4625000</td>
+<td align="right">1.0408587</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">cell2location</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.4904068</td>
+<td align="right">1.0158112</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
+<h2 id="multi-sample-workflow-p6">4. Multi-sample Workflow (P6)<a class="anchor" aria-label="anchor" href="#multi-sample-workflow-p6"></a>
+</h2>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">spots_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span></span>
+<span><span class="va">n_half</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">seu_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  sample1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots_all</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_half</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  sample2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots_all</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq.int</a></span><span class="op">(</span><span class="va">n_half</span> <span class="op">+</span> <span class="fl">1L</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">deconv_nested</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  sample1 <span class="op">=</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">seu_list</span><span class="op">$</span><span class="va">sample1</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">333</span><span class="op">)</span>,</span>
+<span>  sample2 <span class="op">=</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">seu_list</span><span class="op">$</span><span class="va">sample2</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">444</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">seu_list</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="va">deconv_nested</span>,</span>
+<span>  markers <span class="op">=</span> <span class="va">markers</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sample_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_by_sample.html">summarize_by_sample</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">sample_summary</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="6%">
+<col width="5%">
+<col width="6%">
+<col width="12%">
+<col width="10%">
+<col width="8%">
+<col width="17%">
+<col width="13%">
+<col width="17%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">sample_id</th>
+<th align="right">n_spots</th>
+<th align="left">method</th>
+<th align="left">methods_available</th>
+<th align="right">mean_dominance</th>
+<th align="right">mean_entropy</th>
+<th align="right">mean_local_inconsistency</th>
+<th align="right">mean_spot_agreement</th>
+<th align="right">mean_consensus_confidence</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">sample1</td>
+<td align="right">600</td>
+<td align="left">RCTD</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3709512</td>
+<td align="right">1.553806</td>
+<td align="right">0.0951720</td>
+<td align="right">0.9736282</td>
+<td align="right">0.9631498</td>
+</tr>
+<tr class="even">
+<td align="left">sample1</td>
+<td align="right">600</td>
+<td align="left">SPOTlight</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3076496</td>
+<td align="right">1.707738</td>
+<td align="right">0.0726369</td>
+<td align="right">0.9736282</td>
+<td align="right">0.9631498</td>
+</tr>
+<tr class="odd">
+<td align="left">sample2</td>
+<td align="right">600</td>
+<td align="left">RCTD</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3767248</td>
+<td align="right">1.546486</td>
+<td align="right">0.0933078</td>
+<td align="right">0.9737247</td>
+<td align="right">0.9632824</td>
+</tr>
+<tr class="even">
+<td align="left">sample2</td>
+<td align="right">600</td>
+<td align="left">SPOTlight</td>
+<td align="left">RCTD;SPOTlight</td>
+<td align="right">0.3146903</td>
+<td align="right">1.688583</td>
+<td align="right">0.0737592</td>
+<td align="right">0.9737247</td>
+<td align="right">0.9632824</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report_batch.html">render_report_batch</a></span><span class="op">(</span><span class="va">obj_multi</span>, output_dir <span class="op">=</span> <span class="st">"reports"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="optional-report-generation">5. Optional Report Generation<a class="anchor" aria-label="anchor" href="#optional-report-generation"></a>
+</h2>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_sim</span>, output_file <span class="op">=</span> <span class="st">"aegis_report.html"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="summary">6. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h2>
+<ul>
+<li>Use <code><a href="../reference/simulate_deconv_results.html">simulate_deconv_results()</a></code> for reproducible demos
+and method development.</li>
+<li>Use <code><a href="../reference/read_rctd.html">read_rctd()</a></code>, <code><a href="../reference/read_spotlight.html">read_spotlight()</a></code>,
+<code><a href="../reference/read_cell2location.html">read_cell2location()</a></code> for external exports.</li>
+<li>Use <code><a href="../reference/run_aegis.html">run_aegis()</a></code> as the unified pipeline entry for
+single-sample and multi-sample analysis.</li>
+<li>Use <code><a href="../reference/summarize_by_sample.html">summarize_by_sample()</a></code> and
+<code><a href="../reference/render_report_batch.html">render_report_batch()</a></code> for multi-sample projects.</li>
+</ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -192,7 +421,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by AEGIS Team.</p>
+  <p>Developed by Xinjie Wu.</p>
 </div>
 
 <div class="pkgdown-footer-right">

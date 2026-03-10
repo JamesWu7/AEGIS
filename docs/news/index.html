@@ -21,7 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo Human Lymph Node</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo: Human Lymph Node</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Complete Tutorial</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -48,12 +48,17 @@
 <li>Added example data, vignettes, and test coverage for core workflow.</li>
 <li>Updated README with enlarged logo, devtools installation, citation text, and repository link.</li>
 <li>Added tutorial expansion, spatial slice example figure, and pkgdown/R-CMD-check workflows.</li>
+<li>Added unified <code><a href="../reference/run_aegis.html">run_aegis()</a></code> one-call workflow for single-sample and multi-sample usage.</li>
+<li>Updated tutorials to include multi-sample end-to-end examples.</li>
+<li>P7 pre-release hardening: added integration workflow tests (simulated/import/multi-sample), docs consistency checks, and CI smoke workflow.</li>
+<li>Added robust tutorial link fallbacks and a reproducible README figure regeneration script.</li>
+<li>Improved importer error messages for ambiguous spot IDs and missing numeric cell-type columns.</li>
 </ul></div>
   </main></div>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by AEGIS Team.</p>
+  <p>Developed by Xinjie Wu.</p>
 </div>
 
 <div class="pkgdown-footer-right">

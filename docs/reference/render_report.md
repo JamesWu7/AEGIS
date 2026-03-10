@@ -5,7 +5,11 @@ Renders a standalone HTML report from the package template.
 ## Usage
 
 ``` r
-render_report(x, output_file = "aegis_report.html")
+render_report(
+  x,
+  output_file = "aegis_report.html",
+  title = "AEGIS Deconvolution Audit Report"
+)
 ```
 
 ## Arguments
@@ -17,6 +21,10 @@ render_report(x, output_file = "aegis_report.html")
 - output_file:
 
   Output HTML path.
+
+- title:
+
+  Report title.
 
 ## Value
 

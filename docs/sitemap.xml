@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://jameswu7.github.io/AEGIS/404.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/LICENSE-text.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/LICENSE.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html</loc></url>
@@ -10,7 +11,9 @@
 <url><loc>https://jameswu7.github.io/AEGIS/news/index.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/aegis_default_markers.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/aegis_example.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/align_deconv_to_seurat.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/as_aegis.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/as_aegis_multi.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/audit_basic.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/audit_marker.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/audit_spatial.html</loc></url>
@@ -19,10 +22,20 @@
 <url><loc>https://jameswu7.github.io/AEGIS/reference/compute_consensus.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/index.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/is_aegis.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/is_aegis_multi.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/load_10x_lymphnode.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/load_10x_spatial_set.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/merge_spatial_seurat_list.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/plot_audit.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/plot_compare.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/read_cell2location.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/read_rctd.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/read_spotlight.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/render_report.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/render_report_batch.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/run_aegis.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/simulate_deconv_results.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/split_aegis_by_sample.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/summarize_by_sample.html</loc></url>
 </urlset>
 

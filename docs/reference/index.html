@@ -21,7 +21,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo Human Lymph Node</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo: Human Lymph Node</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Complete Tutorial</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -58,6 +58,20 @@
 
         <dt>
 
+          <code><a href="load_10x_spatial_set.html">load_10x_spatial_set()</a></code>
+
+        </dt>
+        <dd>Load a set of 10x spatial datasets</dd>
+
+        <dt>
+
+          <code><a href="merge_spatial_seurat_list.html">merge_spatial_seurat_list()</a></code>
+
+        </dt>
+        <dd>Merge a list of spatial Seurat objects</dd>
+
+        <dt>
+
           <code><a href="aegis_example.html">aegis_example</a></code>
 
         </dt>
@@ -69,6 +83,34 @@
 
         </dt>
         <dd>Default marker list used by AEGIS MVP</dd>
+
+        <dt>
+
+          <code><a href="align_deconv_to_seurat.html">align_deconv_to_seurat()</a></code>
+
+        </dt>
+        <dd>Align a deconvolution matrix to Seurat spot order</dd>
+
+        <dt>
+
+          <code><a href="read_rctd.html">read_rctd()</a></code>
+
+        </dt>
+        <dd>Read RCTD deconvolution outputs</dd>
+
+        <dt>
+
+          <code><a href="read_spotlight.html">read_spotlight()</a></code>
+
+        </dt>
+        <dd>Read SPOTlight deconvolution outputs</dd>
+
+        <dt>
+
+          <code><a href="read_cell2location.html">read_cell2location()</a></code>
+
+        </dt>
+        <dd>Read cell2location deconvolution outputs</dd>
       </dl></div><div class="section level2">
       <h2 id="core-object-and-simulation">Core object and simulation<a class="anchor" aria-label="anchor" href="#core-object-and-simulation"></a></h2>
 
@@ -81,6 +123,13 @@
 
       <dl><dt>
 
+          <code><a href="run_aegis.html">run_aegis()</a></code>
+
+        </dt>
+        <dd>Run the standard AEGIS workflow with one function</dd>
+
+        <dt>
+
           <code><a href="as_aegis.html">as_aegis()</a></code>
 
         </dt>
@@ -88,10 +137,38 @@
 
         <dt>
 
+          <code><a href="as_aegis_multi.html">as_aegis_multi()</a></code>
+
+        </dt>
+        <dd>Construct a multi-sample AEGIS object</dd>
+
+        <dt>
+
           <code><a href="is_aegis.html">is_aegis()</a></code>
 
         </dt>
         <dd>AEGIS analysis object</dd>
+
+        <dt>
+
+          <code><a href="is_aegis_multi.html">is_aegis_multi()</a></code>
+
+        </dt>
+        <dd>Check if object is an AEGIS multi-sample object</dd>
+
+        <dt>
+
+          <code><a href="split_aegis_by_sample.html">split_aegis_by_sample()</a></code>
+
+        </dt>
+        <dd>Split an AEGIS object by sample</dd>
+
+        <dt>
+
+          <code><a href="summarize_by_sample.html">summarize_by_sample()</a></code>
+
+        </dt>
+        <dd>Summarize AEGIS results by sample</dd>
 
         <dt>
 
@@ -176,6 +253,13 @@
 
         <dt>
 
+          <code><a href="render_report_batch.html">render_report_batch()</a></code>
+
+        </dt>
+        <dd>Render one report per sample</dd>
+
+        <dt>
+
           <code><a href="build_aegis_example_data.html">build_aegis_example_data()</a></code>
 
         </dt>
@@ -186,7 +270,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by AEGIS Team.</p>
+  <p>Developed by Xinjie Wu.</p>
 </div>
 
 <div class="pkgdown-footer-right">
