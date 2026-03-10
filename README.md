@@ -121,12 +121,6 @@ If GitHub Pages is temporarily unavailable, use the preview fallback links or th
 
 ![Dominance spatial map](inst/assets/figures/readme-dominance.png)
 
-To regenerate README figures from package code:
-
-```r
-system("Rscript tools/regenerate_readme_figures.R")
-```
-
 ## Citation
 
 ```r
