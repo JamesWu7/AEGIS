@@ -248,15 +248,23 @@ standardize_deconv_matrix <- function(obj, spot_col = NULL, strict = TRUE, metho
     if (!(spot_col %in% colnames(df))) {
       stop(sprintf("%s: `spot_col`='%s' not found in input columns.", method, spot_col), call. = FALSE)
     }
-    spots <- as.character(df[[spot_col]])
-    df[[spot_col]] <- NULL
+    drop_idx <- which(colnames(df) == spot_col)
+    if (length(drop_idx) == 0L) {
+      stop(sprintf("%s: failed to remove `spot_col`='%s' from table.", method, spot_col), call. = FALSE)
+    }
+    spots <- as.character(df[[drop_idx[[1L]]]])
+    df <- df[, -drop_idx[[1L]], drop = FALSE]
   } else if (!is.null(rownames(df)) && !identical(rownames(df), as.character(seq_len(nrow(df))))) {
     spots <- rownames(df)
   } else {
     guessed_spot <- guess_spot_column(df)
     if (!is.null(guessed_spot)) {
-      spots <- as.character(df[[guessed_spot]])
-      df[[guessed_spot]] <- NULL
+      drop_idx <- which(colnames(df) == guessed_spot)
+      if (length(drop_idx) == 0L) {
+        stop(sprintf("%s: failed to remove inferred spot column '%s'.", method, guessed_spot), call. = FALSE)
+      }
+      spots <- as.character(df[[drop_idx[[1L]]]])
+      df <- df[, -drop_idx[[1L]], drop = FALSE]
     }
   }
 
@@ -291,7 +299,11 @@ standardize_deconv_matrix <- function(obj, spot_col = NULL, strict = TRUE, metho
 
   dropped <- setdiff(colnames(df), cell_cols)
   if (length(dropped) > 0L && isTRUE(strict)) {
-    numeric_dropped <- dropped[vapply(df[dropped], is.numeric, logical(1))]
+    dropped_present <- intersect(dropped, colnames(df))
+    numeric_dropped <- character(0)
+    if (length(dropped_present) > 0L) {
+      numeric_dropped <- dropped_present[vapply(df[dropped_present], is.numeric, logical(1))]
+    }
     if (length(numeric_dropped) > 0L) {
       warning(
         sprintf("%s: dropped likely metadata numeric columns: %s", method, paste(numeric_dropped, collapse = ", ")),
