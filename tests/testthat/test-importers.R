@@ -17,6 +17,11 @@ test_that("read_rctd imports delimited and RDS inputs", {
   m_list <- read_rctd(fixture_path("rctd_like_list.rds"), type = "auto")
   expect_true(is.matrix(m_list))
   expect_identical(colnames(m_list), c("B_cell", "T_cell", "Myeloid"))
+
+  m_rowname_first <- read_rctd(fixture_path("rctd_like_rownames_first.csv"), normalize = TRUE)
+  expect_true(is.matrix(m_rowname_first))
+  expect_identical(rownames(m_rowname_first), c("AAAC-1", "AAAC-2", "AAAC-3"))
+  expect_equal(unname(rowSums(m_rowname_first)), c(1, 1, 1), tolerance = 1e-8)
 })
 
 test_that("read_rctd handles malformed and strict ambiguity paths", {
@@ -27,6 +32,10 @@ test_that("read_rctd handles malformed and strict ambiguity paths", {
   expect_error(
     read_rctd(fixture_path("no_spot_numeric.csv"), strict = TRUE),
     "could not infer spot identifiers"
+  )
+  expect_error(
+    read_rctd(fixture_path("ambiguous_transpose.csv"), strict = TRUE),
+    "no numeric cell-type columns|could not infer spot identifiers"
   )
 })
 
@@ -45,6 +54,11 @@ test_that("read_spotlight imports and excludes metadata columns", {
   expect_equal(unname(rowSums(m)), c(1, 1, 1), tolerance = 1e-8)
 
   expect_error(read_spotlight(fixture_path("malformed_deconv.csv")), "no numeric cell-type columns")
+
+  m_txt <- read_spotlight(fixture_path("spotlight_like_txt.txt"), normalize = TRUE)
+  expect_true(is.matrix(m_txt))
+  expect_identical(rownames(m_txt), c("AAAC-1", "AAAC-2", "AAAC-3"))
+  expect_identical(colnames(m_txt), c("B_cell", "T_cell", "NK_cell"))
 })
 
 test_that("read_cell2location supports normalized and raw abundance modes", {

@@ -2,10 +2,9 @@ Package: AEGIS
 Type: Package
 Title: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics
 Version: 0.1.0
-Author: AEGIS Team [aut, cre]
-Maintainer: AEGIS Team <team@example.org>
+Maintainer: Xinjie Wu <jameswu7@users.noreply.github.com>
 Authors@R: c(
-    person(given = "AEGIS", family = "Team", role = c("aut", "cre"), email = "team@example.org")
+    person(given = "Xinjie", family = "Wu", role = c("aut", "cre"), email = "jameswu7@users.noreply.github.com")
     )
 Description: A lightweight MVP package for auditing and comparing spatial transcriptomics
     deconvolution outputs on Seurat objects. It provides utilities to load 10x

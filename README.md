@@ -90,9 +90,11 @@ render_report_batch(obj_multi, output_dir = "reports")
 
 ## Complete Tutorials
 
-- [Overview tutorial (object model + workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
-- [Human lymph node demo (end-to-end demo)](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
-- [Complete tutorial (simulated + real import + multi-sample)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
+If GitHub Pages is temporarily unavailable, use the preview fallback links or the source `.Rmd` links below.
+
+- [Overview tutorial (object model + workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html) ([preview fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
+- [Human lymph node demo (end-to-end demo)](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html) ([preview fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html), [source](vignettes/AEGIS-demo-human-lymph-node.Rmd))
+- [Complete tutorial (simulated + real import + multi-sample)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html) ([preview fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
 
 ## Key Functions
 
@@ -118,6 +120,12 @@ render_report_batch(obj_multi, output_dir = "reports")
 ### Basic audit (dominance)
 
 ![Dominance spatial map](inst/assets/figures/readme-dominance.png)
+
+To regenerate README figures from package code:
+
+```r
+system("Rscript tools/regenerate_readme_figures.R")
+```
 
 ## Citation
 

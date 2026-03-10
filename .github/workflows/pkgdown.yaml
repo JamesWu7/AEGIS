@@ -5,6 +5,8 @@ on:
     branches: [main, master]
     paths-ignore:
       - "docs/**"
+  pull_request:
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -28,6 +30,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Commit docs to main
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

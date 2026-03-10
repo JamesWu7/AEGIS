@@ -17,6 +17,9 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck, any::devtools
+      - name: Integration smoke (run_aegis workflows)
+        run: source("tools/ci_smoke_workflows.R")
+        shell: Rscript {0}
       - name: Check
         run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "warning")
         shell: Rscript {0}

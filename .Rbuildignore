@@ -14,3 +14,6 @@
 ^\\.\\.?Rcheck$
 ^V1_Human_Lymph_Node_filtered_feature_bc_matrix\\.h5$
 ^V1_Human_Lymph_Node_spatial\\.tar\\.gz$
+^V1_Human_Lymph_Node_metrics_summary\\.csv$
+^AEGIS_Logo\\.jpg$
+^LICENSE\\.md$

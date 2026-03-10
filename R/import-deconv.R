@@ -262,7 +262,11 @@ standardize_deconv_matrix <- function(obj, spot_col = NULL, strict = TRUE, metho
 
   if (is.null(spots)) {
     stop(
-      sprintf("%s: could not infer spot identifiers. Provide `spot_col` or include row names / a spot barcode column.", method),
+      sprintf(
+        "%s: could not infer spot identifiers. Expected row names or a barcode-like column (e.g. spot/barcode/cell/id). Detected columns: %s. Provide `spot_col` explicitly.",
+        method,
+        paste(colnames(df), collapse = ", ")
+      ),
       call. = FALSE
     )
   }
@@ -275,7 +279,14 @@ standardize_deconv_matrix <- function(obj, spot_col = NULL, strict = TRUE, metho
 
   cell_cols <- guess_celltype_columns(df, strict = strict)
   if (length(cell_cols) == 0L) {
-    stop(sprintf("%s: no numeric cell-type columns could be identified.", method), call. = FALSE)
+    stop(
+      sprintf(
+        "%s: no numeric cell-type columns could be identified. Columns seen: %s. Remove metadata columns or provide a cleaner exported table.",
+        method,
+        paste(colnames(df), collapse = ", ")
+      ),
+      call. = FALSE
+    )
   }
 
   dropped <- setdiff(colnames(df), cell_cols)
