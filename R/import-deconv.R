@@ -16,6 +16,44 @@ align_deconv_to_seurat <- function(deconv, seu, method_name = "deconv") {
   align_matrix_to_spots(mat, spots, method_name = method_name)
 }
 
+#' Read a generic deconvolution result table
+#'
+#' Generic importer for spot-by-celltype tables exported by external methods.
+#'
+#' @param path File path to exported results (csv/tsv/txt/rds).
+#' @param method Optional method label used in messages and metadata.
+#' @param type Input type for RDS-aware parsing (`auto`, `rds`, `weights`,
+#'   `proportions`, `results_df`).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_deconv_table <- function(
+    path,
+    method = NULL,
+    type = c("auto", "rds", "weights", "proportions", "results_df"),
+    spot_col = NULL,
+    normalize = TRUE,
+    strict = TRUE) {
+  type <- match.arg(type)
+  method <- if (is.null(method) || !nzchar(trimws(method))) "deconv" else as.character(method)[1L]
+
+  obj <- read_deconv_input(path = path, type = type, method = method, strict = strict)
+  mat <- standardize_deconv_matrix(obj = obj, spot_col = spot_col, strict = strict, method = method)
+  if (isTRUE(normalize)) {
+    mat <- normalize_deconv_rows(mat)
+  }
+  attach_method_metadata(
+    mat,
+    method_name = method,
+    imported_from = tools::file_ext(path),
+    normalized = isTRUE(normalize),
+    original_file = normalizePath(path, winslash = "/", mustWork = FALSE)
+  )
+}
+
 #' Read RCTD deconvolution outputs
 #'
 #' Reads exported RCTD result files and standardizes them to a spot-by-celltype
@@ -35,25 +73,10 @@ read_rctd <- function(
     spot_col = NULL,
     normalize = TRUE,
     strict = TRUE) {
-  type <- match.arg(type)
-  obj <- read_deconv_input(path = path, type = type, method = "RCTD", strict = strict)
-
-  mat <- standardize_deconv_matrix(
-    obj = obj,
-    spot_col = spot_col,
-    strict = strict,
-    method = "RCTD"
-  )
-  if (isTRUE(normalize)) {
-    mat <- normalize_deconv_rows(mat)
-  }
-  mat
+  read_deconv_table(path = path, method = "RCTD", type = match.arg(type), spot_col = spot_col, normalize = normalize, strict = strict)
 }
 
 #' Read SPOTlight deconvolution outputs
-#'
-#' Reads exported SPOTlight result files and standardizes them to a
-#' spot-by-celltype numeric matrix usable by `as_aegis()`.
 #'
 #' @param path File path to an exported SPOTlight result (csv/tsv/txt/rds).
 #' @param spot_col Optional explicit spot/barcode column name.
@@ -63,23 +86,10 @@ read_rctd <- function(
 #' @return A numeric spot-by-celltype matrix.
 #' @export
 read_spotlight <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
-  obj <- read_deconv_input(path = path, type = "auto", method = "SPOTlight", strict = strict)
-  mat <- standardize_deconv_matrix(
-    obj = obj,
-    spot_col = spot_col,
-    strict = strict,
-    method = "SPOTlight"
-  )
-  if (isTRUE(normalize)) {
-    mat <- normalize_deconv_rows(mat)
-  }
-  mat
+  read_deconv_table(path = path, method = "SPOTlight", spot_col = spot_col, normalize = normalize, strict = strict)
 }
 
 #' Read cell2location deconvolution outputs
-#'
-#' Reads exported cell2location abundance/proportion tables and standardizes them
-#' to a spot-by-celltype numeric matrix usable by `as_aegis()`.
 #'
 #' @param path File path to an exported cell2location result (csv/tsv/txt/rds).
 #' @param spot_col Optional explicit spot/barcode column name.
@@ -89,15 +99,122 @@ read_spotlight <- function(path, spot_col = NULL, normalize = TRUE, strict = TRU
 #' @return A numeric spot-by-celltype matrix.
 #' @export
 read_cell2location <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
-  obj <- read_deconv_input(path = path, type = "auto", method = "cell2location", strict = strict)
-  mat <- standardize_deconv_matrix(
-    obj = obj,
-    spot_col = spot_col,
-    strict = strict,
-    method = "cell2location"
-  )
-  if (isTRUE(normalize)) {
-    mat <- normalize_deconv_rows(mat)
+  read_deconv_table(path = path, method = "cell2location", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read CARD deconvolution outputs
+#'
+#' @param path File path to exported CARD results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_card <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "CARD", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read SpatialDWLS deconvolution outputs
+#'
+#' @param path File path to exported SpatialDWLS results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_spatialdwls <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "SpatialDWLS", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read stereoscope deconvolution outputs
+#'
+#' @param path File path to exported stereoscope results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_stereoscope <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "stereoscope", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read DestVI deconvolution outputs
+#'
+#' @param path File path to exported DestVI abundance/proportion results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_destvi <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "DestVI", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read Tangram mapping-derived composition outputs
+#'
+#' @param path File path to exported Tangram mapping-derived composition table.
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_tangram <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "Tangram", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read STdeconvolve outputs
+#'
+#' Supports de novo/latent cell-type labels (for example `topic1`, `topic2`).
+#'
+#' @param path File path to exported STdeconvolve results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_stdeconvolve <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "STdeconvolve", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read DSTG deconvolution outputs
+#'
+#' @param path File path to exported DSTG results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous parsing/transposition raises clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_dstg <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  read_deconv_table(path = path, method = "DSTG", spot_col = spot_col, normalize = normalize, strict = strict)
+}
+
+#' Read STRIDE deconvolution outputs
+#'
+#' @param path File path to exported STRIDE results (csv/tsv/txt/rds).
+#' @param spot_col Optional explicit spot/barcode column name.
+#' @param normalize If `TRUE`, rows are normalized to sum 1 when possible.
+#' @param strict If `TRUE`, ambiguous topic-only files raise clear errors.
+#'
+#' @return A numeric spot-by-celltype matrix.
+#' @export
+read_stride <- function(path, spot_col = NULL, normalize = TRUE, strict = TRUE) {
+  mat <- read_deconv_table(path = path, method = "STRIDE", spot_col = spot_col, normalize = normalize, strict = strict)
+  if (isTRUE(strict)) {
+    nm <- colnames(mat)
+    topic_like <- grepl("^topic[_-]?[0-9]+$", tolower(nm))
+    if (length(topic_like) > 0L && all(topic_like)) {
+      stop(
+        "STRIDE import appears topic-only (no direct cell-type composition columns). Export cell-type composition table before import.",
+        call. = FALSE
+      )
+    }
   }
   mat
 }
@@ -367,7 +484,8 @@ guess_celltype_columns <- function(df, strict = TRUE) {
   meta_like <- c(
     "sample", "sampleid", "sample_id", "x", "y", "row", "col",
     "imagerow", "imagecol", "pxlrowinfullres", "pxlcolinfullres",
-    "confidence", "cluster", "region", "slice", "tissue", "library", "batch"
+    "confidence", "conf", "cluster", "region", "slice", "tissue", "library", "batch",
+    "pvalue", "qvalue", "fdr", "pval", "adjp", "likelihood", "weight", "score"
   )
   norm_names <- tolower(gsub("[^a-z0-9]+", "", colnames(df)))
 
@@ -495,5 +613,17 @@ assert_numeric_deconv <- function(mat, method = "deconv") {
   if (any(!is.finite(mat))) {
     stop(sprintf("%s matrix contains non-finite values.", method), call. = FALSE)
   }
+  mat
+}
+
+#' @keywords internal
+attach_method_metadata <- function(mat, method_name, imported_from, normalized, original_file) {
+  attr(mat, "aegis_method_metadata") <- list(
+    method_name = method_name,
+    imported_from = imported_from,
+    normalized = isTRUE(normalized),
+    original_file = original_file,
+    parser_version = "p8"
+  )
   mat
 }
