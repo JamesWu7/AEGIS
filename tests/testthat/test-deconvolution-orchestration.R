@@ -36,13 +36,19 @@ test_that("get_supported_methods exposes registry metadata", {
   expect_true(is.data.frame(reg))
   expect_true(all(c(
     "method_name", "support_mode", "can_run_in_r", "can_run_in_python",
-    "requires_reference", "adapter_reader", "runner_function", "dependency_type"
+    "requires_reference", "adapter_reader", "reader_function", "runner_function", "dependency_type"
   ) %in% colnames(reg)))
   expect_true(all(c(
     "RCTD", "SPOTlight", "cell2location", "CARD", "SpatialDWLS",
     "stereoscope", "DestVI", "Tangram", "STdeconvolve", "DSTG", "STRIDE"
   ) %in% reg$method_name))
   expect_true(all(reg$support_mode %in% c("run_and_import_r", "run_and_import_python", "import_only", "experimental")))
+
+  ns <- getNamespaceExports("AEGIS")
+  reader_fns <- unique(stats::na.omit(reg$reader_function))
+  runner_fns <- unique(stats::na.omit(reg$runner_function))
+  expect_true(all(reader_fns %in% ns))
+  expect_true(all(runner_fns %in% ns))
 })
 
 test_that("run_deconvolution executes selected R methods with stable output contract", {

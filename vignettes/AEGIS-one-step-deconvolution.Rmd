@@ -1,0 +1,139 @@
+---
+title: "AEGIS One-Step Deconvolution Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AEGIS One-Step Deconvolution Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(AEGIS)
+```
+
+## 1) What one-step deconvolution means in AEGIS
+
+AEGIS supports three method support modes:
+- `run_and_import_r`: runnable directly in R
+- `run_and_import_python`: runnable through Python (optional)
+- `import_only`: import exported outputs only
+
+Use the registry first:
+
+```{r}
+registry <- get_supported_methods()
+knitr::kable(registry)
+```
+
+## 2) Load spatial data and markers
+
+```{r}
+data("aegis_example", package = "AEGIS")
+seu <- aegis_example
+markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
+```
+
+## 3) Prepare a reference object
+
+In practice this should be your real single-cell reference object.
+
+```{r}
+reference <- matrix(
+  c(4, 2, 1, 2, 5, 2, 1, 2, 6),
+  nrow = 3,
+  byrow = TRUE
+)
+rownames(reference) <- c("B_cell", "T_cell", "Myeloid")
+colnames(reference) <- c("g1", "g2", "g3")
+```
+
+## 4) Run one method (direct execution)
+
+```{r eval=FALSE}
+res_one <- run_deconvolution(
+  seu = seu,
+  reference = reference,
+  methods = "SPOTlight",
+  strict = TRUE
+)
+
+obj_one <- run_aegis(res_one$seu, deconv = res_one$deconv, markers = markers)
+```
+
+## 5) Run multiple methods in one step
+
+```{r eval=FALSE}
+res_multi <- run_deconvolution(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "CARD", "RCTD"),
+  strict = FALSE
+)
+
+obj_multi <- run_aegis(res_multi$seu, deconv = res_multi$deconv, markers = markers)
+```
+
+## 6) Full one-step wrapper
+
+```{r eval=FALSE}
+obj_full <- run_aegis_full(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "CARD", "RCTD"),
+  markers = markers,
+  strict = FALSE
+)
+```
+
+## 7) Optional Python-backed methods
+
+Python-backed methods are optional. If Python modules are missing:
+- strict mode: clear error
+- non-strict mode: method is skipped with a message
+
+```{r eval=FALSE}
+res_py <- run_deconvolution(
+  seu = seu,
+  reference = reference,
+  methods = c("cell2location", "DestVI", "Tangram"),
+  use_python = TRUE,
+  strict = FALSE
+)
+```
+
+## 8) Downstream AEGIS analysis and visualization
+
+For a fully reproducible vignette run (without backend dependencies), this chunk
+uses simulated deconvolution and then runs the same downstream pipeline.
+
+```{r}
+deconv_demo <- simulate_deconv_results(
+  seu,
+  methods = c("SPOTlight", "CARD", "RCTD"),
+  seed = 909
+)
+
+obj <- run_aegis(seu, deconv = deconv_demo, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "mean_rank")
+obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
+
+plot_compare(obj, type = "heatmap")
+```
+
+```{r}
+plot_compare(obj, type = "consensus_map")
+```
+
+```{r}
+plot_method_ranking(obj)
+```
+
+## 9) Practical notes
+
+1. Use direct execution when method dependencies and inputs are ready.
+2. Use importer functions (`read_*`) when methods are not executable in your environment.
+3. Treat Python-backed methods as optional unless you manage a validated Python environment.
+4. Use `run_aegis_full()` for one-step execution plus downstream AEGIS analysis.

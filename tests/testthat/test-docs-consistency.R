@@ -49,10 +49,14 @@ test_that("README tutorial references and figure assets exist", {
 
   expect_match(readme, "Tutorials")
   expect_match(readme, "AEGIS-overview")
+  expect_match(readme, "AEGIS-one-step-deconvolution")
   expect_match(readme, "AEGIS-complete-tutorial")
   expect_match(readme, "\\[source\\]\\(vignettes/AEGIS-overview.Rmd\\)")
+  expect_match(readme, "\\[source\\]\\(vignettes/AEGIS-one-step-deconvolution.Rmd\\)")
   expect_match(readme, "https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html")
+  expect_match(readme, "https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html")
   expect_match(readme, "https://htmlpreview.github.io/\\?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html")
+  expect_match(readme, "https://htmlpreview.github.io/\\?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html")
 
   # Ensure README does not regress to bare vignette path inventory.
   expect_false(grepl("^\\s*-\\s*vignettes/", readme, perl = TRUE))
@@ -126,10 +130,12 @@ test_that("vignette and docs tutorial files are present when available", {
 
   vignettes <- c(
     "vignettes/AEGIS-overview.Rmd",
+    "vignettes/AEGIS-one-step-deconvolution.Rmd",
     "vignettes/AEGIS-complete-tutorial.Rmd"
   )
   docs_articles <- c(
     "docs/articles/AEGIS-overview.html",
+    "docs/articles/AEGIS-one-step-deconvolution.html",
     "docs/articles/AEGIS-complete-tutorial.html"
   )
 
@@ -155,7 +161,7 @@ test_that("vignette and docs tutorial files are present when available", {
     # Installed package context: look for built vignette artifacts.
     inst_doc <- system.file("doc", package = "AEGIS")
     if (nzchar(inst_doc) && dir.exists(inst_doc)) {
-      for (nm in c("AEGIS-overview.html", "AEGIS-complete-tutorial.html")) {
+      for (nm in c("AEGIS-overview.html", "AEGIS-one-step-deconvolution.html", "AEGIS-complete-tutorial.html")) {
         expect_true(file.exists(file.path(inst_doc, nm)), info = sprintf("Missing installed tutorial artifact: %s", nm))
       }
     } else {

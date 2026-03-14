@@ -84,4 +84,5 @@ articles:
     navbar: Tutorials
     contents:
       - AEGIS-overview
+      - AEGIS-one-step-deconvolution
       - AEGIS-complete-tutorial

@@ -168,7 +168,11 @@ render_report_batch(obj_multi, output_dir = "reports")
 If GitHub Pages is temporarily unavailable, use the preview fallback links or the source `.Rmd` links below.
 
 - [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) (includes `plot_compare` visualizations and RRA/mean-rank selection) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
+- [One-step deconvolution tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html) (focuses on `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, and practical run-vs-import decisions) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html), [source](vignettes/AEGIS-one-step-deconvolution.Rmd))
 - [Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (includes `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, all supported import adapters, method ranking, weighted consensus, and `plot_compare`-based visualization) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
+
+Local preview HTML files are also kept in `vignettes/` for direct viewing:
+`vignettes/AEGIS-overview.html`, `vignettes/AEGIS-one-step-deconvolution.html`, and `vignettes/AEGIS-complete-tutorial.html`.
 
 ## Key Functions
 

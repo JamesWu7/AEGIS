@@ -38,6 +38,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
+    <li><a class="dropdown-item" href="articles/AEGIS-one-step-deconvolution.html">AEGIS One-Step Deconvolution Workflow</a></li>
     <li><a class="dropdown-item" href="articles/AEGIS-complete-tutorial.html">AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</a></li>
   </ul>
 </li>
@@ -77,6 +78,7 @@
 <ol style="list-style-type: decimal">
 <li>Simulated method outputs for development and demos (<code><a href="reference/simulate_deconv_results.html">simulate_deconv_results()</a></code>).</li>
 <li>Real exported outputs from external methods through adapter readers (e.g. <code><a href="reference/read_rctd.html">read_rctd()</a></code>, <code><a href="reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>, <code><a href="reference/read_card.html">read_card()</a></code>, <code><a href="reference/read_destvi.html">read_destvi()</a></code>, <code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>), plus <code><a href="reference/read_deconv_table.html">read_deconv_table()</a></code> for generic spot-by-celltype tables.</li>
+<li>One-shot deconvolution orchestration for directly runnable methods (<code><a href="reference/run_deconvolution.html">run_deconvolution()</a></code>, <code><a href="reference/run_deconvolution.html">run_aegis_full()</a></code>), with explicit run-vs-import capability metadata from <code><a href="reference/get_supported_methods.html">get_supported_methods()</a></code>.</li>
 </ol>
 <p>For day-to-day use, the recommended minimal API is:</p>
 <ol style="list-style-type: decimal">
@@ -111,10 +113,26 @@
 <span><span class="va">p_conf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_consensus_confidence.html">plot_consensus_confidence</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="one-shot-deconvolution-p9">One-shot Deconvolution (P9)<a class="anchor" aria-label="anchor" href="#one-shot-deconvolution-p9"></a>
+</h2>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_10x_lymphnode.html">load_10x_lymphnode</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
+<span>  seu <span class="op">=</span> <span class="va">seu</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">ref</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPOTlight"</span>, <span class="st">"RCTD"</span>, <span class="st">"CARD"</span><span class="op">)</span>,</span>
+<span>  strict <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">seu</span>, deconv <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">deconv</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
+<p>Use <code><a href="reference/get_supported_methods.html">get_supported_methods()</a></code> to inspect support mode (<code>run_and_import_r</code>, <code>run_and_import_python</code>, <code>import_only</code>) before execution.</p>
+</div>
+<div class="section level2">
 <h2 id="import-real-deconvolution-results-p8">Import Real Deconvolution Results (P8)<a class="anchor" aria-label="anchor" href="#import-real-deconvolution-results-p8"></a>
 </h2>
 <p>AEGIS imports exported result tables from external methods. It does <strong>not</strong> install or run external backends. For Python/deep-learning methods, export spot-by-celltype tables first, then import into AEGIS.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_10x_lymphnode.html">load_10x_lymphnode</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="st">"path/to/rctd_output.csv"</span><span class="op">)</span></span>
@@ -139,96 +157,109 @@
 </h3>
 <table class="table">
 <colgroup>
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
-<col width="20%">
+<col width="16%">
+<col width="17%">
+<col width="17%">
+<col width="17%">
+<col width="17%">
+<col width="16%">
 </colgroup>
 <thead><tr class="header">
 <th>Method</th>
-<th>Adapter</th>
-<th>Expected input</th>
-<th><code>normalize</code></th>
+<th>Support mode</th>
+<th>Run in R</th>
+<th>Run via Python</th>
+<th>Import exported results</th>
 <th>Notes</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td>RCTD</td>
-<td><code><a href="reference/read_rctd.html">read_rctd()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Supports common exported table/RDS forms</td>
+<td><code>run_and_import_r</code></td>
+<td>Yes (<code>run_rctd</code>)</td>
+<td>No</td>
+<td>Yes (<code>read_rctd</code>)</td>
+<td>Direct run requires <code>spacexr</code></td>
 </tr>
 <tr class="even">
 <td>SPOTlight</td>
-<td><code><a href="reference/read_spotlight.html">read_spotlight()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Drops obvious metadata columns</td>
+<td><code>run_and_import_r</code></td>
+<td>Yes (<code>run_spotlight</code>)</td>
+<td>No</td>
+<td>Yes (<code>read_spotlight</code>)</td>
+<td>Direct run requires <code>SPOTlight</code></td>
 </tr>
 <tr class="odd">
-<td>cell2location</td>
-<td><code><a href="reference/read_cell2location.html">read_cell2location()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Abundance tables supported</td>
-</tr>
-<tr class="even">
 <td>CARD</td>
-<td><code><a href="reference/read_card.html">read_card()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Table adapter</td>
-</tr>
-<tr class="odd">
-<td>SpatialDWLS</td>
-<td><code><a href="reference/read_spatialdwls.html">read_spatialdwls()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Table adapter</td>
+<td><code>run_and_import_r</code></td>
+<td>Yes (<code>run_card</code>)</td>
+<td>No</td>
+<td>Yes (<code>read_card</code>)</td>
+<td>Direct run requires <code>CARD</code></td>
 </tr>
 <tr class="even">
+<td>cell2location</td>
+<td><code>run_and_import_python</code></td>
+<td>No</td>
+<td>Optional (<code>run_cell2location</code>)</td>
+<td>Yes (<code>read_cell2location</code>)</td>
+<td>Python/reticulate environment required</td>
+</tr>
+<tr class="odd">
 <td>stereoscope</td>
-<td><code><a href="reference/read_stereoscope.html">read_stereoscope()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Export table only</td>
-</tr>
-<tr class="odd">
-<td>DestVI</td>
-<td><code><a href="reference/read_destvi.html">read_destvi()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Export table only</td>
+<td><code>run_and_import_python</code></td>
+<td>No</td>
+<td>Optional (<code>run_stereoscope</code>)</td>
+<td>Yes (<code>read_stereoscope</code>)</td>
+<td>Python/reticulate environment required</td>
 </tr>
 <tr class="even">
+<td>DestVI</td>
+<td><code>run_and_import_python</code></td>
+<td>No</td>
+<td>Optional (<code>run_destvi</code>)</td>
+<td>Yes (<code>read_destvi</code>)</td>
+<td>Python/reticulate environment required</td>
+</tr>
+<tr class="odd">
 <td>Tangram</td>
-<td><code><a href="reference/read_tangram.html">read_tangram()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Treated as mapping-derived composition input</td>
+<td><code>run_and_import_python</code></td>
+<td>No</td>
+<td>Optional (<code>run_tangram</code>)</td>
+<td>Yes (<code>read_tangram</code>)</td>
+<td>Mapping-style composition input</td>
+</tr>
+<tr class="even">
+<td>SpatialDWLS</td>
+<td><code>import_only</code></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (<code>read_spatialdwls</code>)</td>
+<td>Table adapter</td>
 </tr>
 <tr class="odd">
 <td>STdeconvolve</td>
-<td><code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Latent labels (e.g., <code>topic1</code>) allowed</td>
+<td><code>import_only</code></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (<code>read_stdeconvolve</code>)</td>
+<td>Latent labels allowed</td>
 </tr>
 <tr class="even">
 <td>DSTG</td>
-<td><code><a href="reference/read_dstg.html">read_dstg()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Export table only</td>
+<td><code>import_only</code></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (<code>read_dstg</code>)</td>
+<td>Table adapter</td>
 </tr>
 <tr class="odd">
 <td>STRIDE</td>
-<td><code><a href="reference/read_stride.html">read_stride()</a></code></td>
-<td>csv/tsv/txt/rds</td>
-<td>Yes</td>
-<td>Topic-only files fail in strict mode</td>
+<td><code>import_only</code></td>
+<td>No</td>
+<td>No</td>
+<td>Yes (<code>read_stride</code>)</td>
+<td>Topic-only strict checks supported</td>
 </tr>
 </tbody>
 </table>
@@ -278,8 +309,11 @@
 <li>
 <a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html" class="external-link">Quick Start tutorial</a> (includes <code>plot_compare</code> visualizations and RRA/mean-rank selection) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html">pkgdown page</a>, <a href="vignettes/AEGIS-overview.Rmd">source</a>)</li>
 <li>
+<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html" class="external-link">One-step deconvolution tutorial</a> (focuses on <code>get_supported_methods()</code>, <code>run_deconvolution()</code>, <code>run_aegis_full()</code>, and practical run-vs-import decisions) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html">pkgdown page</a>, <a href="vignettes/AEGIS-one-step-deconvolution.Rmd">source</a>)</li>
+<li>
 <a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html" class="external-link">Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)</a> (includes <code>get_supported_methods()</code>, <code>run_deconvolution()</code>, <code>run_aegis_full()</code>, all supported import adapters, method ranking, weighted consensus, and <code>plot_compare</code>-based visualization) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html">pkgdown page</a>, <a href="vignettes/AEGIS-complete-tutorial.Rmd">source</a>)</li>
 </ul>
+<p>Local preview HTML files are also kept in <code>vignettes/</code> for direct viewing: <code>vignettes/AEGIS-overview.html</code>, <code>vignettes/AEGIS-one-step-deconvolution.html</code>, and <code>vignettes/AEGIS-complete-tutorial.html</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="key-functions">Key Functions<a class="anchor" aria-label="anchor" href="#key-functions"></a>

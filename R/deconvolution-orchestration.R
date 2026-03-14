@@ -33,6 +33,10 @@ get_supported_methods <- function() {
       "read_rctd", "read_spotlight", "read_cell2location", "read_card", "read_spatialdwls",
       "read_stereoscope", "read_destvi", "read_tangram", "read_stdeconvolve", "read_dstg", "read_stride"
     ),
+    reader_function = c(
+      "read_rctd", "read_spotlight", "read_cell2location", "read_card", "read_spatialdwls",
+      "read_stereoscope", "read_destvi", "read_tangram", "read_stdeconvolve", "read_dstg", "read_stride"
+    ),
     runner_function = c(
       "run_rctd", "run_spotlight", "run_cell2location", "run_card", NA,
       "run_stereoscope", "run_destvi", "run_tangram", NA, NA, NA
