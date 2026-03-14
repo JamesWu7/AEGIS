@@ -29,7 +29,8 @@ For day-to-day use, the recommended minimal API is:
 
 1. `load_10x_lymphnode()` or `load_10x_spatial_set()`
 2. `run_aegis()`
-3. `plot_audit()` / `plot_compare()` / `render_report()`
+3. `score_methods()` -> `rank_methods()` -> `compute_consensus(strategy = "weighted")`
+4. `plot_method_ranking()` / `plot_disagreement_map()` / `plot_consensus_confidence()` / `render_report()`
 
 ## Quick Start (Simulated)
 
@@ -40,6 +41,13 @@ seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "rra")
+obj <- compute_consensus(obj, strategy = "weighted")
+
+p_rank <- plot_method_ranking(obj)
+p_dis <- plot_disagreement_map(obj)
+p_conf <- plot_consensus_confidence(obj)
 ```
 
 ## Import Real Deconvolution Results (P8)
@@ -144,7 +152,12 @@ If GitHub Pages is temporarily unavailable, use the preview fallback links or th
 - `audit_marker()`: quantify marker-expression support and method concordance.
 - `audit_spatial()`: compute neighborhood-based local inconsistency metrics.
 - `compare_methods()`: summarize cross-method agreement by cell type and spot.
-- `compute_consensus()`: aggregate shared cell types and derive confidence/stability.
+- `score_methods()`: score methods from marker/spatial/agreement/stability evidence.
+- `rank_methods()`: aggregate evidence into robust method rankings (`rra` or `mean_rank`).
+- `compute_consensus()`: integrate methods with `mean` / `weighted` / `trimmed_mean` strategies and return disagreement/confidence.
+- `plot_method_ranking()`: ggplot ranking summary from strongest to weakest methods.
+- `plot_disagreement_map()`: tissue-context map of spot-level cross-method disagreement.
+- `plot_consensus_confidence()`: tissue-context map of spot-level consensus confidence.
 - `run_aegis()`: one-call pipeline for single-sample or multi-sample workflows.
 
 ## Example Figures

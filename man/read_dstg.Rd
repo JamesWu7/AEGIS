@@ -19,5 +19,5 @@ read_dstg(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read DSTG deconvolution outputs.
+Read DSTG deconvolution outputs
 }

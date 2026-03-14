@@ -19,5 +19,5 @@ read_card(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read CARD deconvolution outputs.
+Read CARD deconvolution outputs
 }

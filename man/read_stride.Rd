@@ -19,5 +19,5 @@ read_stride(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read STRIDE deconvolution outputs.
+Read STRIDE deconvolution outputs
 }

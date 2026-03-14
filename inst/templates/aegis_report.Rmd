@@ -81,12 +81,38 @@ knitr::kable(format_report_table(x$consensus$comparison$pairwise_summary))
 plot_compare(x, type = "heatmap", palette = "nature")
 ```
 
+# Method Scoring and Ranking
+
+```{r method-ranking}
+if (is.null(x$consensus$method_evidence)) x <- score_methods(x)
+if (is.null(x$consensus$method_ranking)) x <- rank_methods(x, method = "mean_rank")
+rank_tbl <- x$consensus$method_ranking
+if (is.list(rank_tbl)) {
+  if (!is.null(rank_tbl$summary) && is.data.frame(rank_tbl$summary) && nrow(rank_tbl$summary) > 0) {
+    rank_tbl <- rank_tbl$summary
+  } else {
+    rank_tbl <- rank_tbl$table
+  }
+}
+knitr::kable(format_report_table(rank_tbl))
+plot_method_ranking(x, palette = "nature")
+```
+
 # Consensus
 
 ```{r consensus}
-if (is.null(x$consensus$result)) x <- compute_consensus(x)
+if (is.null(x$consensus$result)) x <- compute_consensus(x, strategy = "weighted")
+methods_used <- x$consensus$result$methods_used
+if (is.null(methods_used)) methods_used <- character()
+consensus_meta <- data.frame(
+  strategy = if (is.null(x$consensus$result$strategy_used)) NA_character_ else x$consensus$result$strategy_used,
+  methods_used = paste(methods_used, collapse = ", "),
+  stringsAsFactors = FALSE
+)
+knitr::kable(consensus_meta)
 knitr::kable(format_report_table(x$consensus$result$celltype_stability))
-plot_compare(x, type = "consensus_map", palette = "brewer")
+plot_disagreement_map(x, palette = "scico")
+plot_consensus_confidence(x, palette = "brewer")
 ```
 
 # Session Info

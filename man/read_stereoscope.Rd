@@ -19,5 +19,5 @@ read_stereoscope(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read stereoscope deconvolution outputs.
+Read stereoscope deconvolution outputs
 }

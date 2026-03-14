@@ -40,5 +40,10 @@ An \code{aegis} or \code{aegis_multi} object.
 }
 \description{
 Convenience entry point that constructs an AEGIS object (if needed) and runs
-the core audit/comparison pipeline for single-sample and multi-sample workflows.
+the core audit/comparison pipeline. Supports:
+\itemize{
+\item a Seurat object + deconvolution list (single-sample)
+\item a named list of Seurat objects + nested deconvolution list (multi-sample)
+\item an existing \code{aegis} or \code{aegis_multi} object
+}
 }

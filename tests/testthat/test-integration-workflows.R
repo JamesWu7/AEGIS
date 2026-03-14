@@ -91,7 +91,8 @@ test_that("single-sample imported workflow runs end-to-end", {
   expect_true(!is.null(obj$audit$basic$summary))
   expect_true(!is.null(obj$consensus$result$consensus_matrix))
 
-  expect_s3_class(plot_compare(obj, "consensus_map"), "ggplot")
+  p_cons <- plot_compare(obj, "consensus_map")
+  expect_true(inherits(p_cons, "ggplot") || inherits(p_cons, "patchwork"))
 })
 
 test_that("multi-sample workflow runs end-to-end with sample boundaries preserved", {

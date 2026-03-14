@@ -89,10 +89,21 @@ markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 deconv <- simulate_deconv_results(seu, seed = 2026)
 
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "mean_rank")
+obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
 ```
 
 ```{r}
 knitr::kable(obj$audit$basic$summary)
+```
+
+```{r}
+rank_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "recommendation"),
+  colnames(obj$consensus$method_ranking)
+)
+knitr::kable(obj$consensus$method_ranking[, rank_cols, drop = FALSE], digits = 3)
 ```
 
 ## Example Plots
@@ -103,6 +114,14 @@ plot_audit(obj, type = "dominance", method = "RCTD")
 
 ```{r, fig.width=7, fig.height=5}
 plot_compare(obj, type = "heatmap")
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_method_ranking(obj)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_consensus_confidence(obj)
 ```
 
 ## Multi-sample Example (Two Sections from the Demo Object)

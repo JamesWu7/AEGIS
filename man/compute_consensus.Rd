@@ -4,15 +4,23 @@
 \alias{compute_consensus}
 \title{Compute consensus deconvolution profile}
 \usage{
-compute_consensus(x)
+compute_consensus(
+  x,
+  strategy = c("mean", "weighted", "trimmed_mean"),
+  top_n = NULL
+)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
+
+\item{strategy}{Aggregation strategy: \code{mean}, \code{weighted}, or \code{trimmed_mean}.}
+
+\item{top_n}{Optional number of top-ranked methods to include.}
 }
 \value{
 Modified \code{aegis} object with \code{x$consensus$result} populated.
 }
 \description{
-Aggregates deconvolution outputs across methods (mean aggregation for MVP)
-and computes disagreement/stability summaries.
+Aggregates deconvolution outputs across methods and computes disagreement and
+confidence summaries.
 }

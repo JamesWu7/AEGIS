@@ -33,7 +33,10 @@ test_that("compute_consensus stores consensus outputs and shared celltypes", {
   expect_true("result" %in% names(obj$consensus))
   res <- obj$consensus$result
 
-  expect_true(all(c("consensus_matrix", "method_disagreement", "spot_confidence", "celltype_stability", "shared_celltypes") %in% names(res)))
+  expect_true(all(c(
+    "consensus_matrix", "method_disagreement", "spot_confidence",
+    "celltype_stability", "shared_celltypes", "methods_used", "strategy_used"
+  ) %in% names(res)))
   expect_true(is.matrix(res$consensus_matrix))
   expect_true(is.matrix(res$method_disagreement))
   expect_true(is.data.frame(res$spot_confidence))
@@ -43,4 +46,5 @@ test_that("compute_consensus stores consensus outputs and shared celltypes", {
   expect_false("NK_cell" %in% res$shared_celltypes)
   expect_identical(colnames(res$consensus_matrix), res$shared_celltypes)
   expect_equal(nrow(res$spot_confidence), ncol(aegis_example))
+  expect_identical(res$strategy_used, "mean")
 })

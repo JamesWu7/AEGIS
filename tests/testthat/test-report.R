@@ -6,10 +6,16 @@ test_that("render_report creates an HTML report", {
   obj <- audit_marker(obj)
   obj <- audit_spatial(obj)
   obj <- compare_methods(obj)
+  obj <- score_methods(obj)
+  obj <- rank_methods(obj, method = "mean_rank")
   obj <- compute_consensus(obj)
 
   out <- tempfile(fileext = ".html")
   report_path <- render_report(obj, output_file = out, title = "AEGIS Test Report")
   expect_true(file.exists(report_path))
   expect_gt(file.info(report_path)$size, 0)
+
+  html <- paste(readLines(report_path, warn = FALSE), collapse = "\n")
+  expect_match(html, "Method Scoring and Ranking")
+  expect_match(html, "Consensus")
 })

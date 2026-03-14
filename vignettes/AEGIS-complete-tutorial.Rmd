@@ -31,10 +31,21 @@ deconv_sim <- simulate_deconv_results(
 )
 
 obj_sim <- run_aegis(seu, deconv = deconv_sim, markers = markers)
+obj_sim <- score_methods(obj_sim)
+obj_sim <- rank_methods(obj_sim, method = "mean_rank")
+obj_sim <- compute_consensus(obj_sim, strategy = "weighted", top_n = 2)
 ```
 
 ```{r}
 knitr::kable(obj_sim$audit$basic$summary)
+```
+
+```{r}
+rank_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "recommendation"),
+  colnames(obj_sim$consensus$method_ranking)
+)
+knitr::kable(obj_sim$consensus$method_ranking[, rank_cols, drop = FALSE], digits = 3)
 ```
 
 ```{r, fig.width=7, fig.height=5}
@@ -45,7 +56,19 @@ plot_audit(obj_sim, type = "entropy", method = "SPOTlight")
 plot_compare(obj_sim, type = "heatmap")
 ```
 
-## 3. Real Import Workflow (P8 Adapter Path)
+```{r, fig.width=7, fig.height=5}
+plot_method_ranking(obj_sim)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_disagreement_map(obj_sim)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_consensus_confidence(obj_sim)
+```
+
+## 3. Real Import Workflow (Adapter Path)
 
 This section mimics exported backend result files and imports them using AEGIS adapter readers.
 
@@ -327,4 +350,6 @@ render_report(obj_sim, output_file = "aegis_report.html")
 - Use `simulate_deconv_results()` for reproducible demos and method development.
 - Use method adapters (`read_rctd()`, `read_spotlight()`, `read_cell2location()`, `read_card()`, `read_spatialdwls()`, `read_stereoscope()`, `read_destvi()`, `read_tangram()`, `read_stdeconvolve()`, `read_dstg()`, `read_stride()`) or `read_deconv_table()` for external exports.
 - Use `run_aegis()` as the unified pipeline entry for single-sample and multi-sample analysis.
+- Use `score_methods()` and `rank_methods()` before weighted integration when method quality differs.
+- Use `compute_consensus(strategy = "weighted")` plus disagreement/confidence maps for integration diagnostics.
 - Use `summarize_by_sample()` and `render_report_batch()` for multi-sample projects.

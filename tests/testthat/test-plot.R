@@ -36,7 +36,8 @@ test_that("plot_compare returns ggplot objects for required types", {
 
   expect_s3_class(plot_compare(obj, type = "heatmap"), "ggplot")
   expect_s3_class(plot_compare(obj, type = "spot_agreement", palette = "viridis"), "ggplot")
-  expect_s3_class(plot_compare(obj, type = "consensus_map", palette = "brewer"), "ggplot")
+  p_cons <- plot_compare(obj, type = "consensus_map", palette = "brewer")
+  expect_true(inherits(p_cons, "ggplot") || inherits(p_cons, "patchwork"))
 })
 
 test_that("plot_compare validates missing prerequisites and arguments", {
@@ -48,4 +49,18 @@ test_that("plot_compare validates missing prerequisites and arguments", {
   expect_error(plot_compare(obj, type = "spot_agreement"), "Run compare_methods")
   expect_error(plot_compare(obj, type = "consensus_map"), "Run compute_consensus")
   expect_error(plot_compare(obj, type = "invalid"), "should be one of")
+})
+
+test_that("ranking and consensus map plotting helpers return plot objects", {
+  obj <- make_plot_ready_obj()
+  obj <- score_methods(obj)
+  obj <- rank_methods(obj, method = "mean_rank")
+
+  p_rank <- plot_method_ranking(obj)
+  p_dis <- plot_disagreement_map(obj)
+  p_conf <- plot_consensus_confidence(obj)
+
+  expect_s3_class(p_rank, "ggplot")
+  expect_true(inherits(p_dis, "ggplot") || inherits(p_dis, "patchwork"))
+  expect_true(inherits(p_conf, "ggplot") || inherits(p_conf, "patchwork"))
 })

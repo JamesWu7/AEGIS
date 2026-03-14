@@ -101,26 +101,5 @@ plot_compare <- function(
     return(p)
   }
 
-  if (is.null(x$consensus$result$spot_confidence)) {
-    stop("Consensus result not found. Run compute_consensus() first.", call. = FALSE)
-  }
-  dat <- x$consensus$result$spot_confidence
-  if (!is.data.frame(dat) || !all(c("spot", "confidence") %in% colnames(dat))) {
-    stop("`x$consensus$result$spot_confidence` must include `spot` and `confidence`.", call. = FALSE)
-  }
-  spatial_dat <- assemble_spatial_plot_data(x$seu, dat[, c("spot", "confidence"), drop = FALSE])
-
-  p <- ggplot2::ggplot(spatial_dat, ggplot2::aes(x = .data$x, y = .data$y, color = .data$confidence)) +
-    ggplot2::geom_point(size = if (nrow(spatial_dat) > 5000L) 0.45 else 0.7, alpha = 0.95) +
-    ggplot2::coord_fixed() +
-    ggplot2::scale_y_reverse() +
-    scale_color_aegis(palette = palette, type = "continuous", limits = c(0, 1)) +
-    theme_aegis_spatial(base_size = base_size) +
-    ggplot2::labs(
-      title = "Consensus Confidence Map",
-      subtitle = "Per-spot confidence derived from cross-method disagreement",
-      color = "Confidence"
-    )
-
-  p
+  plot_consensus_confidence(x, palette = palette, base_size = base_size)
 }

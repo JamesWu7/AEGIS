@@ -23,6 +23,7 @@ Current MVP workflows:
 2. Import real exported results through method adapters (RCTD/SPOTlight/cell2location/CARD/DestVI/STdeconvolve and others).
 3. Run a unified audit/comparison/consensus pipeline on the standardized matrices.
 4. Run single-sample or multi-sample analysis through one entry point (`run_aegis()`).
+5. Score and rank methods, then build weighted consensus with explicit disagreement/confidence.
 
 ## AEGIS Object Structure
 
@@ -46,8 +47,19 @@ obj <- run_aegis(
   deconv = deconv,
   markers = aegis_default_markers()
 )
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "mean_rank")
+obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
 
 knitr::kable(obj$audit$basic$summary)
+```
+
+```{r}
+rank_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "recommendation"),
+  colnames(obj$consensus$method_ranking)
+)
+knitr::kable(obj$consensus$method_ranking[, rank_cols, drop = FALSE], digits = 3)
 ```
 
 ```{r, fig.width=7, fig.height=5}
@@ -56,6 +68,10 @@ plot_audit(obj, type = "dominance", method = "RCTD")
 
 ```{r, fig.width=7, fig.height=5}
 plot_compare(obj, type = "heatmap")
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_method_ranking(obj)
 ```
 
 ## Real Import Workflow

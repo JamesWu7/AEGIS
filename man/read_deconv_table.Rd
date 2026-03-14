@@ -18,7 +18,8 @@ read_deconv_table(
 
 \item{method}{Optional method label used in messages and metadata.}
 
-\item{type}{Input type for RDS-aware parsing.}
+\item{type}{Input type for RDS-aware parsing (\code{auto}, \code{rds}, \code{weights},
+\code{proportions}, \code{results_df}).}
 
 \item{spot_col}{Optional explicit spot/barcode column name.}
 

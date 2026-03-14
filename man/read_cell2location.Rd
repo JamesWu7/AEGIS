@@ -19,6 +19,5 @@ read_cell2location(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Reads exported cell2location abundance/proportion tables and standardizes them
-to a spot-by-celltype numeric matrix usable by \code{as_aegis()}.
+Read cell2location deconvolution outputs
 }

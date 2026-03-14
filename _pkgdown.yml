@@ -55,11 +55,16 @@ reference:
       - audit_marker
       - audit_spatial
       - compare_methods
+      - score_methods
+      - rank_methods
       - compute_consensus
   - title: Visualization and reporting
     contents:
       - plot_audit
       - plot_compare
+      - plot_method_ranking
+      - plot_disagreement_map
+      - plot_consensus_confidence
       - render_report
       - render_report_batch
       - build_aegis_example_data

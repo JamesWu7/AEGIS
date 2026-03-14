@@ -19,5 +19,5 @@ read_tangram(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read Tangram mapping-derived composition outputs.
+Read Tangram mapping-derived composition outputs
 }

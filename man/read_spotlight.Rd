@@ -19,6 +19,5 @@ read_spotlight(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Reads exported SPOTlight result files and standardizes them to a
-spot-by-celltype numeric matrix usable by \code{as_aegis()}.
+Read SPOTlight deconvolution outputs
 }

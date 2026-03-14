@@ -28,9 +28,14 @@ render_report <- function(
   render_env$audit_marker <- audit_marker
   render_env$audit_spatial <- audit_spatial
   render_env$compare_methods <- compare_methods
+  render_env$score_methods <- score_methods
+  render_env$rank_methods <- rank_methods
   render_env$compute_consensus <- compute_consensus
   render_env$plot_audit <- plot_audit
   render_env$plot_compare <- plot_compare
+  render_env$plot_method_ranking <- plot_method_ranking
+  render_env$plot_disagreement_map <- plot_disagreement_map
+  render_env$plot_consensus_confidence <- plot_consensus_confidence
   render_env$format_report_table <- format_report_table
   render_env$head <- utils::head
   render_env$sessionInfo <- utils::sessionInfo

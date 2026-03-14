@@ -19,5 +19,5 @@ read_stdeconvolve(path, spot_col = NULL, normalize = TRUE, strict = TRUE)
 A numeric spot-by-celltype matrix.
 }
 \description{
-Read STdeconvolve outputs. Supports de novo/latent labels such as topic1/topic2.
+Supports de novo/latent cell-type labels (for example \code{topic1}, \code{topic2}).
 }
