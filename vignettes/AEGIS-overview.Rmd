@@ -50,6 +50,14 @@ obj <- run_aegis(
 knitr::kable(obj$audit$basic$summary)
 ```
 
+```{r, fig.width=7, fig.height=5}
+plot_audit(obj, type = "dominance", method = "RCTD")
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_compare(obj, type = "heatmap")
+```
+
 ## Real Import Workflow
 
 AEGIS imports exported tables and does not run external deconvolution backends.

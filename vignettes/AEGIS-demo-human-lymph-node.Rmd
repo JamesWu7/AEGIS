@@ -12,6 +12,44 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 library(AEGIS)
 library(Seurat)
+
+safe_tissue_context_plot <- function(seu) {
+  has_spatial_image <- FALSE
+  has_ncount <- "nCount_Spatial" %in% colnames(seu[[]])
+
+  has_spatial_image <- tryCatch(
+    length(Seurat::Images(seu)) > 0L,
+    error = function(e) FALSE
+  )
+
+  if (has_spatial_image && has_ncount) {
+    return(Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial"))
+  }
+
+  if (has_ncount) {
+    return(
+      ggplot2::ggplot(seu[[]], ggplot2::aes(x = .data$nCount_Spatial)) +
+        ggplot2::geom_histogram(bins = 30, fill = "#1f6fb2", color = "white") +
+        ggplot2::theme_minimal(base_size = 12) +
+        ggplot2::labs(
+          title = "Fallback tissue context view",
+          subtitle = "Spatial image not available; showing nCount_Spatial distribution",
+          x = "nCount_Spatial",
+          y = "Spots"
+        )
+    )
+  }
+
+  ggplot2::ggplot(data.frame(spot = seq_len(ncol(seu))), ggplot2::aes(x = spot, y = 1)) +
+    ggplot2::geom_point(size = 1.3, color = "#1f6fb2") +
+    ggplot2::theme_minimal(base_size = 12) +
+    ggplot2::labs(
+      title = "Fallback tissue context view",
+      subtitle = "No spatial image and no nCount_Spatial metadata; plotting spot index",
+      x = "Spot index",
+      y = NULL
+    )
+}
 ```
 
 ## Demo Data Source
@@ -41,7 +79,7 @@ seu <- load_10x_lymphnode(data_dir = ".")
 ## Tissue Context
 
 ```{r, fig.width=7, fig.height=6}
-Seurat::SpatialFeaturePlot(seu, features = "nCount_Spatial")
+safe_tissue_context_plot(seu)
 ```
 
 ## End-to-End AEGIS Workflow (Simulated Inputs)

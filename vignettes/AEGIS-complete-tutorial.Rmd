@@ -41,6 +41,10 @@ knitr::kable(obj_sim$audit$basic$summary)
 plot_audit(obj_sim, type = "entropy", method = "SPOTlight")
 ```
 
+```{r, fig.width=7, fig.height=5}
+plot_compare(obj_sim, type = "heatmap")
+```
+
 ## 3. Real Import Workflow (P8 Adapter Path)
 
 This section mimics exported backend result files and imports them using AEGIS adapter readers.
@@ -123,6 +127,10 @@ obj_real <- run_aegis(
 
 ```{r}
 knitr::kable(obj_real$audit$basic$summary)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_audit(obj_real, type = "dominance", method = "RCTD")
 ```
 
 ### 3.4 Additional Import Adapters (same standardized output shape)
