@@ -417,9 +417,11 @@ standardize_deconv_matrix <- function(obj, spot_col = NULL, strict = TRUE, metho
   dropped <- setdiff(colnames(df), cell_cols)
   if (length(dropped) > 0L && isTRUE(strict)) {
     dropped_present <- intersect(dropped, colnames(df))
+    dropped_present <- dropped_present[!is.na(dropped_present) & nzchar(dropped_present)]
     numeric_dropped <- character(0)
     if (length(dropped_present) > 0L) {
-      numeric_dropped <- dropped_present[vapply(df[dropped_present], is.numeric, logical(1))]
+      dropped_df <- df[, dropped_present, drop = FALSE]
+      numeric_dropped <- dropped_present[vapply(dropped_df, is.numeric, logical(1))]
     }
     if (length(numeric_dropped) > 0L) {
       warning(

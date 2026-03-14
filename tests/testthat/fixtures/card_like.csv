@@ -1,0 +1,4 @@
+spot,B_cell,T_cell,Myeloid,pvalue
+AAAC-1,0.50,0.30,0.20,0.01
+AAAC-2,0.20,0.50,0.30,0.02
+AAAC-3,0.10,0.20,0.70,0.03

@@ -1,0 +1,4 @@
+barcode	B_cell	T_cell	NK_cell	sample
+AAAC-1	0.40	0.40	0.20	S1
+AAAC-2	0.10	0.70	0.20	S1
+AAAC-3	0.20	0.30	0.50	S1

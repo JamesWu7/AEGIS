@@ -20,7 +20,7 @@ AEGIS is designed to audit and compare spatial deconvolution outputs on Seurat s
 Current MVP workflows:
 
 1. Simulate deconvolution outputs for demos and method development.
-2. Import real exported results from RCTD/SPOTlight/cell2location.
+2. Import real exported results through method adapters (RCTD/SPOTlight/cell2location/CARD/DestVI/STdeconvolve and others).
 3. Run a unified audit/comparison/consensus pipeline on the standardized matrices.
 4. Run single-sample or multi-sample analysis through one entry point (`run_aegis()`).
 

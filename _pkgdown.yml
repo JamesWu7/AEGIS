@@ -27,9 +27,18 @@ reference:
       - aegis_example
       - aegis_default_markers
       - align_deconv_to_seurat
+      - read_deconv_table
       - read_rctd
       - read_spotlight
       - read_cell2location
+      - read_card
+      - read_spatialdwls
+      - read_stereoscope
+      - read_destvi
+      - read_tangram
+      - read_stdeconvolve
+      - read_dstg
+      - read_stride
   - title: Core object and simulation
     contents:
       - run_aegis
