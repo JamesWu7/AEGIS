@@ -284,8 +284,8 @@ Dominance spatial map
 ### Cross-method agreement heatmap
 
 Figure regenerated with all methods from `get_supported_methods()$method_name`
-(11 methods). Dense x-axis pair labels are hidden in this static preview to
-avoid overlap.
+(11 methods). If labels look dense on small screens, open the image for
+full-size viewing.
 
 ![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
 

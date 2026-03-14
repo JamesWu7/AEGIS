@@ -214,7 +214,7 @@ Local preview HTML files are also kept in `vignettes/` for direct viewing:
 
 ### Cross-method agreement heatmap
 
-Figure regenerated with all methods from `get_supported_methods()$method_name` (11 methods); dense x-axis pair labels are hidden in this static preview to avoid overlap.
+Figure regenerated with all methods from `get_supported_methods()$method_name` (11 methods); if labels look dense on mobile, open the image for full-size viewing.
 
 ![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
 
