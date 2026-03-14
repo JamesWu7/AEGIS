@@ -169,6 +169,22 @@ If GitHub Pages is temporarily unavailable, use the preview fallback links or th
 
 ![Dominance spatial map](inst/assets/figures/readme-dominance.png)
 
+### Cross-method agreement heatmap
+
+![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
+
+### Method ranking
+
+![Method ranking](inst/assets/figures/readme-ranking.png)
+
+### Spot-level agreement
+
+![Spot-level agreement](inst/assets/figures/readme-spot-agreement.png)
+
+### Consensus confidence
+
+![Consensus confidence](inst/assets/figures/readme-confidence.png)
+
 ## Citation
 
 ```r

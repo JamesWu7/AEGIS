@@ -23,6 +23,9 @@ seu <- aegis_example
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 deconv <- simulate_deconv_results(seu, seed = 2026)
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "mean_rank")
+obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
 
 out_dir <- file.path("inst", "assets", "figures")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
@@ -57,10 +60,30 @@ ggplot2::ggsave(
   dpi = 180
 )
 
-# Consensus map.
-p_cons <- plot_compare(obj, type = "consensus_map", palette = "brewer")
+# Ranking summary.
+p_rank <- plot_method_ranking(obj, palette = "nature")
 ggplot2::ggsave(
-  filename = file.path(out_dir, "readme-consensus.png"),
+  filename = file.path(out_dir, "readme-ranking.png"),
+  plot = p_rank,
+  width = 7.5,
+  height = 5.5,
+  dpi = 180
+)
+
+# Spot-level agreement.
+p_agree <- plot_compare(obj, type = "spot_agreement", palette = "viridis")
+ggplot2::ggsave(
+  filename = file.path(out_dir, "readme-spot-agreement.png"),
+  plot = p_agree,
+  width = 7.5,
+  height = 5.5,
+  dpi = 180
+)
+
+# Consensus confidence map.
+p_cons <- plot_consensus_confidence(obj, palette = "brewer")
+ggplot2::ggsave(
+  filename = file.path(out_dir, "readme-confidence.png"),
   plot = p_cons,
   width = 7.5,
   height = 5.5,
