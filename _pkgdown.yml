@@ -74,5 +74,4 @@ articles:
     navbar: Tutorials
     contents:
       - AEGIS-overview
-      - AEGIS-demo-human-lymph-node
       - AEGIS-complete-tutorial

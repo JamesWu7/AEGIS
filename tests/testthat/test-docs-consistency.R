@@ -47,9 +47,8 @@ test_that("README tutorial references and figure assets exist", {
     testthat::skip("README.md could not be read in this test context.")
   }
 
-  expect_match(readme, "Complete Tutorials")
+  expect_match(readme, "Tutorials")
   expect_match(readme, "AEGIS-overview")
-  expect_match(readme, "AEGIS-demo-human-lymph-node")
   expect_match(readme, "AEGIS-complete-tutorial")
   expect_match(readme, "\\[source\\]\\(vignettes/AEGIS-overview.Rmd\\)")
   expect_match(readme, "https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html")
@@ -117,18 +116,15 @@ test_that("vignette and docs tutorial files are present when available", {
 
   vignettes <- c(
     "vignettes/AEGIS-overview.Rmd",
-    "vignettes/AEGIS-demo-human-lymph-node.Rmd",
     "vignettes/AEGIS-complete-tutorial.Rmd"
   )
   docs_articles <- c(
     "docs/articles/AEGIS-overview.html",
-    "docs/articles/AEGIS-demo-human-lymph-node.html",
     "docs/articles/AEGIS-complete-tutorial.html"
   )
 
   has_source_vignettes <- all(file.exists(file.path(repo_root, "vignettes", c(
     "AEGIS-overview.Rmd",
-    "AEGIS-demo-human-lymph-node.Rmd",
     "AEGIS-complete-tutorial.Rmd"
   ))))
 
@@ -149,7 +145,7 @@ test_that("vignette and docs tutorial files are present when available", {
     # Installed package context: look for built vignette artifacts.
     inst_doc <- system.file("doc", package = "AEGIS")
     if (nzchar(inst_doc) && dir.exists(inst_doc)) {
-      for (nm in c("AEGIS-overview.html", "AEGIS-demo-human-lymph-node.html", "AEGIS-complete-tutorial.html")) {
+      for (nm in c("AEGIS-overview.html", "AEGIS-complete-tutorial.html")) {
         expect_true(file.exists(file.path(inst_doc, nm)), info = sprintf("Missing installed tutorial artifact: %s", nm))
       }
     } else {
