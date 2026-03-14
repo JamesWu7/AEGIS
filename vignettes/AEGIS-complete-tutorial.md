@@ -184,36 +184,38 @@ knitr::kable(adapter_overview)
 
 
 
-## Step 4. Align to Seurat spots and build AEGIS object
+## Step 4. Build a comparison object including all supported methods
 
 
 ``` r
-rctd_aligned <- align_deconv_to_seurat(rctd, seu_small)
-
-obj <- as_aegis(
-  seu_small,
-  deconv = list(
-    RCTD = rctd_aligned,
-    SPOTlight = spotlight,
-    cell2location = cell2location
-  ),
-  markers = markers
+deconv_all <- list(
+  RCTD = align_deconv_to_seurat(rctd, seu_small),
+  SPOTlight = align_deconv_to_seurat(spotlight, seu_small),
+  cell2location = align_deconv_to_seurat(cell2location, seu_small),
+  CARD = align_deconv_to_seurat(card, seu_small),
+  SpatialDWLS = align_deconv_to_seurat(spatialdwls, seu_small),
+  stereoscope = align_deconv_to_seurat(stereoscope, seu_small),
+  DestVI = align_deconv_to_seurat(destvi, seu_small),
+  Tangram = align_deconv_to_seurat(tangram, seu_small),
+  STdeconvolve = align_deconv_to_seurat(stdeconvolve, seu_small),
+  DSTG = align_deconv_to_seurat(dstg, seu_small),
+  STRIDE = align_deconv_to_seurat(stride, seu_small)
 )
+
+obj_all <- as_aegis(seu_small, deconv = deconv_all, markers = markers)
 ```
 
-## Step 5. Run each analysis step explicitly
+## Step 5. Run audit and comparison on all methods
 
 
 ``` r
-obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- score_methods(obj)
-obj <- rank_methods(obj, method = "mean_rank")
-obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
+obj_all <- audit_basic(obj_all)
+obj_all <- audit_marker(obj_all)
+obj_all <- audit_spatial(obj_all)
+obj_all <- compare_methods(obj_all)
+obj_all <- score_methods(obj_all)
 
-knitr::kable(obj$audit$basic$summary)
+knitr::kable(obj_all$audit$basic$summary)
 ```
 
 
@@ -223,73 +225,201 @@ knitr::kable(obj$audit$basic$summary)
 |RCTD          |       8|           3|             0|                  0|      0.5125000|    0.9992982|                     3|            0|
 |SPOTlight     |       8|           3|             0|                  0|      0.4625000|    1.0408587|                     3|            0|
 |cell2location |       8|           3|             0|                  0|      0.4904068|    1.0158112|                     3|            0|
+|CARD          |       8|           3|             0|                  0|      0.5062500|    1.0102583|                     3|            0|
+|SpatialDWLS   |       8|           3|             0|                  0|      0.5062500|    1.0046721|                     3|            0|
+|stereoscope   |       8|           3|             0|                  0|      0.5037500|    1.0099437|                     3|            0|
+|DestVI        |       8|           3|             0|                  0|      0.5167843|    0.9951021|                     3|            0|
+|Tangram       |       8|           3|             0|                  0|      0.5075000|    1.0133763|                     3|            0|
+|STdeconvolve  |       8|           2|             0|                  0|      0.6250000|    0.6409325|                     2|            0|
+|DSTG          |       8|           3|             0|                  0|      0.5062500|    1.0053414|                     3|            0|
+|STRIDE        |       8|           3|             0|                  0|      0.5000000|    1.0147017|                     3|            0|
 
 
+
+## Step 6. Rank methods (RRA and mean-rank meta style)
 
 
 ``` r
-rank_cols <- intersect(
-  c("method", "overall_rank", "overall_score", "recommendation"),
-  colnames(obj$consensus$method_ranking)
+obj_rra <- rank_methods(obj_all, method = "rra")
+#> Warning: RRA aggregation unavailable (missing RobustRankAggreg or failed
+#> aggregation); falling back to mean_rank.
+obj_meta <- rank_methods(obj_all, method = "mean_rank")
+
+rra_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "rra_pvalue", "aggregation_used", "recommendation"),
+  colnames(obj_rra$consensus$method_ranking)
 )
-knitr::kable(obj$consensus$method_ranking[, rank_cols, drop = FALSE], digits = 3)
+meta_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "aggregation_used", "recommendation"),
+  colnames(obj_meta$consensus$method_ranking)
+)
+
+rra_tbl <- obj_rra$consensus$method_ranking[, rra_cols, drop = FALSE]
+meta_tbl <- obj_meta$consensus$method_ranking[, meta_cols, drop = FALSE]
+
+best_method <- meta_tbl$method[[1]]
+best_label <- meta_tbl$recommendation[[1]]
+marker_methods <- unique(obj_meta$audit$marker$concordance$method)
+if (!(best_method %in% marker_methods)) {
+  candidate_methods <- meta_tbl$method[meta_tbl$method %in% marker_methods]
+  if (length(candidate_methods) > 0L) {
+    best_method <- candidate_methods[[1]]
+  }
+}
+
+knitr::kable(rra_tbl, digits = 4, caption = "RRA ranking result")
 ```
 
 
 
-|   |method        | overall_rank| overall_score|recommendation |
-|:--|:-------------|------------:|-------------:|:--------------|
-|2  |SPOTlight     |         1.75|         -1.75|preferred      |
-|3  |cell2location |         2.00|         -2.00|acceptable     |
-|1  |RCTD          |         2.25|         -2.25|acceptable     |
+Table: RRA ranking result
 
+|   |method        | overall_rank| overall_score| rra_pvalue|aggregation_used   |recommendation   |
+|:--|:-------------|------------:|-------------:|----------:|:------------------|:----------------|
+|10 |DSTG          |        3.875|        -3.875|         NA|mean_rank_fallback |preferred        |
+|11 |STRIDE        |        4.250|        -4.250|         NA|mean_rank_fallback |preferred        |
+|6  |stereoscope   |        4.375|        -4.375|         NA|mean_rank_fallback |preferred        |
+|8  |Tangram       |        5.000|        -5.000|         NA|mean_rank_fallback |preferred        |
+|2  |SPOTlight     |        5.500|        -5.500|         NA|mean_rank_fallback |acceptable       |
+|5  |SpatialDWLS   |        5.750|        -5.750|         NA|mean_rank_fallback |acceptable       |
+|4  |CARD          |        6.000|        -6.000|         NA|mean_rank_fallback |acceptable       |
+|1  |RCTD          |        6.750|        -6.750|         NA|mean_rank_fallback |acceptable       |
+|3  |cell2location |        7.250|        -7.250|         NA|mean_rank_fallback |use_with_caution |
+|7  |DestVI        |        7.500|        -7.500|         NA|mean_rank_fallback |use_with_caution |
+|9  |STdeconvolve  |        8.500|        -8.500|         NA|mean_rank_fallback |use_with_caution |
 
-
-## Step 6. Plot outputs
 
 
 ``` r
-plot_audit(obj, type = "dominance", method = "RCTD")
+knitr::kable(meta_tbl, digits = 4, caption = "Mean-rank (meta-style) result")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+
+
+Table: Mean-rank (meta-style) result
+
+|   |method        | overall_rank| overall_score|aggregation_used |recommendation   |
+|:--|:-------------|------------:|-------------:|:----------------|:----------------|
+|10 |DSTG          |        3.875|        -3.875|mean_rank        |preferred        |
+|11 |STRIDE        |        4.250|        -4.250|mean_rank        |preferred        |
+|6  |stereoscope   |        4.375|        -4.375|mean_rank        |preferred        |
+|8  |Tangram       |        5.000|        -5.000|mean_rank        |preferred        |
+|2  |SPOTlight     |        5.500|        -5.500|mean_rank        |acceptable       |
+|5  |SpatialDWLS   |        5.750|        -5.750|mean_rank        |acceptable       |
+|4  |CARD          |        6.000|        -6.000|mean_rank        |acceptable       |
+|1  |RCTD          |        6.750|        -6.750|mean_rank        |acceptable       |
+|3  |cell2location |        7.250|        -7.250|mean_rank        |use_with_caution |
+|7  |DestVI        |        7.500|        -7.500|mean_rank        |use_with_caution |
+|9  |STdeconvolve  |        8.500|        -8.500|mean_rank        |use_with_caution |
+
 
 
 ``` r
-plot_compare(obj, type = "heatmap")
+best_method
+#> [1] "DSTG"
+best_label
+#> [1] "preferred"
+```
+
+## Step 7. Integrate methods into weighted consensus
+
+`STdeconvolve` uses latent topic labels (`topic1`, `topic2`) and is kept in the comparison/ranking table.
+For integrated cell-type consensus, we use methods with shared cell-type labels.
+
+
+``` r
+consensus_methods <- setdiff(names(deconv_all), "STdeconvolve")
+
+obj_consensus <- as_aegis(
+  seu_small,
+  deconv = deconv_all[consensus_methods],
+  markers = markers
+)
+obj_consensus <- audit_basic(obj_consensus)
+obj_consensus <- audit_marker(obj_consensus)
+obj_consensus <- audit_spatial(obj_consensus)
+obj_consensus <- compare_methods(obj_consensus)
+obj_consensus <- score_methods(obj_consensus)
+obj_consensus <- rank_methods(obj_consensus, method = "mean_rank")
+obj_consensus <- compute_consensus(obj_consensus, strategy = "weighted", top_n = 3)
+
+obj_consensus$consensus$result$methods_used
+#> [1] "DSTG"        "STRIDE"      "stereoscope"
+```
+
+## Step 8. Visualization (plot_compare and related functions)
+
+
+``` r
+plot_compare(obj_meta, type = "heatmap")
 ```
 
 ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
 
 
 ``` r
-plot_method_ranking(obj)
+plot_compare(obj_meta, type = "spot_agreement")
 ```
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
 
 
 ``` r
-plot_disagreement_map(obj)
+plot_compare(obj_consensus, type = "consensus_map")
 ```
 
 ![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
 
 
 ``` r
-plot_consensus_confidence(obj)
+plot_audit(obj_meta, type = "dominance", method = best_method)
 ```
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
-## Step 7. Render single-sample report
+
+``` r
+plot_audit(obj_meta, type = "marker", method = best_method)
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
 
 
 ``` r
-render_report(obj, output_file = "aegis_real_data_report.html")
+plot_audit(obj_meta, type = "smoothness", method = best_method)
 ```
 
-## Step 8. Multi-sample workflow
+![plot of chunk unnamed-chunk-15](figure/unnamed-chunk-15-1.png)
+
+
+``` r
+plot_method_ranking(obj_meta)
+```
+
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+
+
+``` r
+plot_disagreement_map(obj_consensus)
+```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
+
+
+``` r
+plot_consensus_confidence(obj_consensus)
+```
+
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+
+## Step 9. Render single-sample report
+
+
+``` r
+render_report(obj_consensus, output_file = "aegis_real_data_report.html")
+```
+
+## Step 10. Multi-sample workflow
 
 A directory-based loader is supported for real projects:
 

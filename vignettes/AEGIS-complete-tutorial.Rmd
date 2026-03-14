@@ -163,73 +163,141 @@ adapter_overview <- data.frame(
 knitr::kable(adapter_overview)
 ```
 
-## Step 4. Align to Seurat spots and build AEGIS object
+## Step 4. Build a comparison object including all supported methods
 
 ```{r}
-rctd_aligned <- align_deconv_to_seurat(rctd, seu_small)
+deconv_all <- list(
+  RCTD = align_deconv_to_seurat(rctd, seu_small),
+  SPOTlight = align_deconv_to_seurat(spotlight, seu_small),
+  cell2location = align_deconv_to_seurat(cell2location, seu_small),
+  CARD = align_deconv_to_seurat(card, seu_small),
+  SpatialDWLS = align_deconv_to_seurat(spatialdwls, seu_small),
+  stereoscope = align_deconv_to_seurat(stereoscope, seu_small),
+  DestVI = align_deconv_to_seurat(destvi, seu_small),
+  Tangram = align_deconv_to_seurat(tangram, seu_small),
+  STdeconvolve = align_deconv_to_seurat(stdeconvolve, seu_small),
+  DSTG = align_deconv_to_seurat(dstg, seu_small),
+  STRIDE = align_deconv_to_seurat(stride, seu_small)
+)
 
-obj <- as_aegis(
+obj_all <- as_aegis(seu_small, deconv = deconv_all, markers = markers)
+```
+
+## Step 5. Run audit and comparison on all methods
+
+```{r}
+obj_all <- audit_basic(obj_all)
+obj_all <- audit_marker(obj_all)
+obj_all <- audit_spatial(obj_all)
+obj_all <- compare_methods(obj_all)
+obj_all <- score_methods(obj_all)
+
+knitr::kable(obj_all$audit$basic$summary)
+```
+
+## Step 6. Rank methods (RRA and mean-rank meta style)
+
+```{r}
+obj_rra <- rank_methods(obj_all, method = "rra")
+obj_meta <- rank_methods(obj_all, method = "mean_rank")
+
+rra_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "rra_pvalue", "aggregation_used", "recommendation"),
+  colnames(obj_rra$consensus$method_ranking)
+)
+meta_cols <- intersect(
+  c("method", "overall_rank", "overall_score", "aggregation_used", "recommendation"),
+  colnames(obj_meta$consensus$method_ranking)
+)
+
+rra_tbl <- obj_rra$consensus$method_ranking[, rra_cols, drop = FALSE]
+meta_tbl <- obj_meta$consensus$method_ranking[, meta_cols, drop = FALSE]
+
+best_method <- meta_tbl$method[[1]]
+best_label <- meta_tbl$recommendation[[1]]
+marker_methods <- unique(obj_meta$audit$marker$concordance$method)
+if (!(best_method %in% marker_methods)) {
+  candidate_methods <- meta_tbl$method[meta_tbl$method %in% marker_methods]
+  if (length(candidate_methods) > 0L) {
+    best_method <- candidate_methods[[1]]
+  }
+}
+
+knitr::kable(rra_tbl, digits = 4, caption = "RRA ranking result")
+knitr::kable(meta_tbl, digits = 4, caption = "Mean-rank (meta-style) result")
+best_method
+best_label
+```
+
+## Step 7. Integrate methods into weighted consensus
+
+`STdeconvolve` uses latent topic labels (`topic1`, `topic2`) and is kept in the comparison/ranking table.
+For integrated cell-type consensus, we use methods with shared cell-type labels.
+
+```{r}
+consensus_methods <- setdiff(names(deconv_all), "STdeconvolve")
+
+obj_consensus <- as_aegis(
   seu_small,
-  deconv = list(
-    RCTD = rctd_aligned,
-    SPOTlight = spotlight,
-    cell2location = cell2location
-  ),
+  deconv = deconv_all[consensus_methods],
   markers = markers
 )
+obj_consensus <- audit_basic(obj_consensus)
+obj_consensus <- audit_marker(obj_consensus)
+obj_consensus <- audit_spatial(obj_consensus)
+obj_consensus <- compare_methods(obj_consensus)
+obj_consensus <- score_methods(obj_consensus)
+obj_consensus <- rank_methods(obj_consensus, method = "mean_rank")
+obj_consensus <- compute_consensus(obj_consensus, strategy = "weighted", top_n = 3)
+
+obj_consensus$consensus$result$methods_used
 ```
 
-## Step 5. Run each analysis step explicitly
-
-```{r}
-obj <- audit_basic(obj)
-obj <- audit_marker(obj)
-obj <- audit_spatial(obj)
-obj <- compare_methods(obj)
-obj <- score_methods(obj)
-obj <- rank_methods(obj, method = "mean_rank")
-obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
-
-knitr::kable(obj$audit$basic$summary)
-```
-
-```{r}
-rank_cols <- intersect(
-  c("method", "overall_rank", "overall_score", "recommendation"),
-  colnames(obj$consensus$method_ranking)
-)
-knitr::kable(obj$consensus$method_ranking[, rank_cols, drop = FALSE], digits = 3)
-```
-
-## Step 6. Plot outputs
+## Step 8. Visualization (plot_compare and related functions)
 
 ```{r, fig.width=7, fig.height=5}
-plot_audit(obj, type = "dominance", method = "RCTD")
+plot_compare(obj_meta, type = "heatmap")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_compare(obj, type = "heatmap")
+plot_compare(obj_meta, type = "spot_agreement")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_method_ranking(obj)
+plot_compare(obj_consensus, type = "consensus_map")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_disagreement_map(obj)
+plot_audit(obj_meta, type = "dominance", method = best_method)
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_consensus_confidence(obj)
+plot_audit(obj_meta, type = "marker", method = best_method)
 ```
 
-## Step 7. Render single-sample report
+```{r, fig.width=7, fig.height=5}
+plot_audit(obj_meta, type = "smoothness", method = best_method)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_method_ranking(obj_meta)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_disagreement_map(obj_consensus)
+```
+
+```{r, fig.width=7, fig.height=5}
+plot_consensus_confidence(obj_consensus)
+```
+
+## Step 9. Render single-sample report
 
 ```{r eval=FALSE}
-render_report(obj, output_file = "aegis_real_data_report.html")
+render_report(obj_consensus, output_file = "aegis_real_data_report.html")
 ```
 
-## Step 8. Multi-sample workflow
+## Step 10. Multi-sample workflow
 
 A directory-based loader is supported for real projects:
 

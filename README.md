@@ -134,8 +134,8 @@ render_report_batch(obj_multi, output_dir = "reports")
 
 If GitHub Pages is temporarily unavailable, use the preview fallback links or the source `.Rmd` links below.
 
-- [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
-- [Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
+- [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) (includes `plot_compare` visualizations and RRA/mean-rank selection) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
+- [Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (includes all supported import adapters, method comparison, best-method selection, weighted consensus) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
 
 ## Key Functions
 
