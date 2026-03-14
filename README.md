@@ -20,10 +20,11 @@ devtools::install_github("JamesWu7/AEGIS")
 
 ## Workflow at a Glance
 
-AEGIS now supports two primary workflows:
+AEGIS now supports three primary workflows:
 
 1. Simulated method outputs for development and demos (`simulate_deconv_results()`).
 2. Real exported outputs from external methods through adapter readers (e.g. `read_rctd()`, `read_spotlight()`, `read_cell2location()`, `read_card()`, `read_destvi()`, `read_stdeconvolve()`), plus `read_deconv_table()` for generic spot-by-celltype tables.
+3. One-shot deconvolution orchestration for directly runnable methods (`run_deconvolution()`, `run_aegis_full()`), with explicit run-vs-import capability metadata from `get_supported_methods()`.
 
 For day-to-day use, the recommended minimal API is:
 
@@ -31,6 +32,37 @@ For day-to-day use, the recommended minimal API is:
 2. `run_aegis()`
 3. `score_methods()` -> `rank_methods()` -> `compute_consensus(strategy = "weighted")`
 4. `plot_method_ranking()` / `plot_disagreement_map()` / `plot_consensus_confidence()` / `render_report()`
+
+## One-shot Deconvolution (P9)
+
+AEGIS now provides a unified orchestration layer that can run selected methods when their runtime dependencies are available, and then hand off standardized outputs into downstream AEGIS analysis.
+
+```r
+seu <- load_10x_lymphnode()
+
+res <- run_deconvolution(
+  seu = seu,
+  reference = ref,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  strict = FALSE
+)
+
+obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+```
+
+or one-shot end to end:
+
+```r
+obj <- run_aegis_full(
+  seu = seu,
+  reference = ref,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  markers = markers,
+  strict = FALSE
+)
+```
+
+Use `get_supported_methods()` to inspect exact support mode (`run_and_import_r`, `run_and_import_python`, `import_only`) before execution.
 
 ## Quick Start (Simulated)
 
@@ -80,19 +112,19 @@ For cell2location, export posterior abundance/proportion tables to csv/tsv/txt f
 
 ### Method Support Matrix
 
-| Method | Adapter | Expected input | `normalize` | Notes |
-|---|---|---|---|---|
-| RCTD | `read_rctd()` | csv/tsv/txt/rds | Yes | Supports common exported table/RDS forms |
-| SPOTlight | `read_spotlight()` | csv/tsv/txt/rds | Yes | Drops obvious metadata columns |
-| cell2location | `read_cell2location()` | csv/tsv/txt/rds | Yes | Abundance tables supported |
-| CARD | `read_card()` | csv/tsv/txt/rds | Yes | Table adapter |
-| SpatialDWLS | `read_spatialdwls()` | csv/tsv/txt/rds | Yes | Table adapter |
-| stereoscope | `read_stereoscope()` | csv/tsv/txt/rds | Yes | Export table only |
-| DestVI | `read_destvi()` | csv/tsv/txt/rds | Yes | Export table only |
-| Tangram | `read_tangram()` | csv/tsv/txt/rds | Yes | Treated as mapping-derived composition input |
-| STdeconvolve | `read_stdeconvolve()` | csv/tsv/txt/rds | Yes | Latent labels (e.g., `topic1`) allowed |
-| DSTG | `read_dstg()` | csv/tsv/txt/rds | Yes | Export table only |
-| STRIDE | `read_stride()` | csv/tsv/txt/rds | Yes | Topic-only files fail in strict mode |
+| Method | Support mode | Run in R | Run via Python | Import exported results | Notes |
+|---|---|---|---|---|---|
+| RCTD | `run_and_import_r` | Yes (`run_rctd`) | No | Yes (`read_rctd`) | Direct run requires `spacexr` |
+| SPOTlight | `run_and_import_r` | Yes (`run_spotlight`) | No | Yes (`read_spotlight`) | Direct run requires `SPOTlight` |
+| CARD | `run_and_import_r` | Yes (`run_card`) | No | Yes (`read_card`) | Direct run requires `CARD` |
+| cell2location | `run_and_import_python` | No | Optional (`run_cell2location`) | Yes (`read_cell2location`) | Python/reticulate environment required |
+| stereoscope | `run_and_import_python` | No | Optional (`run_stereoscope`) | Yes (`read_stereoscope`) | Python/reticulate environment required |
+| DestVI | `run_and_import_python` | No | Optional (`run_destvi`) | Yes (`read_destvi`) | Python/reticulate environment required |
+| Tangram | `run_and_import_python` | No | Optional (`run_tangram`) | Yes (`read_tangram`) | Mapping-style composition input |
+| SpatialDWLS | `import_only` | No | No | Yes (`read_spatialdwls`) | Table adapter |
+| STdeconvolve | `import_only` | No | No | Yes (`read_stdeconvolve`) | Latent labels allowed |
+| DSTG | `import_only` | No | No | Yes (`read_dstg`) | Table adapter |
+| STRIDE | `import_only` | No | No | Yes (`read_stride`) | Topic-only strict checks supported |
 
 ### Additional Import Examples
 
@@ -146,6 +178,11 @@ If GitHub Pages is temporarily unavailable, use the preview fallback links or th
 - `read_cell2location()`: import exported cell2location tables/RDS (abundance or proportion) and standardize.
 - `read_card()`, `read_spatialdwls()`, `read_stereoscope()`, `read_destvi()`, `read_tangram()`, `read_stdeconvolve()`, `read_dstg()`, `read_stride()`: method-specific import adapters.
 - `read_deconv_table()`: generic importer for spot-by-celltype exported tables.
+- `get_supported_methods()`: inspect method capability registry and support modes.
+- `run_deconvolution()`: unified deconvolution orchestrator across runnable/import-only methods.
+- `run_aegis_full()`: one-shot wrapper from deconvolution dispatch to full AEGIS downstream analysis.
+- `run_spotlight()`, `run_card()`, `run_rctd()`: R-native runner wrappers (dependency-aware).
+- `run_cell2location()`, `run_destvi()`, `run_tangram()`, `run_stereoscope()`: optional Python-backed runner wrappers via `reticulate`.
 - `as_aegis()`: validate inputs and create the internal `aegis` S3 object.
 - `audit_basic()`: compute per-spot and per-method basic quality metrics.
 - `audit_marker()`: quantify marker-expression support and method concordance.

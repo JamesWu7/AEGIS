@@ -42,6 +42,16 @@ reference:
   - title: Core object and simulation
     contents:
       - run_aegis
+      - run_aegis_full
+      - get_supported_methods
+      - run_deconvolution
+      - run_spotlight
+      - run_card
+      - run_rctd
+      - run_cell2location
+      - run_destvi
+      - run_tangram
+      - run_stereoscope
       - as_aegis
       - as_aegis_multi
       - is_aegis

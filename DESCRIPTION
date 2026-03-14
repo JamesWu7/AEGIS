@@ -36,6 +36,7 @@ Suggests:
     knitr,
     markdown,
     pkgdown,
-    RobustRankAggreg
+    RobustRankAggreg,
+    reticulate
 VignetteBuilder: knitr
 Config/testthat/edition: 3
