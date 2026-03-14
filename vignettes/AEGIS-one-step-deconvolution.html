@@ -24,14 +24,22 @@
   methods = c("SPOTlight", "CARD", "RCTD"),
   strict = FALSE
 )
-obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+all_methods <- get_supported_methods()$method_name
+deconv_demo <- simulate_deconv_results(
+  seu,
+  methods = all_methods,
+  cell_types = c("B_cell", "T_cell", "Myeloid"),
+  seed = 909
+)
+obj <- run_aegis(seu, deconv = deconv_demo, markers = markers)
 obj <- score_methods(obj)
 obj <- rank_methods(obj, method = "mean_rank")
-obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)</code></pre>
+obj <- compute_consensus(obj, strategy = "weighted", top_n = min(4, length(all_methods)))</code></pre>
 
   <h2>Step 2. Visualizations</h2>
   <pre><code>plot_compare(obj, type = "heatmap")</code></pre>
   <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-heatmap.png" alt="heatmap" />
+  <p><small>Heatmap shown with all supported methods (11 / 55 method-pairs). Dense x-axis pair labels are hidden in this static preview to avoid overlap.</small></p>
 
   <pre><code>plot_compare(obj, type = "consensus_map")</code></pre>
   <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-consensus.png" alt="consensus map" />

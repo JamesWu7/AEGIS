@@ -17,3 +17,6 @@
 ^V1_Human_Lymph_Node_metrics_summary\\.csv$
 ^AEGIS_Logo\\.jpg$
 ^LICENSE\\.md$
+^figure($|/)
+^spatial($|/)
+^vignettes/figure($|/)

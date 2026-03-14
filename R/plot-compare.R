@@ -35,8 +35,24 @@ plot_compare <- function(
       dplyr::summarise(mean_cor = mean(.data$correlation, na.rm = TRUE), .groups = "drop") |>
       dplyr::arrange(dplyr::desc(.data$mean_cor)) |>
       dplyr::pull(.data$method_pair)
-    dat$method_pair <- factor(dat$method_pair, levels = pair_order)
+    n_pairs <- length(pair_order)
+    n_methods <- length(unique(c(dat$method_1, dat$method_2)))
+
+    pair_labels <- pair_order
+    if (n_pairs > 12L) {
+      pair_labels <- vapply(
+        pair_order,
+        function(lbl) gsub(" vs ", "\nvs\n", lbl, fixed = TRUE),
+        character(1)
+      )
+    }
+
+    dat$method_pair <- factor(dat$method_pair, levels = pair_order, labels = pair_labels)
     dat$celltype <- factor(dat$celltype, levels = sort(unique(dat$celltype)))
+
+    axis_x_angle <- if (n_pairs > 24L) 90 else if (n_pairs > 12L) 60 else 30
+    axis_x_size <- if (n_pairs > 36L) base_size * 0.56 else if (n_pairs > 24L) base_size * 0.62 else if (n_pairs > 12L) base_size * 0.72 else base_size * 0.82
+    axis_y_size <- if (length(levels(dat$celltype)) > 10L) base_size * 0.72 else base_size * 0.84
 
     p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$method_pair, y = .data$celltype, fill = .data$correlation)) +
       ggplot2::geom_tile(color = "white", linewidth = 0.25) +
@@ -44,17 +60,18 @@ plot_compare <- function(
       theme_aegis(base_size = base_size) +
       ggplot2::theme(
         panel.grid = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_text(angle = 30, hjust = 1, vjust = 1),
-        legend.key.width = grid::unit(1.2, "lines")
+        axis.text.x = ggplot2::element_text(size = axis_x_size, angle = axis_x_angle, hjust = 1, vjust = if (axis_x_angle == 90) 0.5 else 1),
+        axis.text.y = ggplot2::element_text(size = axis_y_size),
+        legend.key.width = grid::unit(if (n_pairs > 24L) 1.5 else 1.2, "lines")
       ) +
       ggplot2::labs(
         title = "Method-Pair Agreement by Cell Type",
-        subtitle = "Correlation across shared spots",
+        subtitle = sprintf("Correlation across shared spots (%d methods, %d pairs)", n_methods, n_pairs),
         x = "Method pair",
         y = "Cell type",
         fill = "Correlation"
       )
-    if (length(unique(dat$celltype)) <= 8L && length(unique(dat$method_pair)) <= 8L) {
+    if (length(unique(dat$celltype)) <= 8L && n_pairs <= 8L) {
       p <- p + ggplot2::geom_text(
         ggplot2::aes(label = sprintf("%.2f", .data$correlation)),
         size = base_size * 0.23,

@@ -109,33 +109,39 @@ For a fully reproducible vignette run (without backend dependencies), this chunk
 uses simulated deconvolution and then runs the same downstream pipeline.
 
 ```{r}
+demo_methods <- registry$method_name
 deconv_demo <- simulate_deconv_results(
   seu,
-  methods = c("SPOTlight", "CARD", "RCTD"),
+  methods = demo_methods,
+  cell_types = c("B_cell", "T_cell", "Myeloid"),
   seed = 909
 )
 
 obj <- run_aegis(seu, deconv = deconv_demo, markers = markers)
 obj <- score_methods(obj)
 obj <- rank_methods(obj, method = "mean_rank")
-obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
+obj <- compute_consensus(obj, strategy = "weighted", top_n = min(4, length(demo_methods)))
 
+obj$consensus$result$methods_used
+```
+
+```{r, fig.width=14, fig.height=6.5}
 plot_compare(obj, type = "heatmap")
 ```
 
-```{r}
+```{r, fig.width=7.2, fig.height=5.6}
 plot_compare(obj, type = "consensus_map")
 ```
 
-```{r}
+```{r, fig.width=9, fig.height=6.2}
 plot_compare(obj, type = "ranking")
 ```
 
-```{r}
+```{r, fig.width=7.2, fig.height=5.6}
 plot_compare(obj, type = "disagreement_map")
 ```
 
-```{r}
+```{r, fig.width=7.2, fig.height=5.6}
 plot_compare(obj, type = "confidence_map")
 ```
 

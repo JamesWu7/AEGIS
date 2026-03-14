@@ -16,7 +16,26 @@ plot_method_ranking <- function(
   assert_is_aegis(x)
   tbl <- get_method_ranking_table(x)
   if (is.null(tbl) || !is.data.frame(tbl) || nrow(tbl) == 0L) {
-    stop("Method ranking not found. Run rank_methods() first.", call. = FALSE)
+    # Keep plotting ergonomic: attempt to derive ranking from available evidence.
+    x <- tryCatch(
+      {
+        x2 <- x
+        if (is.null(get_method_evidence_table(x2))) {
+          x2 <- score_methods(x2)
+        }
+        rank_methods(x2, method = "mean_rank")
+      },
+      error = function(e) {
+        stop(
+          sprintf("Method ranking not found and auto-ranking failed: %s", conditionMessage(e)),
+          call. = FALSE
+        )
+      }
+    )
+    tbl <- get_method_ranking_table(x)
+    if (is.null(tbl) || !is.data.frame(tbl) || nrow(tbl) == 0L) {
+      stop("Method ranking not found. Run rank_methods() first.", call. = FALSE)
+    }
   }
   if (!all(c("method", "overall_rank") %in% colnames(tbl))) {
     stop("Method ranking table must include `method` and `overall_rank`.", call. = FALSE)
@@ -33,27 +52,26 @@ plot_method_ranking <- function(
   dat <- dat[order(dat$overall_rank), , drop = FALSE]
   dat$method <- factor(dat$method, levels = rev(dat$method))
   dat$rank_label <- paste0("#", dat$overall_rank)
+  n_methods <- nrow(dat)
   score_min <- min(dat$overall_score, na.rm = TRUE)
   score_min <- if (is.finite(score_min)) min(score_min, 0) else 0
   score_span <- diff(range(dat$overall_score, na.rm = TRUE))
   if (!is.finite(score_span) || score_span == 0) score_span <- 1
+  show_rank_label <- n_methods <= 16L
+  point_size <- if (n_methods > 12L) 3.0 else 3.6
+  line_width <- if (n_methods > 12L) 0.86 else 1.0
+  label_size <- if (n_methods > 12L) base_size * 0.20 else base_size * 0.23
 
-  ggplot2::ggplot(dat, ggplot2::aes(x = .data$overall_score, y = .data$method, color = .data$recommendation)) +
+  p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$overall_score, y = .data$method, color = .data$recommendation)) +
     ggplot2::geom_segment(
       ggplot2::aes(x = score_min, xend = .data$overall_score, y = .data$method, yend = .data$method),
-      linewidth = 1.0,
+      linewidth = line_width,
       alpha = 0.75
     ) +
-    ggplot2::geom_point(size = 3.6, alpha = 0.96) +
-    ggplot2::geom_text(
-      ggplot2::aes(label = .data$rank_label),
-      nudge_x = 0.02 * score_span,
-      hjust = 0,
-      size = base_size * 0.23,
-      color = "#222222",
-      show.legend = FALSE
-    ) +
+    ggplot2::geom_point(size = point_size, alpha = 0.96) +
     scale_color_aegis(palette = palette, type = "categorical") +
+    ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0.02, 0.14))) +
+    ggplot2::coord_cartesian(clip = "off") +
     theme_aegis(base_size = base_size) +
     ggplot2::theme(panel.grid.major.y = ggplot2::element_blank()) +
     ggplot2::labs(
@@ -63,6 +81,19 @@ plot_method_ranking <- function(
       y = "Method",
       color = "Recommendation"
     )
+
+  if (isTRUE(show_rank_label)) {
+    p <- p + ggplot2::geom_text(
+      ggplot2::aes(label = .data$rank_label),
+      nudge_x = 0.02 * score_span,
+      hjust = 0,
+      size = label_size,
+      color = "#222222",
+      show.legend = FALSE
+    )
+  }
+
+  p
 }
 
 #' Plot spot-level consensus disagreement map

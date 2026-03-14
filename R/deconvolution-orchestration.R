@@ -487,7 +487,7 @@ run_stereoscope <- function(
 resolve_method_names <- function(methods, registry = get_supported_methods(), unique_out = TRUE) {
   normalize_key <- function(x) gsub("[^a-z0-9]", "", tolower(x))
 
-  aliases <- setNames(registry$method_name, normalize_key(registry$method_name))
+  aliases <- stats::setNames(registry$method_name, normalize_key(registry$method_name))
   aliases[[normalize_key("cell2loc")]] <- "cell2location"
   aliases[[normalize_key("spotlight")]] <- "SPOTlight"
   aliases[[normalize_key("stdeconv")]] <- "STdeconvolve"

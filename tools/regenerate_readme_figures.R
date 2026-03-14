@@ -21,11 +21,17 @@ devtools::load_all(".", quiet = TRUE)
 data("aegis_example", package = "AEGIS")
 seu <- aegis_example
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
-deconv <- simulate_deconv_results(seu, seed = 2026)
+all_methods <- get_supported_methods()$method_name
+deconv <- simulate_deconv_results(
+  seu,
+  methods = all_methods,
+  cell_types = c("B_cell", "T_cell", "Myeloid"),
+  seed = 2026
+)
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
 obj <- score_methods(obj)
 obj <- rank_methods(obj, method = "mean_rank")
-obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
+obj <- compute_consensus(obj, strategy = "weighted", top_n = min(4, length(all_methods)))
 
 out_dir <- file.path("inst", "assets", "figures")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
@@ -55,8 +61,8 @@ p_heat <- plot_compare(obj, type = "heatmap", palette = "nature")
 ggplot2::ggsave(
   filename = file.path(out_dir, "readme-heatmap.png"),
   plot = p_heat,
-  width = 8,
-  height = 5.5,
+  width = 15,
+  height = 6.5,
   dpi = 180
 )
 
@@ -65,8 +71,8 @@ p_rank <- plot_compare(obj, type = "ranking", palette = "nature")
 ggplot2::ggsave(
   filename = file.path(out_dir, "readme-ranking.png"),
   plot = p_rank,
-  width = 7.5,
-  height = 5.5,
+  width = 9,
+  height = 6.2,
   dpi = 180
 )
 

@@ -283,11 +283,18 @@ Dominance spatial map
 
 ### Cross-method agreement heatmap
 
+Figure regenerated with all methods from `get_supported_methods()$method_name`
+(11 methods). Dense x-axis pair labels are hidden in this static preview to
+avoid overlap.
+
 ![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
 
 Method agreement heatmap
 
 ### Method ranking
+
+Ranking is aggregated across the same full method set (mean-rank meta-style
+evidence synthesis).
 
 ![Method ranking](inst/assets/figures/readme-ranking.png)
 
