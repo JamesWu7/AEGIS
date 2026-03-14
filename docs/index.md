@@ -9,10 +9,6 @@
 [![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg?branch=main)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
 [![License:
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![GitHub
-release](https://img.shields.io/github/v/release/JamesWu7/AEGIS)](https://github.com/JamesWu7/AEGIS/releases)
 
 AEGIS is an R package for basic auditing of spatial deconvolution
 outputs on Seurat spatial objects, with a minimal and reproducible Human
