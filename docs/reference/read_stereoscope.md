@@ -1,6 +1,6 @@
 # Read stereoscope deconvolution outputs
 
-Read stereoscope deconvolution outputs.
+Read stereoscope deconvolution outputs
 
 ## Usage
 

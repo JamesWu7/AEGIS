@@ -1,7 +1,7 @@
 # Read STdeconvolve outputs
 
-Read STdeconvolve outputs. Supports de novo/latent labels such as
-topic1/topic2.
+Supports de novo/latent cell-type labels (for example `topic1`,
+`topic2`).
 
 ## Usage
 

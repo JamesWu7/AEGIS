@@ -1,6 +1,6 @@
 # Read STRIDE deconvolution outputs
 
-Read STRIDE deconvolution outputs.
+Read STRIDE deconvolution outputs
 
 ## Usage
 

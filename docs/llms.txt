@@ -5,8 +5,8 @@
 **AEGIS**: **A**udit and **E**valuate deconvolution outputs in
 **G**rid-based Spatial transcriptomics.
 
-[![R-CMD-check](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml)
-[![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
+[![R-CMD-check](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/JamesWu7/AEGIS/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml/badge.svg?branch=main)](https://github.com/JamesWu7/AEGIS/actions/workflows/pkgdown.yaml)
 
 AEGIS is an R package for basic auditing of spatial deconvolution
 outputs on Seurat spatial objects, with a minimal and reproducible Human
@@ -42,9 +42,15 @@ For day-to-day use, the recommended minimal API is:
     or
     [`load_10x_spatial_set()`](https://jameswu7.github.io/AEGIS/reference/load_10x_spatial_set.md)
 2.  [`run_aegis()`](https://jameswu7.github.io/AEGIS/reference/run_aegis.md)
-3.  [`plot_audit()`](https://jameswu7.github.io/AEGIS/reference/plot_audit.md)
+3.  [`score_methods()`](https://jameswu7.github.io/AEGIS/reference/score_methods.md)
+    -\>
+    [`rank_methods()`](https://jameswu7.github.io/AEGIS/reference/rank_methods.md)
+    -\> `compute_consensus(strategy = "weighted")`
+4.  [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md)
     /
-    [`plot_compare()`](https://jameswu7.github.io/AEGIS/reference/plot_compare.md)
+    [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md)
+    /
+    [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md)
     /
     [`render_report()`](https://jameswu7.github.io/AEGIS/reference/render_report.md)
 
@@ -57,6 +63,13 @@ seu <- load_10x_lymphnode()
 deconv <- simulate_deconv_results(seu)
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "rra")
+obj <- compute_consensus(obj, strategy = "weighted")
+
+p_rank <- plot_method_ranking(obj)
+p_dis <- plot_disagreement_map(obj)
+p_conf <- plot_consensus_confidence(obj)
 ```
 
 ## Import Real Deconvolution Results (P8)
@@ -142,24 +155,21 @@ summary_tbl <- summarize_by_sample(obj_multi)
 render_report_batch(obj_multi, output_dir = "reports")
 ```
 
-## Complete Tutorials
+## Tutorials
 
 If GitHub Pages is temporarily unavailable, use the preview fallback
 links or the source `.Rmd` links below.
 
-- [Overview tutorial (object model +
-  workflows)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html)
+- [Quick Start
+  tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html)
+  (includes `plot_compare` visualizations and RRA/mean-rank selection)
   ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-overview.Rmd))
-- [Human lymph node demo (end-to-end
-  demo)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html)
-  ([pkgdown
-  page](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html),
-  [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-demo-human-lymph-node.Rmd))
-- [Complete tutorial (simulated + real import +
-  multi-sample)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
-  ([pkgdown
+- [Real Data tutorial (Human Lymph
+  Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
+  (includes all supported import adapters, method comparison,
+  best-method selection, weighted consensus) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-complete-tutorial.Rmd))
 
@@ -199,8 +209,19 @@ links or the source `.Rmd` links below.
   compute neighborhood-based local inconsistency metrics.
 - [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md):
   summarize cross-method agreement by cell type and spot.
+- [`score_methods()`](https://jameswu7.github.io/AEGIS/reference/score_methods.md):
+  score methods from marker/spatial/agreement/stability evidence.
+- [`rank_methods()`](https://jameswu7.github.io/AEGIS/reference/rank_methods.md):
+  aggregate evidence into robust method rankings (`rra` or `mean_rank`).
 - [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md):
-  aggregate shared cell types and derive confidence/stability.
+  integrate methods with `mean` / `weighted` / `trimmed_mean` strategies
+  and return disagreement/confidence.
+- [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md):
+  ggplot ranking summary from strongest to weakest methods.
+- [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md):
+  tissue-context map of spot-level cross-method disagreement.
+- [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md):
+  tissue-context map of spot-level consensus confidence.
 - [`run_aegis()`](https://jameswu7.github.io/AEGIS/reference/run_aegis.md):
   one-call pipeline for single-sample or multi-sample workflows.
 
@@ -217,6 +238,30 @@ Human Lymph Node slice
 ![Dominance spatial map](inst/assets/figures/readme-dominance.png)
 
 Dominance spatial map
+
+### Cross-method agreement heatmap
+
+![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
+
+Method agreement heatmap
+
+### Method ranking
+
+![Method ranking](inst/assets/figures/readme-ranking.png)
+
+Method ranking
+
+### Spot-level agreement
+
+![Spot-level agreement](inst/assets/figures/readme-spot-agreement.png)
+
+Spot-level agreement
+
+### Consensus confidence
+
+![Consensus confidence](inst/assets/figures/readme-confidence.png)
+
+Consensus confidence
 
 ## Citation
 
@@ -306,6 +351,10 @@ BibTeX:
   : Run spatial smoothness audit
 - [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md)
   : Compare deconvolution methods
+- [`score_methods()`](https://jameswu7.github.io/AEGIS/reference/score_methods.md)
+  : Score deconvolution methods from available audit evidence
+- [`rank_methods()`](https://jameswu7.github.io/AEGIS/reference/rank_methods.md)
+  : Rank methods from evidence dimensions
 - [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md)
   : Compute consensus deconvolution profile
 
@@ -315,6 +364,12 @@ BibTeX:
   : Plot audit outputs
 - [`plot_compare()`](https://jameswu7.github.io/AEGIS/reference/plot_compare.md)
   : Plot method comparison and consensus outputs
+- [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md)
+  : Plot method ranking summary
+- [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md)
+  : Plot spot-level consensus disagreement map
+- [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md)
+  : Plot spot-level consensus confidence map
 - [`render_report()`](https://jameswu7.github.io/AEGIS/reference/render_report.md)
   : Render an AEGIS HTML report
 - [`render_report_batch()`](https://jameswu7.github.io/AEGIS/reference/render_report_batch.md)
@@ -326,9 +381,7 @@ BibTeX:
 
 ### Tutorials
 
-- [AEGIS
-  Overview](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.md):
-- [AEGIS Demo: Human Lymph
-  Node](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.md):
-- [AEGIS Complete
-  Tutorial](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.md):
+- [AEGIS Quick
+  Start](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.md):
+- [AEGIS Real Data Example (Human Lymph
+  Node)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.md):

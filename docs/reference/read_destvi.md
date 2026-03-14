@@ -1,6 +1,6 @@
 # Read DestVI deconvolution outputs
 
-Read DestVI deconvolution outputs.
+Read DestVI deconvolution outputs
 
 ## Usage
 

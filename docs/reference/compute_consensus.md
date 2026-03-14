@@ -1,12 +1,16 @@
 # Compute consensus deconvolution profile
 
-Aggregates deconvolution outputs across methods (mean aggregation for
-MVP) and computes disagreement/stability summaries.
+Aggregates deconvolution outputs across methods and computes
+disagreement and confidence summaries.
 
 ## Usage
 
 ``` r
-compute_consensus(x)
+compute_consensus(
+  x,
+  strategy = c("mean", "weighted", "trimmed_mean"),
+  top_n = NULL
+)
 ```
 
 ## Arguments
@@ -14,6 +18,14 @@ compute_consensus(x)
 - x:
 
   An `aegis` object.
+
+- strategy:
+
+  Aggregation strategy: `mean`, `weighted`, or `trimmed_mean`.
+
+- top_n:
+
+  Optional number of top-ranked methods to include.
 
 ## Value
 

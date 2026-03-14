@@ -1,6 +1,6 @@
 # Read SpatialDWLS deconvolution outputs
 
-Read SpatialDWLS deconvolution outputs.
+Read SpatialDWLS deconvolution outputs
 
 ## Usage
 

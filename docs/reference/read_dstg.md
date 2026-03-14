@@ -1,6 +1,6 @@
 # Read DSTG deconvolution outputs
 
-Read DSTG deconvolution outputs.
+Read DSTG deconvolution outputs
 
 ## Usage
 

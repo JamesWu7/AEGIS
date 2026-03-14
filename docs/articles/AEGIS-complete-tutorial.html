@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>AEGIS Complete Tutorial • AEGIS</title>
+<title>AEGIS Real Data Example (Human Lymph Node) • AEGIS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="AEGIS Complete Tutorial">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="AEGIS Real Data Example (Human Lymph Node)">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -35,9 +35,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Overview</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-demo-human-lymph-node.html">AEGIS Demo: Human Lymph Node</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Complete Tutorial</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Real Data Example (Human Lymph Node)</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -60,7 +59,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>AEGIS Complete Tutorial</h1>
+      <h1>AEGIS Real Data Example (Human Lymph Node)</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd" class="external-link"><code>vignettes/AEGIS-complete-tutorial.Rmd</code></a></small>
@@ -70,171 +69,258 @@
     
     
 <div class="section level2">
-<h2 id="load-example-seurat-object">1. Load Example Seurat Object<a class="anchor" aria-label="anchor" href="#load-example-seurat-object"></a>
+<h2 id="step-1--load-real-human-lymph-node-data">Step 1. Load real Human Lymph Node data<a class="anchor" aria-label="anchor" href="#step-1--load-real-human-lymph-node-data"></a>
 </h2>
+<p>If authoritative raw files are available in your repository root,
+load directly:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_lymphnode.html">load_10x_lymphnode</a></span><span class="op">(</span>data_dir <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span></code></pre></div>
+<p>For a fully reproducible tutorial run (including CI), use the
+built-in object:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"aegis_example"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span></span>
-<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="va">aegis_example</span></span></code></pre></div>
+<span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="va">aegis_example</span></span>
+<span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"marker_list.rds"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="simulated-workflow-development-path">2. Simulated Workflow (Development Path)<a class="anchor" aria-label="anchor" href="#simulated-workflow-development-path"></a>
+<h2 id="step-2--prepare-exported-result-tables-from-multiple-methods">Step 2. Prepare exported result tables from multiple methods<a class="anchor" aria-label="anchor" href="#step-2--prepare-exported-result-tables-from-multiple-methods"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"marker_list.rds"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">deconv_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span></span>
-<span>  <span class="va">seu</span>,</span>
-<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span>, <span class="st">"cell2location"</span><span class="op">)</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">2026</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required namespace: SeuratObject</span></span>
-<span></span>
-<span><span class="va">obj_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">seu</span>, deconv <span class="op">=</span> <span class="va">deconv_sim</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_sim</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="10%">
-<col width="6%">
-<col width="9%">
-<col width="10%">
-<col width="14%">
-<col width="11%">
-<col width="9%">
-<col width="16%">
-<col width="9%">
-</colgroup>
+<code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Loading required namespace: SeuratObject</span></span>
+<span><span class="va">seu_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required namespace: Seurat</span></span>
+<span></span>
+<span><span class="va">tmp_rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.50</span>, <span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.30</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.40</span>, <span class="fl">0.50</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.60</span>, <span class="fl">0.40</span>, <span class="fl">0.40</span>, <span class="fl">0.70</span>, <span class="fl">0.60</span>, <span class="fl">0.30</span>, <span class="fl">0.30</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_rctd</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tsv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.40</span>, <span class="fl">0.30</span>, <span class="fl">0.50</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.40</span>, <span class="fl">0.40</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.40</span>, <span class="fl">0.50</span>, <span class="fl">0.30</span>, <span class="fl">0.40</span>, <span class="fl">0.60</span>, <span class="fl">0.50</span>, <span class="fl">0.40</span>, <span class="fl">0.30</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span><span class="op">)</span>,</span>
+<span>  sample <span class="op">=</span> <span class="st">"S1"</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_spotlight</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fl">11</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">18</span>, <span class="fl">10</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">16</span>, <span class="fl">12</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">6</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_cell2location</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_card</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.55</span>, <span class="fl">0.25</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span>, <span class="fl">0.15</span>, <span class="fl">0.25</span>, <span class="fl">0.35</span>, <span class="fl">0.45</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.55</span>, <span class="fl">0.35</span>, <span class="fl">0.40</span>, <span class="fl">0.65</span>, <span class="fl">0.55</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_card</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_spatialdwls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tsv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.50</span>, <span class="fl">0.25</span>, <span class="fl">0.40</span>, <span class="fl">0.35</span>, <span class="fl">0.10</span>, <span class="fl">0.20</span>, <span class="fl">0.35</span>, <span class="fl">0.45</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.55</span>, <span class="fl">0.35</span>, <span class="fl">0.40</span>, <span class="fl">0.70</span>, <span class="fl">0.60</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
+<span>  sample <span class="op">=</span> <span class="st">"S1"</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_spatialdwls</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_stereoscope</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.48</span>, <span class="fl">0.22</span>, <span class="fl">0.38</span>, <span class="fl">0.32</span>, <span class="fl">0.12</span>, <span class="fl">0.22</span>, <span class="fl">0.32</span>, <span class="fl">0.42</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.32</span>, <span class="fl">0.58</span>, <span class="fl">0.37</span>, <span class="fl">0.43</span>, <span class="fl">0.68</span>, <span class="fl">0.58</span>, <span class="fl">0.48</span>, <span class="fl">0.36</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.22</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_stereoscope</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">9</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">18</span>, <span class="fl">11</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">17</span>, <span class="fl">12</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_destvi</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_tangram</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tsv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  cell_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.52</span>, <span class="fl">0.24</span>, <span class="fl">0.42</span>, <span class="fl">0.34</span>, <span class="fl">0.14</span>, <span class="fl">0.24</span>, <span class="fl">0.34</span>, <span class="fl">0.46</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.28</span>, <span class="fl">0.56</span>, <span class="fl">0.34</span>, <span class="fl">0.42</span>, <span class="fl">0.66</span>, <span class="fl">0.56</span>, <span class="fl">0.46</span>, <span class="fl">0.34</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.24</span>, <span class="fl">0.24</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_tangram</span>, sep <span class="op">=</span> <span class="st">"\t"</span>, quote <span class="op">=</span> <span class="cn">FALSE</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  topic1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.60</span>, <span class="fl">0.30</span>, <span class="fl">0.40</span>, <span class="fl">0.50</span>, <span class="fl">0.20</span>, <span class="fl">0.30</span>, <span class="fl">0.40</span>, <span class="fl">0.50</span><span class="op">)</span>,</span>
+<span>  topic2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.40</span>, <span class="fl">0.70</span>, <span class="fl">0.60</span>, <span class="fl">0.50</span>, <span class="fl">0.80</span>, <span class="fl">0.70</span>, <span class="fl">0.60</span>, <span class="fl">0.50</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_stdec</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_dstg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.46</span>, <span class="fl">0.21</span>, <span class="fl">0.36</span>, <span class="fl">0.31</span>, <span class="fl">0.11</span>, <span class="fl">0.21</span>, <span class="fl">0.31</span>, <span class="fl">0.40</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.34</span>, <span class="fl">0.59</span>, <span class="fl">0.39</span>, <span class="fl">0.44</span>, <span class="fl">0.69</span>, <span class="fl">0.59</span>, <span class="fl">0.49</span>, <span class="fl">0.38</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.22</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_dstg</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_stride</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  spot <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>  B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.47</span>, <span class="fl">0.23</span>, <span class="fl">0.39</span>, <span class="fl">0.33</span>, <span class="fl">0.13</span>, <span class="fl">0.23</span>, <span class="fl">0.33</span>, <span class="fl">0.43</span><span class="op">)</span>,</span>
+<span>  T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.33</span>, <span class="fl">0.57</span>, <span class="fl">0.36</span>, <span class="fl">0.43</span>, <span class="fl">0.67</span>, <span class="fl">0.57</span>, <span class="fl">0.47</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
+<span>  Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.24</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.22</span><span class="op">)</span>,</span>
+<span>  confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.90</span>, <span class="fl">0.88</span>, <span class="fl">0.87</span>, <span class="fl">0.89</span>, <span class="fl">0.91</span>, <span class="fl">0.86</span>, <span class="fl">0.88</span>, <span class="fl">0.90</span><span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span>, <span class="va">tmp_stride</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="step-3--import-all-supported-adapters">Step 3. Import all supported adapters<a class="anchor" aria-label="anchor" href="#step-3--import-all-supported-adapters"></a>
+</h2>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="va">tmp_rctd</span><span class="op">)</span></span>
+<span><span class="va">spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_spotlight.html">read_spotlight</a></span><span class="op">(</span><span class="va">tmp_spotlight</span><span class="op">)</span></span>
+<span><span class="va">cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_cell2location.html">read_cell2location</a></span><span class="op">(</span><span class="va">tmp_cell2location</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: cell2location: dropped likely metadata numeric columns: x, y</span></span>
+<span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_card.html">read_card</a></span><span class="op">(</span><span class="va">tmp_card</span><span class="op">)</span></span>
+<span><span class="va">spatialdwls</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_spatialdwls.html">read_spatialdwls</a></span><span class="op">(</span><span class="va">tmp_spatialdwls</span><span class="op">)</span></span>
+<span><span class="va">stereoscope</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_stereoscope.html">read_stereoscope</a></span><span class="op">(</span><span class="va">tmp_stereoscope</span><span class="op">)</span></span>
+<span><span class="va">destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_destvi.html">read_destvi</a></span><span class="op">(</span><span class="va">tmp_destvi</span><span class="op">)</span></span>
+<span><span class="va">tangram</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_tangram.html">read_tangram</a></span><span class="op">(</span><span class="va">tmp_tangram</span><span class="op">)</span></span>
+<span><span class="va">stdeconvolve</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_stdeconvolve.html">read_stdeconvolve</a></span><span class="op">(</span><span class="va">tmp_stdec</span><span class="op">)</span></span>
+<span><span class="va">dstg</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_dstg.html">read_dstg</a></span><span class="op">(</span><span class="va">tmp_dstg</span><span class="op">)</span></span>
+<span><span class="va">stride</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_stride.html">read_stride</a></span><span class="op">(</span><span class="va">tmp_stride</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: STRIDE: dropped likely metadata numeric columns: confidence</span></span>
+<span><span class="va">generic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_deconv_table.html">read_deconv_table</a></span><span class="op">(</span><span class="va">tmp_stereoscope</span>, method <span class="op">=</span> <span class="st">"generic"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">adapter_overview</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span>, <span class="st">"cell2location"</span>, <span class="st">"CARD"</span>, <span class="st">"SpatialDWLS"</span>, <span class="st">"stereoscope"</span>, <span class="st">"DestVI"</span>, <span class="st">"Tangram"</span>, <span class="st">"STdeconvolve"</span>, <span class="st">"DSTG"</span>, <span class="st">"STRIDE"</span>, <span class="st">"generic"</span><span class="op">)</span>,</span>
+<span>  n_spots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rctd</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">spotlight</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cell2location</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">spatialdwls</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">stereoscope</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">destvi</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">tangram</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">stdeconvolve</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">dstg</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">stride</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">generic</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  n_celltypes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">rctd</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spotlight</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">cell2location</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">card</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">spatialdwls</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">stereoscope</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">destvi</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">tangram</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">stdeconvolve</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dstg</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">stride</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">generic</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">adapter_overview</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
 <thead><tr class="header">
 <th align="left">method</th>
 <th align="right">n_spots</th>
 <th align="right">n_celltypes</th>
-<th align="right">zero_fraction</th>
-<th align="right">near_zero_fraction</th>
-<th align="right">mean_dominance</th>
-<th align="right">mean_entropy</th>
-<th align="right">mean_n_detected_types</th>
-<th align="right">mean_sum_dev</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">RCTD</td>
-<td align="right">1200</td>
-<td align="right">7</td>
-<td align="right">0.1015476</td>
-<td align="right">0.2575000</td>
-<td align="right">0.3695554</td>
-<td align="right">1.557445</td>
-<td align="right">5.197500</td>
-<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
 <td align="left">SPOTlight</td>
-<td align="right">1200</td>
-<td align="right">7</td>
-<td align="right">0.0410714</td>
-<td align="right">0.1664286</td>
-<td align="right">0.3073309</td>
-<td align="right">1.702981</td>
-<td align="right">5.835000</td>
-<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">3</td>
 </tr>
 <tr class="odd">
 <td align="left">cell2location</td>
-<td align="right">1200</td>
-<td align="right">7</td>
-<td align="right">0.0896429</td>
-<td align="right">0.2244048</td>
-<td align="right">0.3407826</td>
-<td align="right">1.617544</td>
-<td align="right">5.429167</td>
-<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">CARD</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">SpatialDWLS</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">stereoscope</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">DestVI</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">Tangram</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">STdeconvolve</td>
+<td align="right">8</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">DSTG</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">STRIDE</td>
+<td align="right">8</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">generic</td>
+<td align="right">8</td>
+<td align="right">3</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_sim</span>, type <span class="op">=</span> <span class="st">"entropy"</span>, method <span class="op">=</span> <span class="st">"SPOTlight"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="real-import-workflow-p8-adapter-path">3. Real Import Workflow (P8 Adapter Path)<a class="anchor" aria-label="anchor" href="#real-import-workflow-p8-adapter-path"></a>
+<h2 id="step-4--build-a-comparison-object-including-all-supported-methods">Step 4. Build a comparison object including all supported
+methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-object-including-all-supported-methods"></a>
 </h2>
-<p>This section mimics exported backend result files and imports them
-using AEGIS adapter readers.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span>
-<span><span class="va">seu_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="build-example-exported-files">3.1 Build Example Exported Files<a class="anchor" aria-label="anchor" href="#build-example-exported-files"></a>
-</h3>
+<code class="sourceCode R"><span><span class="va">deconv_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  RCTD <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">rctd</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  SPOTlight <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">spotlight</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  cell2location <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">cell2location</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  CARD <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">card</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  SpatialDWLS <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">spatialdwls</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  stereoscope <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">stereoscope</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  DestVI <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">destvi</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  Tangram <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">tangram</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  STdeconvolve <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">stdeconvolve</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  DSTG <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">dstg</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
+<span>  STRIDE <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">stride</span>, <span class="va">seu_small</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span><span class="va">seu_small</span>, deconv <span class="op">=</span> <span class="va">deconv_all</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="step-5--run-audit-and-comparison-on-all-methods">Step 5. Run audit and comparison on all methods<a class="anchor" aria-label="anchor" href="#step-5--run-audit-and-comparison-on-all-methods"></a>
+</h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmp_rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    barcode <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
-<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_rctd</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
+<span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_marker.html">audit_marker</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
+<span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_spatial.html">audit_spatial</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
+<span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_methods.html">compare_methods</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
+<span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/score_methods.html">score_methods</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">tmp_spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tsv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.table</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
-<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
-<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span><span class="op">)</span>,</span>
-<span>    sample <span class="op">=</span> <span class="st">"S1"</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_spotlight</span>,</span>
-<span>  sep <span class="op">=</span> <span class="st">"\t"</span>,</span>
-<span>  quote <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">tmp_cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    spot <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">10</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">9</span>, <span class="fl">11</span><span class="op">)</span>,</span>
-<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">12</span>, <span class="fl">18</span>, <span class="fl">10</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">16</span>, <span class="fl">12</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">6</span>, <span class="fl">9</span><span class="op">)</span>,</span>
-<span>    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span>,</span>
-<span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">spots</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_cell2location</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="import-and-standardize">3.2 Import and Standardize<a class="anchor" aria-label="anchor" href="#import-and-standardize"></a>
-</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="va">tmp_rctd</span><span class="op">)</span></span>
-<span><span class="va">spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_spotlight.html">read_spotlight</a></span><span class="op">(</span><span class="va">tmp_spotlight</span><span class="op">)</span></span>
-<span><span class="va">cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_cell2location.html">read_cell2location</a></span><span class="op">(</span><span class="va">tmp_cell2location</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: cell2location: dropped likely metadata numeric columns: x, y</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="build-aegis-object-from-real-inputs">3.3 Build AEGIS Object from Real Inputs<a class="anchor" aria-label="anchor" href="#build-aegis-object-from-real-inputs"></a>
-</h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">obj_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
-<span>  <span class="va">seu_small</span>,</span>
-<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    RCTD <span class="op">=</span> <span class="va">rctd</span>,</span>
-<span>    SPOTlight <span class="op">=</span> <span class="va">spotlight</span>,</span>
-<span>    cell2location <span class="op">=</span> <span class="va">cell2location</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  do_marker <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  do_spatial <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_real</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="10%">
@@ -292,86 +378,7 @@ using AEGIS adapter readers.</p>
 <td align="right">3</td>
 <td align="right">0</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div class="section level3">
-<h3 id="additional-import-adapters-same-standardized-output-shape">3.4 Additional Import Adapters (same standardized output shape)<a class="anchor" aria-label="anchor" href="#additional-import-adapters-same-standardized-output-shape"></a>
-</h3>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmp_card</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.55</span>, <span class="fl">0.25</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span>, <span class="fl">0.15</span>, <span class="fl">0.25</span>, <span class="fl">0.35</span>, <span class="fl">0.45</span><span class="op">)</span>,</span>
-<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.55</span>, <span class="fl">0.35</span>, <span class="fl">0.40</span>, <span class="fl">0.65</span>, <span class="fl">0.55</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
-<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_card</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">tmp_destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    barcode <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">9</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">18</span>, <span class="fl">11</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">17</span>, <span class="fl">12</span>, <span class="fl">9</span><span class="op">)</span>,</span>
-<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_destvi</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">tmp_stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
-<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    spot <span class="op">=</span> <span class="va">spots</span>,</span>
-<span>    topic1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>    topic2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  <span class="va">tmp_stdec</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_card.html">read_card</a></span><span class="op">(</span><span class="va">tmp_card</span><span class="op">)</span></span>
-<span><span class="va">destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_destvi.html">read_destvi</a></span><span class="op">(</span><span class="va">tmp_destvi</span><span class="op">)</span></span>
-<span><span class="va">stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_stdeconvolve.html">read_stdeconvolve</a></span><span class="op">(</span><span class="va">tmp_stdec</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">obj_extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span></span>
-<span>  <span class="va">seu_small</span>,</span>
-<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CARD <span class="op">=</span> <span class="va">card</span>, DestVI <span class="op">=</span> <span class="va">destvi</span>, STdeconvolve <span class="op">=</span> <span class="va">stdec</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">obj_extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_extra</span><span class="op">)</span></span>
-<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_extra</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="10%">
-<col width="6%">
-<col width="9%">
-<col width="10%">
-<col width="14%">
-<col width="11%">
-<col width="10%">
-<col width="17%">
-<col width="10%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">method</th>
-<th align="right">n_spots</th>
-<th align="right">n_celltypes</th>
-<th align="right">zero_fraction</th>
-<th align="right">near_zero_fraction</th>
-<th align="right">mean_dominance</th>
-<th align="right">mean_entropy</th>
-<th align="right">mean_n_detected_types</th>
-<th align="right">mean_sum_dev</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
+<tr class="even">
 <td align="left">CARD</td>
 <td align="right">8</td>
 <td align="right">3</td>
@@ -382,7 +389,29 @@ using AEGIS adapter readers.</p>
 <td align="right">3</td>
 <td align="right">0</td>
 </tr>
+<tr class="odd">
+<td align="left">SpatialDWLS</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5062500</td>
+<td align="right">1.0046721</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
 <tr class="even">
+<td align="left">stereoscope</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5037500</td>
+<td align="right">1.0099437</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
 <td align="left">DestVI</td>
 <td align="right">8</td>
 <td align="right">3</td>
@@ -390,6 +419,17 @@ using AEGIS adapter readers.</p>
 <td align="right">0</td>
 <td align="right">0.5167843</td>
 <td align="right">0.9951021</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Tangram</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5075000</td>
+<td align="right">1.0133763</td>
 <td align="right">3</td>
 <td align="right">0</td>
 </tr>
@@ -404,14 +444,374 @@ using AEGIS adapter readers.</p>
 <td align="right">2</td>
 <td align="right">0</td>
 </tr>
+<tr class="even">
+<td align="left">DSTG</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5062500</td>
+<td align="right">1.0053414</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">STRIDE</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5000000</td>
+<td align="right">1.0147017</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
 </tbody>
 </table>
 </div>
+<div class="section level2">
+<h2 id="step-6--rank-methods-rra-and-mean-rank-meta-style">Step 6. Rank methods (RRA and mean-rank meta style)<a class="anchor" aria-label="anchor" href="#step-6--rank-methods-rra-and-mean-rank-meta-style"></a>
+</h2>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">obj_rra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_all</span>, method <span class="op">=</span> <span class="st">"rra"</span><span class="op">)</span></span>
+<span><span class="va">obj_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_all</span>, method <span class="op">=</span> <span class="st">"mean_rank"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rra_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"overall_rank"</span>, <span class="st">"overall_score"</span>, <span class="st">"rra_pvalue"</span>, <span class="st">"aggregation_used"</span>, <span class="st">"recommendation"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">obj_rra</span><span class="op">$</span><span class="va">consensus</span><span class="op">$</span><span class="va">method_ranking</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">meta_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"overall_rank"</span>, <span class="st">"overall_score"</span>, <span class="st">"aggregation_used"</span>, <span class="st">"recommendation"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">$</span><span class="va">consensus</span><span class="op">$</span><span class="va">method_ranking</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">rra_tbl</span> <span class="op">&lt;-</span> <span class="va">obj_rra</span><span class="op">$</span><span class="va">consensus</span><span class="op">$</span><span class="va">method_ranking</span><span class="op">[</span>, <span class="va">rra_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="va">meta_tbl</span> <span class="op">&lt;-</span> <span class="va">obj_meta</span><span class="op">$</span><span class="va">consensus</span><span class="op">$</span><span class="va">method_ranking</span><span class="op">[</span>, <span class="va">meta_cols</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">best_method</span> <span class="op">&lt;-</span> <span class="va">meta_tbl</span><span class="op">$</span><span class="va">method</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">best_label</span> <span class="op">&lt;-</span> <span class="va">meta_tbl</span><span class="op">$</span><span class="va">recommendation</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">marker_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">marker</span><span class="op">$</span><span class="va">concordance</span><span class="op">$</span><span class="va">method</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="va">best_method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">marker_methods</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">candidate_methods</span> <span class="op">&lt;-</span> <span class="va">meta_tbl</span><span class="op">$</span><span class="va">method</span><span class="op">[</span><span class="va">meta_tbl</span><span class="op">$</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">marker_methods</span><span class="op">]</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">candidate_methods</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">best_method</span> <span class="op">&lt;-</span> <span class="va">candidate_methods</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">rra_tbl</span>, digits <span class="op">=</span> <span class="fl">4</span>, caption <span class="op">=</span> <span class="st">"RRA ranking result"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>RRA ranking result</caption>
+<colgroup>
+<col width="3%">
+<col width="15%">
+<col width="14%">
+<col width="15%">
+<col width="12%">
+<col width="19%">
+<col width="19%">
+</colgroup>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">method</th>
+<th align="right">overall_rank</th>
+<th align="right">overall_score</th>
+<th align="right">rra_pvalue</th>
+<th align="left">aggregation_used</th>
+<th align="left">recommendation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">RCTD</td>
+<td align="right">1.0</td>
+<td align="right">0.7567</td>
+<td align="right">0.1751</td>
+<td align="left">rra</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="left">stereoscope</td>
+<td align="right">2.0</td>
+<td align="right">0.4509</td>
+<td align="right">0.3541</td>
+<td align="left">rra</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">SPOTlight</td>
+<td align="right">3.0</td>
+<td align="right">0.2117</td>
+<td align="right">0.6142</td>
+<td align="left">rra</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="left">CARD</td>
+<td align="right">4.5</td>
+<td align="right">0.0042</td>
+<td align="right">0.9904</td>
+<td align="left">rra</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left">DSTG</td>
+<td align="right">4.5</td>
+<td align="right">0.0042</td>
+<td align="right">0.9904</td>
+<td align="left">rra</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">cell2location</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="left">SpatialDWLS</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="even">
+<td align="left">7</td>
+<td align="left">DestVI</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="odd">
+<td align="left">8</td>
+<td align="left">Tangram</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="even">
+<td align="left">9</td>
+<td align="left">STdeconvolve</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="odd">
+<td align="left">11</td>
+<td align="left">STRIDE</td>
+<td align="right">8.5</td>
+<td align="right">0.0000</td>
+<td align="right">1.0000</td>
+<td align="left">rra</td>
+<td align="left">use_with_caution</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">meta_tbl</span>, digits <span class="op">=</span> <span class="fl">4</span>, caption <span class="op">=</span> <span class="st">"Mean-rank (meta-style) result"</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<caption>Mean-rank (meta-style) result</caption>
+<colgroup>
+<col width="3%">
+<col width="17%">
+<col width="16%">
+<col width="17%">
+<col width="21%">
+<col width="21%">
+</colgroup>
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">method</th>
+<th align="right">overall_rank</th>
+<th align="right">overall_score</th>
+<th align="left">aggregation_used</th>
+<th align="left">recommendation</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left">DSTG</td>
+<td align="right">3.875</td>
+<td align="right">-3.875</td>
+<td align="left">mean_rank</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="even">
+<td align="left">11</td>
+<td align="left">STRIDE</td>
+<td align="right">4.250</td>
+<td align="right">-4.250</td>
+<td align="left">mean_rank</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="left">stereoscope</td>
+<td align="right">4.375</td>
+<td align="right">-4.375</td>
+<td align="left">mean_rank</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="left">Tangram</td>
+<td align="right">5.000</td>
+<td align="right">-5.000</td>
+<td align="left">mean_rank</td>
+<td align="left">preferred</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">SPOTlight</td>
+<td align="right">5.500</td>
+<td align="right">-5.500</td>
+<td align="left">mean_rank</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="left">SpatialDWLS</td>
+<td align="right">5.750</td>
+<td align="right">-5.750</td>
+<td align="left">mean_rank</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">CARD</td>
+<td align="right">6.000</td>
+<td align="right">-6.000</td>
+<td align="left">mean_rank</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">RCTD</td>
+<td align="right">6.750</td>
+<td align="right">-6.750</td>
+<td align="left">mean_rank</td>
+<td align="left">acceptable</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">cell2location</td>
+<td align="right">7.250</td>
+<td align="right">-7.250</td>
+<td align="left">mean_rank</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="even">
+<td align="left">7</td>
+<td align="left">DestVI</td>
+<td align="right">7.500</td>
+<td align="right">-7.500</td>
+<td align="left">mean_rank</td>
+<td align="left">use_with_caution</td>
+</tr>
+<tr class="odd">
+<td align="left">9</td>
+<td align="left">STdeconvolve</td>
+<td align="right">8.500</td>
+<td align="right">-8.500</td>
+<td align="left">mean_rank</td>
+<td align="left">use_with_caution</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">best_method</span></span>
+<span><span class="co">#&gt; [1] "DSTG"</span></span>
+<span><span class="va">best_label</span></span>
+<span><span class="co">#&gt; [1] "preferred"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="multi-sample-workflow-p6">4. Multi-sample Workflow (P6)<a class="anchor" aria-label="anchor" href="#multi-sample-workflow-p6"></a>
+<h2 id="step-7--integrate-methods-into-weighted-consensus">Step 7. Integrate methods into weighted consensus<a class="anchor" aria-label="anchor" href="#step-7--integrate-methods-into-weighted-consensus"></a>
+</h2>
+<p><code>STdeconvolve</code> uses latent topic labels
+(<code>topic1</code>, <code>topic2</code>) and is kept in the
+comparison/ranking table. For integrated cell-type consensus, we use
+methods with shared cell-type labels.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">consensus_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">deconv_all</span><span class="op">)</span>, <span class="st">"STdeconvolve"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">seu_small</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="va">deconv_all</span><span class="op">[</span><span class="va">consensus_methods</span><span class="op">]</span>,</span>
+<span>  markers <span class="op">=</span> <span class="va">markers</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_marker.html">audit_marker</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_spatial.html">audit_spatial</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_methods.html">compare_methods</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/score_methods.html">score_methods</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_consensus</span>, method <span class="op">=</span> <span class="st">"mean_rank"</span><span class="op">)</span></span>
+<span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_consensus.html">compute_consensus</a></span><span class="op">(</span><span class="va">obj_consensus</span>, strategy <span class="op">=</span> <span class="st">"weighted"</span>, top_n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_consensus</span><span class="op">$</span><span class="va">consensus</span><span class="op">$</span><span class="va">result</span><span class="op">$</span><span class="va">methods_used</span></span>
+<span><span class="co">#&gt; [1] "DSTG"        "STRIDE"      "stereoscope"</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="step-8--visualization-plot_compare-and-related-functions">Step 8. Visualization (plot_compare and related functions)<a class="anchor" aria-label="anchor" href="#step-8--visualization-plot_compare-and-related-functions"></a>
 </h2>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"spot_agreement"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_consensus</span>, type <span class="op">=</span> <span class="st">"consensus_map"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"dominance"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"marker"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"smoothness"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_method_ranking.html">plot_method_ranking</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_disagreement_map.html">plot_disagreement_map</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_consensus_confidence.html">plot_consensus_confidence</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level2">
+<h2 id="step-9--render-single-sample-report">Step 9. Render single-sample report<a class="anchor" aria-label="anchor" href="#step-9--render-single-sample-report"></a>
+</h2>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_consensus</span>, output_file <span class="op">=</span> <span class="st">"aegis_real_data_report.html"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="step-10--multi-sample-workflow">Step 10. Multi-sample workflow<a class="anchor" aria-label="anchor" href="#step-10--multi-sample-workflow"></a>
+</h2>
+<p>A directory-based loader is supported for real projects:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">seu_list_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_spatial_set.html">load_10x_spatial_set</a></span><span class="op">(</span></span>
+<span>  paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1_dir"</span>, <span class="st">"sample2_dir"</span><span class="op">)</span>,</span>
+<span>  sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span>, <span class="st">"sample2"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Reproducible example using one object split into two sections:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spots_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span></span>
 <span><span class="va">n_half</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -425,13 +825,26 @@ using AEGIS adapter readers.</p>
 <span>  sample2 <span class="op">=</span> <span class="fu"><a href="../reference/simulate_deconv_results.html">simulate_deconv_results</a></span><span class="op">(</span><span class="va">seu_list</span><span class="op">$</span><span class="va">sample2</span>, methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCTD"</span>, <span class="st">"SPOTlight"</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">444</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span></span>
-<span>  <span class="va">seu_list</span>,</span>
-<span>  deconv <span class="op">=</span> <span class="va">deconv_nested</span>,</span>
-<span>  markers <span class="op">=</span> <span class="va">markers</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis_multi.html">as_aegis_multi</a></span><span class="op">(</span><span class="va">seu_list</span>, deconv <span class="op">=</span> <span class="va">deconv_nested</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_marker.html">audit_marker</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_spatial.html">audit_spatial</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_methods.html">compare_methods</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/score_methods.html">score_methods</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_multi</span>, method <span class="op">=</span> <span class="st">"mean_rank"</span><span class="op">)</span></span>
+<span><span class="va">obj_multi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_consensus.html">compute_consensus</a></span><span class="op">(</span><span class="va">obj_multi</span>, strategy <span class="op">=</span> <span class="st">"weighted"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">split_objs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/split_aegis_by_sample.html">split_aegis_by_sample</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
 <span><span class="va">sample_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summarize_by_sample.html">summarize_by_sample</a></span><span class="op">(</span><span class="va">obj_multi</span><span class="op">)</span></span>
+<span><span class="va">merged_seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge_spatial_seurat_list.html">merge_spatial_seurat_list</a></span><span class="op">(</span><span class="va">seu_list</span>, sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span>, <span class="st">"sample2"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Key 'slice1_' taken, using 'slice12_' instead</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">split_objs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sample_summary</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">merged_seu</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1200</span></span>
 <span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">sample_summary</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -466,7 +879,7 @@ using AEGIS adapter readers.</p>
 <td align="right">1.553806</td>
 <td align="right">0.0951720</td>
 <td align="right">0.9736282</td>
-<td align="right">0.9631498</td>
+<td align="right">0.9736282</td>
 </tr>
 <tr class="even">
 <td align="left">sample1</td>
@@ -477,7 +890,7 @@ using AEGIS adapter readers.</p>
 <td align="right">1.707738</td>
 <td align="right">0.0726369</td>
 <td align="right">0.9736282</td>
-<td align="right">0.9631498</td>
+<td align="right">0.9736282</td>
 </tr>
 <tr class="odd">
 <td align="left">sample2</td>
@@ -488,7 +901,7 @@ using AEGIS adapter readers.</p>
 <td align="right">1.546486</td>
 <td align="right">0.0933078</td>
 <td align="right">0.9737247</td>
-<td align="right">0.9632824</td>
+<td align="right">0.9737247</td>
 </tr>
 <tr class="even">
 <td align="left">sample2</td>
@@ -499,34 +912,14 @@ using AEGIS adapter readers.</p>
 <td align="right">1.688583</td>
 <td align="right">0.0737592</td>
 <td align="right">0.9737247</td>
-<td align="right">0.9632824</td>
+<td align="right">0.9737247</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report_batch.html">render_report_batch</a></span><span class="op">(</span><span class="va">obj_multi</span>, output_dir <span class="op">=</span> <span class="st">"reports"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="optional-report-generation">5. Optional Report Generation<a class="anchor" aria-label="anchor" href="#optional-report-generation"></a>
-</h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_sim</span>, output_file <span class="op">=</span> <span class="st">"aegis_report.html"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="summary">6. Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
-</h2>
-<ul>
-<li>Use <code><a href="../reference/simulate_deconv_results.html">simulate_deconv_results()</a></code> for reproducible demos
-and method development.</li>
-<li>Use method adapters (<code><a href="../reference/read_rctd.html">read_rctd()</a></code>,
-<code><a href="../reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="../reference/read_cell2location.html">read_cell2location()</a></code>,
-<code><a href="../reference/read_card.html">read_card()</a></code>, <code><a href="../reference/read_destvi.html">read_destvi()</a></code>,
-<code><a href="../reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>, etc.) for external exports.</li>
-<li>Use <code><a href="../reference/run_aegis.html">run_aegis()</a></code> as the unified pipeline entry for
-single-sample and multi-sample analysis.</li>
-<li>Use <code><a href="../reference/summarize_by_sample.html">summarize_by_sample()</a></code> and
-<code><a href="../reference/render_report_batch.html">render_report_batch()</a></code> for multi-sample projects.</li>
-</ul>
+<p>This tutorial shows the real-data style pathway with explicit
+step-by-step calls and no custom helper functions.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

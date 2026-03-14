@@ -68,6 +68,10 @@
   : Run spatial smoothness audit
 - [`compare_methods()`](https://jameswu7.github.io/AEGIS/reference/compare_methods.md)
   : Compare deconvolution methods
+- [`score_methods()`](https://jameswu7.github.io/AEGIS/reference/score_methods.md)
+  : Score deconvolution methods from available audit evidence
+- [`rank_methods()`](https://jameswu7.github.io/AEGIS/reference/rank_methods.md)
+  : Rank methods from evidence dimensions
 - [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md)
   : Compute consensus deconvolution profile
 
@@ -77,6 +81,12 @@
   : Plot audit outputs
 - [`plot_compare()`](https://jameswu7.github.io/AEGIS/reference/plot_compare.md)
   : Plot method comparison and consensus outputs
+- [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md)
+  : Plot method ranking summary
+- [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md)
+  : Plot spot-level consensus disagreement map
+- [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md)
+  : Plot spot-level consensus confidence map
 - [`render_report()`](https://jameswu7.github.io/AEGIS/reference/render_report.md)
   : Render an AEGIS HTML report
 - [`render_report_batch()`](https://jameswu7.github.io/AEGIS/reference/render_report_batch.md)

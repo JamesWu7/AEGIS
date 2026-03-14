@@ -1,8 +1,6 @@
 # Read cell2location deconvolution outputs
 
-Reads exported cell2location abundance/proportion tables and
-standardizes them to a spot-by-celltype numeric matrix usable by
-[`as_aegis()`](https://jameswu7.github.io/AEGIS/reference/as_aegis.md).
+Read cell2location deconvolution outputs
 
 ## Usage
 
