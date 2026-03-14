@@ -14,12 +14,30 @@
   : Default marker list used by AEGIS MVP
 - [`align_deconv_to_seurat()`](https://jameswu7.github.io/AEGIS/reference/align_deconv_to_seurat.md)
   : Align a deconvolution matrix to Seurat spot order
+- [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md)
+  : Read a generic deconvolution result table
 - [`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md)
   : Read RCTD deconvolution outputs
 - [`read_spotlight()`](https://jameswu7.github.io/AEGIS/reference/read_spotlight.md)
   : Read SPOTlight deconvolution outputs
 - [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md)
   : Read cell2location deconvolution outputs
+- [`read_card()`](https://jameswu7.github.io/AEGIS/reference/read_card.md)
+  : Read CARD deconvolution outputs
+- [`read_spatialdwls()`](https://jameswu7.github.io/AEGIS/reference/read_spatialdwls.md)
+  : Read SpatialDWLS deconvolution outputs
+- [`read_stereoscope()`](https://jameswu7.github.io/AEGIS/reference/read_stereoscope.md)
+  : Read stereoscope deconvolution outputs
+- [`read_destvi()`](https://jameswu7.github.io/AEGIS/reference/read_destvi.md)
+  : Read DestVI deconvolution outputs
+- [`read_tangram()`](https://jameswu7.github.io/AEGIS/reference/read_tangram.md)
+  : Read Tangram mapping-derived composition outputs
+- [`read_stdeconvolve()`](https://jameswu7.github.io/AEGIS/reference/read_stdeconvolve.md)
+  : Read STdeconvolve outputs
+- [`read_dstg()`](https://jameswu7.github.io/AEGIS/reference/read_dstg.md)
+  : Read DSTG deconvolution outputs
+- [`read_stride()`](https://jameswu7.github.io/AEGIS/reference/read_stride.md)
+  : Read STRIDE deconvolution outputs
 
 ## Core object and simulation
 

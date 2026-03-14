@@ -25,10 +25,16 @@ AEGIS now supports two primary workflows:
 
 1.  Simulated method outputs for development and demos
     ([`simulate_deconv_results()`](https://jameswu7.github.io/AEGIS/reference/simulate_deconv_results.md)).
-2.  Real exported outputs from external methods
-    ([`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md),
+2.  Real exported outputs from external methods through adapter readers
+    (e.g. [`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md),
     [`read_spotlight()`](https://jameswu7.github.io/AEGIS/reference/read_spotlight.md),
-    [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md)).
+    [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md),
+    [`read_card()`](https://jameswu7.github.io/AEGIS/reference/read_card.md),
+    [`read_destvi()`](https://jameswu7.github.io/AEGIS/reference/read_destvi.md),
+    [`read_stdeconvolve()`](https://jameswu7.github.io/AEGIS/reference/read_stdeconvolve.md)),
+    plus
+    [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md)
+    for generic spot-by-celltype tables.
 
 For day-to-day use, the recommended minimal API is:
 
@@ -53,10 +59,11 @@ markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 obj <- run_aegis(seu, deconv = deconv, markers = markers)
 ```
 
-## Import Real Deconvolution Results (P5)
+## Import Real Deconvolution Results (P8)
 
 AEGIS imports exported result tables from external methods. It does
-**not** install or run RCTD/SPOTlight/cell2location backends.
+**not** install or run external backends. For Python/deep-learning
+methods, export spot-by-celltype tables first, then import into AEGIS.
 
 ``` r
 seu <- load_10x_lymphnode()
@@ -83,6 +90,39 @@ For cell2location, export posterior abundance/proportion tables to
 csv/tsv/txt first, then import with
 [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md).
 
+### Method Support Matrix
+
+| Method        | Adapter                                                                                    | Expected input  | `normalize` | Notes                                        |
+|---------------|--------------------------------------------------------------------------------------------|-----------------|-------------|----------------------------------------------|
+| RCTD          | [`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md)                   | csv/tsv/txt/rds | Yes         | Supports common exported table/RDS forms     |
+| SPOTlight     | [`read_spotlight()`](https://jameswu7.github.io/AEGIS/reference/read_spotlight.md)         | csv/tsv/txt/rds | Yes         | Drops obvious metadata columns               |
+| cell2location | [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md) | csv/tsv/txt/rds | Yes         | Abundance tables supported                   |
+| CARD          | [`read_card()`](https://jameswu7.github.io/AEGIS/reference/read_card.md)                   | csv/tsv/txt/rds | Yes         | Table adapter                                |
+| SpatialDWLS   | [`read_spatialdwls()`](https://jameswu7.github.io/AEGIS/reference/read_spatialdwls.md)     | csv/tsv/txt/rds | Yes         | Table adapter                                |
+| stereoscope   | [`read_stereoscope()`](https://jameswu7.github.io/AEGIS/reference/read_stereoscope.md)     | csv/tsv/txt/rds | Yes         | Export table only                            |
+| DestVI        | [`read_destvi()`](https://jameswu7.github.io/AEGIS/reference/read_destvi.md)               | csv/tsv/txt/rds | Yes         | Export table only                            |
+| Tangram       | [`read_tangram()`](https://jameswu7.github.io/AEGIS/reference/read_tangram.md)             | csv/tsv/txt/rds | Yes         | Treated as mapping-derived composition input |
+| STdeconvolve  | [`read_stdeconvolve()`](https://jameswu7.github.io/AEGIS/reference/read_stdeconvolve.md)   | csv/tsv/txt/rds | Yes         | Latent labels (e.g., `topic1`) allowed       |
+| DSTG          | [`read_dstg()`](https://jameswu7.github.io/AEGIS/reference/read_dstg.md)                   | csv/tsv/txt/rds | Yes         | Export table only                            |
+| STRIDE        | [`read_stride()`](https://jameswu7.github.io/AEGIS/reference/read_stride.md)               | csv/tsv/txt/rds | Yes         | Topic-only files fail in strict mode         |
+
+### Additional Import Examples
+
+``` r
+card <- read_card("path/to/card.csv")
+destvi <- read_destvi("path/to/destvi.csv")
+stdec <- read_stdeconvolve("path/to/stdeconvolve.csv")
+
+obj <- as_aegis(
+  seu,
+  deconv = list(
+    CARD = card,
+    DestVI = destvi,
+    STdeconvolve = stdec
+  )
+)
+```
+
 ## Multi-sample Workflow (P6)
 
 ``` r
@@ -108,19 +148,19 @@ If GitHub Pages is temporarily unavailable, use the preview fallback
 links or the source `.Rmd` links below.
 
 - [Overview tutorial (object model +
-  workflows)](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html)
-  ([preview
-  fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html),
+  workflows)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html)
+  ([pkgdown
+  page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-overview.Rmd))
 - [Human lymph node demo (end-to-end
-  demo)](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html)
-  ([preview
-  fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html),
+  demo)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html)
+  ([pkgdown
+  page](https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-demo-human-lymph-node.Rmd))
 - [Complete tutorial (simulated + real import +
-  multi-sample)](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html)
-  ([preview
-  fallback](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html),
+  multi-sample)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
+  ([pkgdown
+  page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-complete-tutorial.Rmd))
 
 ## Key Functions
@@ -138,6 +178,17 @@ links or the source `.Rmd` links below.
 - [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md):
   import exported cell2location tables/RDS (abundance or proportion) and
   standardize.
+- [`read_card()`](https://jameswu7.github.io/AEGIS/reference/read_card.md),
+  [`read_spatialdwls()`](https://jameswu7.github.io/AEGIS/reference/read_spatialdwls.md),
+  [`read_stereoscope()`](https://jameswu7.github.io/AEGIS/reference/read_stereoscope.md),
+  [`read_destvi()`](https://jameswu7.github.io/AEGIS/reference/read_destvi.md),
+  [`read_tangram()`](https://jameswu7.github.io/AEGIS/reference/read_tangram.md),
+  [`read_stdeconvolve()`](https://jameswu7.github.io/AEGIS/reference/read_stdeconvolve.md),
+  [`read_dstg()`](https://jameswu7.github.io/AEGIS/reference/read_dstg.md),
+  [`read_stride()`](https://jameswu7.github.io/AEGIS/reference/read_stride.md):
+  method-specific import adapters.
+- [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md):
+  generic importer for spot-by-celltype exported tables.
 - [`as_aegis()`](https://jameswu7.github.io/AEGIS/reference/as_aegis.md):
   validate inputs and create the internal `aegis` S3 object.
 - [`audit_basic()`](https://jameswu7.github.io/AEGIS/reference/audit_basic.md):

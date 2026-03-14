@@ -37,10 +37,10 @@ plot_audit(obj_sim, type = "entropy", method = "SPOTlight")
 
 ![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-5-1.png)
 
-## 3. Real Import Workflow (P5 Path)
+## 3. Real Import Workflow (P8 Adapter Path)
 
 This section mimics exported backend result files and imports them using
-the new readers.
+AEGIS adapter readers.
 
 ``` r
 spots <- colnames(seu)[1:8]
@@ -129,6 +129,65 @@ knitr::kable(obj_real$audit$basic$summary)
 | SPOTlight     |       8 |           3 |             0 |                  0 |      0.4625000 |    1.0408587 |                     3 |            0 |
 | cell2location |       8 |           3 |             0 |                  0 |      0.4904068 |    1.0158112 |                     3 |            0 |
 
+### 3.4 Additional Import Adapters (same standardized output shape)
+
+``` r
+tmp_card <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    spot_id = spots,
+    B_cell = c(0.55, 0.25, 0.45, 0.35, 0.15, 0.25, 0.35, 0.45),
+    T_cell = c(0.30, 0.55, 0.35, 0.40, 0.65, 0.55, 0.45, 0.35),
+    Myeloid = c(0.15, 0.20, 0.20, 0.25, 0.20, 0.20, 0.20, 0.20),
+    check.names = FALSE
+  ),
+  tmp_card,
+  row.names = FALSE
+)
+
+tmp_destvi <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    barcode = spots,
+    B_cell = c(20, 8, 12, 9, 5, 7, 8, 10),
+    T_cell = c(10, 18, 11, 13, 20, 17, 12, 9),
+    Myeloid = c(4, 6, 5, 7, 4, 6, 5, 8),
+    check.names = FALSE
+  ),
+  tmp_destvi,
+  row.names = FALSE
+)
+
+tmp_stdec <- tempfile(fileext = ".csv")
+utils::write.csv(
+  data.frame(
+    spot = spots,
+    topic1 = c(0.6, 0.3, 0.4, 0.5, 0.2, 0.3, 0.4, 0.5),
+    topic2 = c(0.4, 0.7, 0.6, 0.5, 0.8, 0.7, 0.6, 0.5),
+    check.names = FALSE
+  ),
+  tmp_stdec,
+  row.names = FALSE
+)
+
+card <- read_card(tmp_card)
+destvi <- read_destvi(tmp_destvi)
+stdec <- read_stdeconvolve(tmp_stdec)
+
+obj_extra <- as_aegis(
+  seu_small,
+  deconv = list(CARD = card, DestVI = destvi, STdeconvolve = stdec)
+)
+obj_extra <- audit_basic(obj_extra)
+knitr::kable(obj_extra$audit$basic$summary)
+```
+
+| method       | n_spots | n_celltypes | zero_fraction | near_zero_fraction | mean_dominance | mean_entropy | mean_n_detected_types | mean_sum_dev |
+|:-------------|--------:|------------:|--------------:|-------------------:|---------------:|-------------:|----------------------:|-------------:|
+| CARD         |       8 |           3 |             0 |                  0 |      0.5062500 |    1.0102583 |                     3 |            0 |
+| DestVI       |       8 |           3 |             0 |                  0 |      0.5167843 |    0.9951021 |                     3 |            0 |
+| STdeconvolve |       8 |           2 |             0 |                  0 |      0.6250000 |    0.6409325 |                     2 |            0 |
+
 ## 4. Multi-sample Workflow (P6)
 
 ``` r
@@ -177,11 +236,14 @@ render_report(obj_sim, output_file = "aegis_report.html")
 - Use
   [`simulate_deconv_results()`](https://jameswu7.github.io/AEGIS/reference/simulate_deconv_results.md)
   for reproducible demos and method development.
-- Use
-  [`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md),
+- Use method adapters
+  ([`read_rctd()`](https://jameswu7.github.io/AEGIS/reference/read_rctd.md),
   [`read_spotlight()`](https://jameswu7.github.io/AEGIS/reference/read_spotlight.md),
-  [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md)
-  for external exports.
+  [`read_cell2location()`](https://jameswu7.github.io/AEGIS/reference/read_cell2location.md),
+  [`read_card()`](https://jameswu7.github.io/AEGIS/reference/read_card.md),
+  [`read_destvi()`](https://jameswu7.github.io/AEGIS/reference/read_destvi.md),
+  [`read_stdeconvolve()`](https://jameswu7.github.io/AEGIS/reference/read_stdeconvolve.md),
+  etc.) for external exports.
 - Use
   [`run_aegis()`](https://jameswu7.github.io/AEGIS/reference/run_aegis.md)
   as the unified pipeline entry for single-sample and multi-sample

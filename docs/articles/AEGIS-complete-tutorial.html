@@ -155,10 +155,10 @@
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="real-import-workflow-p5-path">3. Real Import Workflow (P5 Path)<a class="anchor" aria-label="anchor" href="#real-import-workflow-p5-path"></a>
+<h2 id="real-import-workflow-p8-adapter-path">3. Real Import Workflow (P8 Adapter Path)<a class="anchor" aria-label="anchor" href="#real-import-workflow-p8-adapter-path"></a>
 </h2>
 <p>This section mimics exported backend result files and imports them
-using the new readers.</p>
+using AEGIS adapter readers.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span>
 <span><span class="va">seu_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
@@ -295,11 +295,123 @@ using the new readers.</p>
 </tbody>
 </table>
 </div>
+<div class="section level3">
+<h3 id="additional-import-adapters-same-standardized-output-shape">3.4 Additional Import Adapters (same standardized output shape)<a class="anchor" aria-label="anchor" href="#additional-import-adapters-same-standardized-output-shape"></a>
+</h3>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tmp_card</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    spot_id <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.55</span>, <span class="fl">0.25</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span>, <span class="fl">0.15</span>, <span class="fl">0.25</span>, <span class="fl">0.35</span>, <span class="fl">0.45</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.30</span>, <span class="fl">0.55</span>, <span class="fl">0.35</span>, <span class="fl">0.40</span>, <span class="fl">0.65</span>, <span class="fl">0.55</span>, <span class="fl">0.45</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.15</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.25</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span>, <span class="fl">0.20</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_card</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    barcode <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    B_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">8</span>, <span class="fl">12</span>, <span class="fl">9</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>    T_cell <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">18</span>, <span class="fl">11</span>, <span class="fl">13</span>, <span class="fl">20</span>, <span class="fl">17</span>, <span class="fl">12</span>, <span class="fl">9</span><span class="op">)</span>,</span>
+<span>    Myeloid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">8</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_destvi</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">tmp_stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".csv"</span><span class="op">)</span></span>
+<span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    spot <span class="op">=</span> <span class="va">spots</span>,</span>
+<span>    topic1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>    topic2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="fl">0.7</span>, <span class="fl">0.6</span>, <span class="fl">0.5</span><span class="op">)</span>,</span>
+<span>    check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="va">tmp_stdec</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_card.html">read_card</a></span><span class="op">(</span><span class="va">tmp_card</span><span class="op">)</span></span>
+<span><span class="va">destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_destvi.html">read_destvi</a></span><span class="op">(</span><span class="va">tmp_destvi</span><span class="op">)</span></span>
+<span><span class="va">stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_stdeconvolve.html">read_stdeconvolve</a></span><span class="op">(</span><span class="va">tmp_stdec</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">seu_small</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CARD <span class="op">=</span> <span class="va">card</span>, DestVI <span class="op">=</span> <span class="va">destvi</span>, STdeconvolve <span class="op">=</span> <span class="va">stdec</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">obj_extra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_extra</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">obj_extra</span><span class="op">$</span><span class="va">audit</span><span class="op">$</span><span class="va">basic</span><span class="op">$</span><span class="va">summary</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="10%">
+<col width="6%">
+<col width="9%">
+<col width="10%">
+<col width="14%">
+<col width="11%">
+<col width="10%">
+<col width="17%">
+<col width="10%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">method</th>
+<th align="right">n_spots</th>
+<th align="right">n_celltypes</th>
+<th align="right">zero_fraction</th>
+<th align="right">near_zero_fraction</th>
+<th align="right">mean_dominance</th>
+<th align="right">mean_entropy</th>
+<th align="right">mean_n_detected_types</th>
+<th align="right">mean_sum_dev</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">CARD</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5062500</td>
+<td align="right">1.0102583</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">DestVI</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.5167843</td>
+<td align="right">0.9951021</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">STdeconvolve</td>
+<td align="right">8</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0.6250000</td>
+<td align="right">0.6409325</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level2">
 <h2 id="multi-sample-workflow-p6">4. Multi-sample Workflow (P6)<a class="anchor" aria-label="anchor" href="#multi-sample-workflow-p6"></a>
 </h2>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spots_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span></span>
 <span><span class="va">n_half</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -391,13 +503,13 @@ using the new readers.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report_batch.html">render_report_batch</a></span><span class="op">(</span><span class="va">obj_multi</span>, output_dir <span class="op">=</span> <span class="st">"reports"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="optional-report-generation">5. Optional Report Generation<a class="anchor" aria-label="anchor" href="#optional-report-generation"></a>
 </h2>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_sim</span>, output_file <span class="op">=</span> <span class="st">"aegis_report.html"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -406,8 +518,10 @@ using the new readers.</p>
 <ul>
 <li>Use <code><a href="../reference/simulate_deconv_results.html">simulate_deconv_results()</a></code> for reproducible demos
 and method development.</li>
-<li>Use <code><a href="../reference/read_rctd.html">read_rctd()</a></code>, <code><a href="../reference/read_spotlight.html">read_spotlight()</a></code>,
-<code><a href="../reference/read_cell2location.html">read_cell2location()</a></code> for external exports.</li>
+<li>Use method adapters (<code><a href="../reference/read_rctd.html">read_rctd()</a></code>,
+<code><a href="../reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="../reference/read_cell2location.html">read_cell2location()</a></code>,
+<code><a href="../reference/read_card.html">read_card()</a></code>, <code><a href="../reference/read_destvi.html">read_destvi()</a></code>,
+<code><a href="../reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>, etc.) for external exports.</li>
 <li>Use <code><a href="../reference/run_aegis.html">run_aegis()</a></code> as the unified pipeline entry for
 single-sample and multi-sample analysis.</li>
 <li>Use <code><a href="../reference/summarize_by_sample.html">summarize_by_sample()</a></code> and

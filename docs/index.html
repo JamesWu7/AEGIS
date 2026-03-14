@@ -77,7 +77,7 @@
 <p>AEGIS now supports two primary workflows:</p>
 <ol style="list-style-type: decimal">
 <li>Simulated method outputs for development and demos (<code><a href="reference/simulate_deconv_results.html">simulate_deconv_results()</a></code>).</li>
-<li>Real exported outputs from external methods (<code><a href="reference/read_rctd.html">read_rctd()</a></code>, <code><a href="reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>).</li>
+<li>Real exported outputs from external methods through adapter readers (e.g. <code><a href="reference/read_rctd.html">read_rctd()</a></code>, <code><a href="reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>, <code><a href="reference/read_card.html">read_card()</a></code>, <code><a href="reference/read_destvi.html">read_destvi()</a></code>, <code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>), plus <code><a href="reference/read_deconv_table.html">read_deconv_table()</a></code> for generic spot-by-celltype tables.</li>
 </ol>
 <p>For day-to-day use, the recommended minimal API is:</p>
 <ol style="list-style-type: decimal">
@@ -102,9 +102,9 @@
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">seu</span>, deconv <span class="op">=</span> <span class="va">deconv</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="import-real-deconvolution-results-p5">Import Real Deconvolution Results (P5)<a class="anchor" aria-label="anchor" href="#import-real-deconvolution-results-p5"></a>
+<h2 id="import-real-deconvolution-results-p8">Import Real Deconvolution Results (P8)<a class="anchor" aria-label="anchor" href="#import-real-deconvolution-results-p8"></a>
 </h2>
-<p>AEGIS imports exported result tables from external methods. It does <strong>not</strong> install or run RCTD/SPOTlight/cell2location backends.</p>
+<p>AEGIS imports exported result tables from external methods. It does <strong>not</strong> install or run external backends. For Python/deep-learning methods, export spot-by-celltype tables first, then import into AEGIS.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seu</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_10x_lymphnode.html">load_10x_lymphnode</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -125,11 +125,127 @@
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compare_methods.html">compare_methods</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_consensus.html">compute_consensus</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span></code></pre></div>
 <p>For cell2location, export posterior abundance/proportion tables to csv/tsv/txt first, then import with <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>.</p>
+<div class="section level3">
+<h3 id="method-support-matrix">Method Support Matrix<a class="anchor" aria-label="anchor" href="#method-support-matrix"></a>
+</h3>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th>Method</th>
+<th>Adapter</th>
+<th>Expected input</th>
+<th><code>normalize</code></th>
+<th>Notes</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>RCTD</td>
+<td><code><a href="reference/read_rctd.html">read_rctd()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Supports common exported table/RDS forms</td>
+</tr>
+<tr class="even">
+<td>SPOTlight</td>
+<td><code><a href="reference/read_spotlight.html">read_spotlight()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Drops obvious metadata columns</td>
+</tr>
+<tr class="odd">
+<td>cell2location</td>
+<td><code><a href="reference/read_cell2location.html">read_cell2location()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Abundance tables supported</td>
+</tr>
+<tr class="even">
+<td>CARD</td>
+<td><code><a href="reference/read_card.html">read_card()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Table adapter</td>
+</tr>
+<tr class="odd">
+<td>SpatialDWLS</td>
+<td><code><a href="reference/read_spatialdwls.html">read_spatialdwls()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Table adapter</td>
+</tr>
+<tr class="even">
+<td>stereoscope</td>
+<td><code><a href="reference/read_stereoscope.html">read_stereoscope()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Export table only</td>
+</tr>
+<tr class="odd">
+<td>DestVI</td>
+<td><code><a href="reference/read_destvi.html">read_destvi()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Export table only</td>
+</tr>
+<tr class="even">
+<td>Tangram</td>
+<td><code><a href="reference/read_tangram.html">read_tangram()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Treated as mapping-derived composition input</td>
+</tr>
+<tr class="odd">
+<td>STdeconvolve</td>
+<td><code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Latent labels (e.g., <code>topic1</code>) allowed</td>
+</tr>
+<tr class="even">
+<td>DSTG</td>
+<td><code><a href="reference/read_dstg.html">read_dstg()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Export table only</td>
+</tr>
+<tr class="odd">
+<td>STRIDE</td>
+<td><code><a href="reference/read_stride.html">read_stride()</a></code></td>
+<td>csv/tsv/txt/rds</td>
+<td>Yes</td>
+<td>Topic-only files fail in strict mode</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="additional-import-examples">Additional Import Examples<a class="anchor" aria-label="anchor" href="#additional-import-examples"></a>
+</h3>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">card</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_card.html">read_card</a></span><span class="op">(</span><span class="st">"path/to/card.csv"</span><span class="op">)</span></span>
+<span><span class="va">destvi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_destvi.html">read_destvi</a></span><span class="op">(</span><span class="st">"path/to/destvi.csv"</span><span class="op">)</span></span>
+<span><span class="va">stdec</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_stdeconvolve.html">read_stdeconvolve</a></span><span class="op">(</span><span class="st">"path/to/stdeconvolve.csv"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/as_aegis.html">as_aegis</a></span><span class="op">(</span></span>
+<span>  <span class="va">seu</span>,</span>
+<span>  deconv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    CARD <span class="op">=</span> <span class="va">card</span>,</span>
+<span>    DestVI <span class="op">=</span> <span class="va">destvi</span>,</span>
+<span>    STdeconvolve <span class="op">=</span> <span class="va">stdec</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="multi-sample-workflow-p6">Multi-sample Workflow (P6)<a class="anchor" aria-label="anchor" href="#multi-sample-workflow-p6"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seu_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/load_10x_spatial_set.html">load_10x_spatial_set</a></span><span class="op">(</span></span>
 <span>  paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1_dir"</span>, <span class="st">"sample2_dir"</span><span class="op">)</span>,</span>
 <span>  sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span>, <span class="st">"sample2"</span><span class="op">)</span></span>
@@ -151,11 +267,11 @@
 <p>If GitHub Pages is temporarily unavailable, use the preview fallback links or the source <code>.Rmd</code> links below.</p>
 <ul>
 <li>
-<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html">Overview tutorial (object model + workflows)</a> (<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html" class="external-link">preview fallback</a>, <a href="vignettes/AEGIS-overview.Rmd">source</a>)</li>
+<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html" class="external-link">Overview tutorial (object model + workflows)</a> (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html">pkgdown page</a>, <a href="vignettes/AEGIS-overview.Rmd">source</a>)</li>
 <li>
-<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html">Human lymph node demo (end-to-end demo)</a> (<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html" class="external-link">preview fallback</a>, <a href="vignettes/AEGIS-demo-human-lymph-node.Rmd">source</a>)</li>
+<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-demo-human-lymph-node.html" class="external-link">Human lymph node demo (end-to-end demo)</a> (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-demo-human-lymph-node.html">pkgdown page</a>, <a href="vignettes/AEGIS-demo-human-lymph-node.Rmd">source</a>)</li>
 <li>
-<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html">Complete tutorial (simulated + real import + multi-sample)</a> (<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html" class="external-link">preview fallback</a>, <a href="vignettes/AEGIS-complete-tutorial.Rmd">source</a>)</li>
+<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html" class="external-link">Complete tutorial (simulated + real import + multi-sample)</a> (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html">pkgdown page</a>, <a href="vignettes/AEGIS-complete-tutorial.Rmd">source</a>)</li>
 </ul>
 </div>
 <div class="section level2">
@@ -172,6 +288,10 @@
 <code><a href="reference/read_spotlight.html">read_spotlight()</a></code>: import exported SPOTlight result tables/RDS and standardize to spot-by-celltype.</li>
 <li>
 <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>: import exported cell2location tables/RDS (abundance or proportion) and standardize.</li>
+<li>
+<code><a href="reference/read_card.html">read_card()</a></code>, <code><a href="reference/read_spatialdwls.html">read_spatialdwls()</a></code>, <code><a href="reference/read_stereoscope.html">read_stereoscope()</a></code>, <code><a href="reference/read_destvi.html">read_destvi()</a></code>, <code><a href="reference/read_tangram.html">read_tangram()</a></code>, <code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>, <code><a href="reference/read_dstg.html">read_dstg()</a></code>, <code><a href="reference/read_stride.html">read_stride()</a></code>: method-specific import adapters.</li>
+<li>
+<code><a href="reference/read_deconv_table.html">read_deconv_table()</a></code>: generic importer for spot-by-celltype exported tables.</li>
 <li>
 <code><a href="reference/as_aegis.html">as_aegis()</a></code>: validate inputs and create the internal <code>aegis</code> S3 object.</li>
 <li>
@@ -209,16 +329,16 @@
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"AEGIS"</span><span class="op">)</span></span></code></pre></div>
 <p>BibTeX:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">Wu2026AEGIS</span>,</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="dt">title</span> = {AEGIS: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics},</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="dt">author</span> = {Xinjie Wu},</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="dt">year</span> = {2026},</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.1.0},</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/JamesWu7/AEGIS}</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">Wu2026AEGIS</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="dt">title</span> = {AEGIS: Audit and Evaluate Deconvolution Outputs in Grid-Based Spatial Transcriptomics},</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="dt">author</span> = {Xinjie Wu},</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="dt">year</span> = {2026},</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="dt">note</span> = {R package version 0.1.0},</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="dt">url</span> = {https://github.com/JamesWu7/AEGIS}</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 </div>
 
