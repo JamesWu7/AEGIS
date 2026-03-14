@@ -1,4 +1,6 @@
-# AEGIS Real Data Example (Human Lymph Node)
+# AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)
+
+**Updated workflow note:** this tutorial now centers on `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, and full downstream analysis (audit, ranking, consensus, visualization, report). If this rendered markdown lags, open the source `vignettes/AEGIS-complete-tutorial.Rmd`.
 
 ## Step 1. Load real Human Lymph Node data
 

@@ -1,8 +1,8 @@
 ---
-title: "AEGIS Real Data Example (Human Lymph Node)"
+title: "AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{AEGIS Real Data Example}
+  %\VignetteIndexEntry{AEGIS Deconvolution from Scratch + Downstream Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,7 +29,52 @@ seu <- aegis_example
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 ```
 
-## Step 2. Prepare exported result tables from multiple methods
+## Step 2. Check method capability registry
+
+`get_supported_methods()` is the one place to inspect whether a method is:
+- `run_and_import_r`
+- `run_and_import_python`
+- `import_only`
+
+```{r}
+method_registry <- get_supported_methods()
+knitr::kable(method_registry)
+```
+
+## Step 3. One-shot deconvolution examples from raw inputs
+
+Run directly executable methods (typically R-native methods first):
+
+```{r eval=FALSE}
+reference <- ref_object  # your single-cell reference
+
+res <- run_deconvolution(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  strict = FALSE,
+  use_python = TRUE
+)
+
+obj_from_run <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+```
+
+Full one-shot wrapper:
+
+```{r eval=FALSE}
+obj_full <- run_aegis_full(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  markers = markers,
+  strict = FALSE,
+  use_python = TRUE
+)
+```
+
+The rest of this tutorial is fully reproducible in vignette/CI by using exported result tables.
+
+## Step 4. Prepare exported result tables from multiple methods
 
 ```{r}
 spots <- colnames(seu)[1:8]
@@ -139,7 +184,7 @@ utils::write.csv(data.frame(
 ), tmp_stride, row.names = FALSE)
 ```
 
-## Step 3. Import all supported adapters
+## Step 5. Import all supported adapters
 
 ```{r}
 rctd <- read_rctd(tmp_rctd)
@@ -163,7 +208,7 @@ adapter_overview <- data.frame(
 knitr::kable(adapter_overview)
 ```
 
-## Step 4. Build a comparison object including all supported methods
+## Step 6. Build a comparison object including all supported methods
 
 ```{r}
 deconv_all <- list(
@@ -183,7 +228,7 @@ deconv_all <- list(
 obj_all <- as_aegis(seu_small, deconv = deconv_all, markers = markers)
 ```
 
-## Step 5. Run audit and comparison on all methods
+## Step 7. Run audit and comparison on all methods
 
 ```{r}
 obj_all <- audit_basic(obj_all)
@@ -195,7 +240,7 @@ obj_all <- score_methods(obj_all)
 knitr::kable(obj_all$audit$basic$summary)
 ```
 
-## Step 6. Rank methods (RRA and mean-rank meta style)
+## Step 8. Rank methods (RRA and mean-rank meta style)
 
 ```{r}
 obj_rra <- rank_methods(obj_all, method = "rra")
@@ -229,7 +274,7 @@ best_method
 best_label
 ```
 
-## Step 7. Integrate methods into weighted consensus
+## Step 9. Integrate methods into weighted consensus
 
 `STdeconvolve` uses latent topic labels (`topic1`, `topic2`) and is kept in the comparison/ranking table.
 For integrated cell-type consensus, we use methods with shared cell-type labels.
@@ -253,7 +298,7 @@ obj_consensus <- compute_consensus(obj_consensus, strategy = "weighted", top_n =
 obj_consensus$consensus$result$methods_used
 ```
 
-## Step 8. Visualization (plot_compare and related functions)
+## Step 10. Visualization (plot_compare and related functions)
 
 ```{r, fig.width=7, fig.height=5}
 plot_compare(obj_meta, type = "heatmap")
@@ -291,13 +336,13 @@ plot_disagreement_map(obj_consensus)
 plot_consensus_confidence(obj_consensus)
 ```
 
-## Step 9. Render single-sample report
+## Step 11. Render single-sample report
 
 ```{r eval=FALSE}
 render_report(obj_consensus, output_file = "aegis_real_data_report.html")
 ```
 
-## Step 10. Multi-sample workflow
+## Step 12. Multi-sample workflow
 
 A directory-based loader is supported for real projects:
 

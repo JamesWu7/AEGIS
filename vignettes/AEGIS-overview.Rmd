@@ -104,3 +104,6 @@ render_report(obj_meta, output_file = "aegis_quick_start_report.html")
 ```
 
 This quick start shows the minimum workflow from input data to ranking and consensus outputs.
+
+For a full "deconvolution from scratch -> downstream analysis" walkthrough, see:
+`vignettes/AEGIS-complete-tutorial.Rmd`.

@@ -38,7 +38,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
-    <li><a class="dropdown-item" href="articles/AEGIS-complete-tutorial.html">AEGIS Real Data Example (Human Lymph Node)</a></li>
+    <li><a class="dropdown-item" href="articles/AEGIS-complete-tutorial.html">AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -73,7 +73,7 @@
 <div class="section level2">
 <h2 id="workflow-at-a-glance">Workflow at a Glance<a class="anchor" aria-label="anchor" href="#workflow-at-a-glance"></a>
 </h2>
-<p>AEGIS now supports two primary workflows:</p>
+<p>AEGIS now supports three primary workflows:</p>
 <ol style="list-style-type: decimal">
 <li>Simulated method outputs for development and demos (<code><a href="reference/simulate_deconv_results.html">simulate_deconv_results()</a></code>).</li>
 <li>Real exported outputs from external methods through adapter readers (e.g. <code><a href="reference/read_rctd.html">read_rctd()</a></code>, <code><a href="reference/read_spotlight.html">read_spotlight()</a></code>, <code><a href="reference/read_cell2location.html">read_cell2location()</a></code>, <code><a href="reference/read_card.html">read_card()</a></code>, <code><a href="reference/read_destvi.html">read_destvi()</a></code>, <code><a href="reference/read_stdeconvolve.html">read_stdeconvolve()</a></code>), plus <code><a href="reference/read_deconv_table.html">read_deconv_table()</a></code> for generic spot-by-celltype tables.</li>
@@ -278,7 +278,7 @@
 <li>
 <a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html" class="external-link">Quick Start tutorial</a> (includes <code>plot_compare</code> visualizations and RRA/mean-rank selection) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html">pkgdown page</a>, <a href="vignettes/AEGIS-overview.Rmd">source</a>)</li>
 <li>
-<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html" class="external-link">Real Data tutorial (Human Lymph Node)</a> (includes all supported import adapters, method comparison, best-method selection, weighted consensus) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html">pkgdown page</a>, <a href="vignettes/AEGIS-complete-tutorial.Rmd">source</a>)</li>
+<a href="https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html" class="external-link">Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)</a> (includes <code>get_supported_methods()</code>, <code>run_deconvolution()</code>, <code>run_aegis_full()</code>, all supported import adapters, method ranking, weighted consensus, and <code>plot_compare</code>-based visualization) (<a href="https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html">pkgdown page</a>, <a href="vignettes/AEGIS-complete-tutorial.Rmd">source</a>)</li>
 </ul>
 </div>
 <div class="section level2">

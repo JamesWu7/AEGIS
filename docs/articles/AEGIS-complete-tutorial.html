@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>AEGIS Real Data Example (Human Lymph Node) • AEGIS</title>
+<title>AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node) • AEGIS</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="AEGIS Real Data Example (Human Lymph Node)">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -36,7 +36,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
-    <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Real Data Example (Human Lymph Node)</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -59,7 +59,8 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>AEGIS Real Data Example (Human Lymph Node)</h1>
+      <h1>AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</h1>
+      <p><strong>Updated workflow note:</strong> this tutorial now centers on <code>get_supported_methods()</code>, <code>run_deconvolution()</code>, <code>run_aegis_full()</code>, and full downstream analysis (audit, ranking, consensus, visualization, report). If page content lags, open the linked source Rmd.</p>
             
       
       <small class="dont-index">Source: <a href="https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd" class="external-link"><code>vignettes/AEGIS-complete-tutorial.Rmd</code></a></small>

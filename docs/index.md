@@ -21,7 +21,7 @@ devtools::install_github("JamesWu7/AEGIS")
 
 ## Workflow at a Glance
 
-AEGIS now supports two primary workflows:
+AEGIS now supports three primary workflows:
 
 1.  Simulated method outputs for development and demos
     ([`simulate_deconv_results()`](https://jameswu7.github.io/AEGIS/reference/simulate_deconv_results.md)).
@@ -35,6 +35,13 @@ AEGIS now supports two primary workflows:
     plus
     [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md)
     for generic spot-by-celltype tables.
+3.  One-shot deconvolution orchestration for directly runnable methods
+    through
+    [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+    and
+    [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+    with capability metadata from
+    [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md).
 
 For day-to-day use, the recommended minimal API is:
 
@@ -71,6 +78,26 @@ p_rank <- plot_method_ranking(obj)
 p_dis <- plot_disagreement_map(obj)
 p_conf <- plot_consensus_confidence(obj)
 ```
+
+## One-shot Deconvolution (P9)
+
+``` r
+seu <- load_10x_lymphnode()
+
+res <- run_deconvolution(
+  seu = seu,
+  reference = ref,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  strict = FALSE
+)
+
+obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+```
+
+Use
+[`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md)
+to inspect support mode (`run_and_import_r`, `run_and_import_python`,
+`import_only`) before execution.
 
 ## Import Real Deconvolution Results (P8)
 
@@ -166,10 +193,11 @@ links or the source `.Rmd` links below.
   ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-overview.Rmd))
-- [Real Data tutorial (Human Lymph
+- [Deconvolution from Scratch + Real Data tutorial (Human Lymph
   Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
-  (includes all supported import adapters, method comparison,
-  best-method selection, weighted consensus) ([pkgdown
+  (includes `get_supported_methods()`, `run_deconvolution()`,
+  `run_aegis_full()`, all supported import adapters, method ranking,
+  weighted consensus, and `plot_compare`-based visualization) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-complete-tutorial.Rmd))
 
