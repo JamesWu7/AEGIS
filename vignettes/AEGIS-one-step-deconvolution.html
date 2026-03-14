@@ -1,44 +1,52 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AEGIS One-Step Deconvolution Workflow (Local Preview)</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 2rem auto; max-width: 920px; line-height: 1.6; color: #222; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 2rem auto; max-width: 980px; line-height: 1.65; color: #1e1e1e; }
     h1, h2 { line-height: 1.25; }
-    pre { background: #f6f8fa; padding: 0.9rem; overflow-x: auto; border-radius: 6px; border: 1px solid #e5e7eb; }
+    pre { background: #f6f8fa; border: 1px solid #d8dee4; border-radius: 8px; padding: 0.9rem; overflow-x: auto; }
+    img { max-width: 100%; border: 1px solid #e5e7eb; border-radius: 10px; margin: 0.4rem 0 1.2rem; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .tip { background: #f3f8ff; border: 1px solid #d5e7ff; border-radius: 10px; padding: 0.8rem 1rem; }
   </style>
 </head>
 <body>
-  <h1>AEGIS One-Step Deconvolution Workflow (Local Preview)</h1>
-  <p>This local HTML preview mirrors <code>vignettes/AEGIS-one-step-deconvolution.Rmd</code> for quick inspection without knitting.</p>
+  <h1>AEGIS One-Step Deconvolution Workflow</h1>
+  <p>Local preview page for <code>vignettes/AEGIS-one-step-deconvolution.Rmd</code>. Visual style and figure order are aligned with the other two tutorials.</p>
 
-  <h2>Core flow</h2>
-  <pre><code>library(AEGIS)
-registry &lt;- get_supported_methods()
-
-# one-step dispatch
-res &lt;- run_deconvolution(
+  <h2>Step 1. Dispatch and downstream</h2>
+  <pre><code>res <- run_deconvolution(
   seu = seu,
   reference = reference,
   methods = c("SPOTlight", "CARD", "RCTD"),
   strict = FALSE
 )
+obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+obj <- score_methods(obj)
+obj <- rank_methods(obj, method = "mean_rank")
+obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)</code></pre>
 
-# downstream
-obj &lt;- run_aegis(res$seu, deconv = res$deconv, markers = markers)
-obj &lt;- score_methods(obj)
-obj &lt;- rank_methods(obj, method = "mean_rank")
-obj &lt;- compute_consensus(obj, strategy = "weighted", top_n = 2)
+  <h2>Step 2. Visualizations</h2>
+  <pre><code>plot_compare(obj, type = "heatmap")</code></pre>
+  <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-heatmap.png" alt="heatmap" />
 
-plot_compare(obj, type = "heatmap")
-plot_compare(obj, type = "consensus_map")
-plot_compare(obj, type = "ranking")
-plot_compare(obj, type = "disagreement_map")
-plot_compare(obj, type = "confidence_map")</code></pre>
+  <pre><code>plot_compare(obj, type = "consensus_map")</code></pre>
+  <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-consensus.png" alt="consensus map" />
 
-  <p>For the full step-by-step narrative, open <code>AEGIS-one-step-deconvolution.Rmd</code> in the same folder.</p>
+  <pre><code>plot_compare(obj, type = "ranking")</code></pre>
+  <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-ranking.png" alt="ranking" />
+
+  <pre><code>plot_compare(obj, type = "disagreement_map")</code></pre>
+  <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-disagreement.png" alt="disagreement" />
+
+  <pre><code>plot_compare(obj, type = "confidence_map")</code></pre>
+  <img src="../docs/articles/AEGIS-one-step-deconvolution_files/figure-html/one-step-confidence.png" alt="confidence" />
+
+  <div class="tip">
+    建议优先使用 <code>plot_compare()</code> 作为统一可视化入口，减少函数记忆成本。
+  </div>
 </body>
 </html>
