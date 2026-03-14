@@ -1,6 +1,6 @@
 # Read Tangram mapping-derived composition outputs
 
-Read Tangram mapping-derived composition outputs.
+Read Tangram mapping-derived composition outputs
 
 ## Usage
 

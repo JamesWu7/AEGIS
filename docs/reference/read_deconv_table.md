@@ -28,7 +28,8 @@ read_deconv_table(
 
 - type:
 
-  Input type for RDS-aware parsing.
+  Input type for RDS-aware parsing (`auto`, `rds`, `weights`,
+  `proportions`, `results_df`).
 
 - spot_col:
 

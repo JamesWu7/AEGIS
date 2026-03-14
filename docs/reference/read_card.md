@@ -1,6 +1,6 @@
 # Read CARD deconvolution outputs
 
-Read CARD deconvolution outputs.
+Read CARD deconvolution outputs
 
 ## Usage
 

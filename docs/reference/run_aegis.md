@@ -1,8 +1,14 @@
 # Run the standard AEGIS workflow with one function
 
 Convenience entry point that constructs an AEGIS object (if needed) and
-runs the core audit/comparison pipeline for single-sample and
-multi-sample workflows.
+runs the core audit/comparison pipeline. Supports:
+
+- a Seurat object + deconvolution list (single-sample)
+
+- a named list of Seurat objects + nested deconvolution list
+  (multi-sample)
+
+- an existing `aegis` or `aegis_multi` object
 
 ## Usage
 

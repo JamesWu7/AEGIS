@@ -1,8 +1,6 @@
 # Read SPOTlight deconvolution outputs
 
-Reads exported SPOTlight result files and standardizes them to a
-spot-by-celltype numeric matrix usable by
-[`as_aegis()`](https://jameswu7.github.io/AEGIS/reference/as_aegis.md).
+Read SPOTlight deconvolution outputs
 
 ## Usage
 
