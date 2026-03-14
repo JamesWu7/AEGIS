@@ -82,7 +82,9 @@ obj <- compute_consensus(obj, strategy = "weighted", top_n = 2)
 
 plot_compare(obj, type = "heatmap")
 plot_compare(obj, type = "consensus_map")
-plot_method_ranking(obj)
+plot_compare(obj, type = "ranking")
+plot_compare(obj, type = "disagreement_map")
+plot_compare(obj, type = "confidence_map")
 ```
 
 ## 8) Practical notes

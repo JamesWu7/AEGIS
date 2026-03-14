@@ -35,7 +35,9 @@ obj &lt;- compute_consensus(obj, strategy = "weighted", top_n = 2)
 
 plot_compare(obj, type = "heatmap")
 plot_compare(obj, type = "consensus_map")
-plot_method_ranking(obj)</code></pre>
+plot_compare(obj, type = "ranking")
+plot_compare(obj, type = "disagreement_map")
+plot_compare(obj, type = "confidence_map")</code></pre>
 
   <p>For the full step-by-step narrative, open <code>AEGIS-one-step-deconvolution.Rmd</code> in the same folder.</p>
 </body>

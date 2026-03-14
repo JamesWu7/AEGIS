@@ -1,7 +1,8 @@
 #' Plot method comparison and consensus outputs
 #'
 #' @param x An `aegis` object.
-#' @param type One of `heatmap`, `spot_agreement`, `consensus_map`.
+#' @param type One of `heatmap`, `spot_agreement`, `consensus_map`,
+#'   `disagreement_map`, `confidence_map`, or `ranking`.
 #' @param sample Optional sample ID for multi-sample objects.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param base_size Base font size for the plot theme.
@@ -10,26 +11,11 @@
 #' @export
 plot_compare <- function(
     x,
-    type = c("heatmap", "spot_agreement", "consensus_map"),
+    type = c("heatmap", "spot_agreement", "consensus_map", "disagreement_map", "confidence_map", "ranking"),
     sample = NULL,
     palette = "nature",
     base_size = 12) {
-  if (is_multi_sample_context(x)) {
-    sample_objs <- split_aegis_by_sample(x)
-    if (is.null(sample)) {
-      stop("Multi-sample object detected. Please provide `sample` for `plot_compare()`.", call. = FALSE)
-    }
-    if (!(sample %in% names(sample_objs))) {
-      stop(sprintf("Sample '%s' not found. Available: %s", sample, paste(names(sample_objs), collapse = ", ")), call. = FALSE)
-    }
-    return(plot_compare(
-      x = sample_objs[[sample]],
-      type = type,
-      sample = NULL,
-      palette = palette,
-      base_size = base_size
-    ))
-  }
+  x <- resolve_plot_input_aegis(x, sample = sample, fun_name = "plot_compare")
 
   assert_is_aegis(x)
   type <- match.arg(type)
@@ -58,7 +44,8 @@ plot_compare <- function(
       theme_aegis(base_size = base_size) +
       ggplot2::theme(
         panel.grid = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_text(angle = 30, hjust = 1, vjust = 1)
+        axis.text.x = ggplot2::element_text(angle = 30, hjust = 1, vjust = 1),
+        legend.key.width = grid::unit(1.2, "lines")
       ) +
       ggplot2::labs(
         title = "Method-Pair Agreement by Cell Type",
@@ -67,6 +54,13 @@ plot_compare <- function(
         y = "Cell type",
         fill = "Correlation"
       )
+    if (length(unique(dat$celltype)) <= 8L && length(unique(dat$method_pair)) <= 8L) {
+      p <- p + ggplot2::geom_text(
+        ggplot2::aes(label = sprintf("%.2f", .data$correlation)),
+        size = base_size * 0.23,
+        color = "#1F1F1F"
+      )
+    }
     return(p)
   }
 
@@ -85,21 +79,28 @@ plot_compare <- function(
         stop("Spot agreement data must include `agreement` or `mean_mad`.", call. = FALSE)
       }
     }
-    spatial_dat <- assemble_spatial_plot_data(x$seu, dat[, c("spot", "agreement"), drop = FALSE])
-
-    p <- ggplot2::ggplot(spatial_dat, ggplot2::aes(x = .data$x, y = .data$y, color = .data$agreement)) +
-      ggplot2::geom_point(size = if (nrow(spatial_dat) > 5000L) 0.45 else 0.7, alpha = 0.95) +
-      ggplot2::coord_fixed() +
-      ggplot2::scale_y_reverse() +
-      scale_color_aegis(palette = palette, type = "continuous", limits = c(0, 1)) +
-      theme_aegis_spatial(base_size = base_size) +
-      ggplot2::labs(
-        title = "Spot-Level Method Agreement",
-        subtitle = "Higher values indicate stronger cross-method consistency",
-        color = "Agreement"
-      )
-    return(p)
+    return(plot_spatial_metric_df(
+      seu = x$seu,
+      metrics = dat[, c("spot", "agreement"), drop = FALSE],
+      value_col = "agreement",
+      palette = palette,
+      base_size = base_size,
+      limits = c(0, 1),
+      title = "Spot-Level Method Agreement",
+      subtitle = "Higher values indicate stronger cross-method consistency",
+      legend_title = "Agreement"
+    ))
   }
 
-  plot_consensus_confidence(x, palette = palette, base_size = base_size)
+  if (type %in% c("consensus_map", "confidence_map")) {
+    return(plot_consensus_confidence(x, palette = palette, base_size = base_size))
+  }
+  if (type == "disagreement_map") {
+    return(plot_disagreement_map(x, palette = palette, base_size = base_size))
+  }
+  if (type == "ranking") {
+    return(plot_method_ranking(x, palette = palette, base_size = base_size))
+  }
+
+  stop("Unsupported `type`.", call. = FALSE)
 }

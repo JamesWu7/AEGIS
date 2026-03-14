@@ -32,7 +32,7 @@ For day-to-day use, the recommended minimal API is:
 1. `load_10x_lymphnode()` or `load_10x_spatial_set()`
 2. `run_aegis()`
 3. `score_methods()` -> `rank_methods()` -> `compute_consensus(strategy = "weighted")`
-4. `plot_method_ranking()` / `plot_disagreement_map()` / `plot_consensus_confidence()` / `render_report()`
+4. `plot_compare()` / `plot_audit()` / `render_report()`
 
 ## One-shot Deconvolution (P9)
 
@@ -78,9 +78,9 @@ obj <- score_methods(obj)
 obj <- rank_methods(obj, method = "rra")
 obj <- compute_consensus(obj, strategy = "weighted")
 
-p_rank <- plot_method_ranking(obj)
-p_dis <- plot_disagreement_map(obj)
-p_conf <- plot_consensus_confidence(obj)
+p_rank <- plot_compare(obj, type = "ranking")
+p_dis <- plot_compare(obj, type = "disagreement_map")
+p_conf <- plot_compare(obj, type = "confidence_map")
 ```
 
 ## Import Real Deconvolution Results (P8)
@@ -167,9 +167,9 @@ render_report_batch(obj_multi, output_dir = "reports")
 
 If GitHub Pages is temporarily unavailable, use the preview fallback links or the source `.Rmd` links below.
 
-- [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) (includes `plot_compare` visualizations and RRA/mean-rank selection) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
+- [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) (includes simplified `plot_compare` visualizations and RRA/mean-rank selection) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
 - [One-step deconvolution tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html) (focuses on `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, and practical run-vs-import decisions) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html), [source](vignettes/AEGIS-one-step-deconvolution.Rmd))
-- [Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (includes `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, all supported import adapters, method ranking, weighted consensus, and `plot_compare`-based visualization) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
+- [Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (includes `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, all supported import adapters, method ranking, weighted consensus, and unified `plot_compare` visualization) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
 
 Local preview HTML files are also kept in `vignettes/` for direct viewing:
 `vignettes/AEGIS-overview.html`, `vignettes/AEGIS-one-step-deconvolution.html`, and `vignettes/AEGIS-complete-tutorial.html`.
@@ -196,6 +196,7 @@ Local preview HTML files are also kept in `vignettes/` for direct viewing:
 - `score_methods()`: score methods from marker/spatial/agreement/stability evidence.
 - `rank_methods()`: aggregate evidence into robust method rankings (`rra` or `mean_rank`).
 - `compute_consensus()`: integrate methods with `mean` / `weighted` / `trimmed_mean` strategies and return disagreement/confidence.
+- `plot_compare()`: unified comparison visualization entry (`heatmap`, `spot_agreement`, `consensus_map`, `disagreement_map`, `confidence_map`, `ranking`).
 - `plot_method_ranking()`: ggplot ranking summary from strongest to weakest methods.
 - `plot_disagreement_map()`: tissue-context map of spot-level cross-method disagreement.
 - `plot_consensus_confidence()`: tissue-context map of spot-level consensus confidence.

@@ -55,11 +55,9 @@ For day-to-day use, the recommended minimal API is:
     -\>
     [`rank_methods()`](https://jameswu7.github.io/AEGIS/reference/rank_methods.md)
     -\> `compute_consensus(strategy = "weighted")`
-4.  [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md)
+4.  [`plot_compare()`](https://jameswu7.github.io/AEGIS/reference/plot_compare.md)
     /
-    [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md)
-    /
-    [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md)
+    [`plot_audit()`](https://jameswu7.github.io/AEGIS/reference/plot_audit.md)
     /
     [`render_report()`](https://jameswu7.github.io/AEGIS/reference/render_report.md)
 
@@ -76,9 +74,9 @@ obj <- score_methods(obj)
 obj <- rank_methods(obj, method = "rra")
 obj <- compute_consensus(obj, strategy = "weighted")
 
-p_rank <- plot_method_ranking(obj)
-p_dis <- plot_disagreement_map(obj)
-p_conf <- plot_consensus_confidence(obj)
+p_rank <- plot_compare(obj, type = "ranking")
+p_dis <- plot_compare(obj, type = "disagreement_map")
+p_conf <- plot_compare(obj, type = "confidence_map")
 ```
 
 ## One-shot Deconvolution (P9)
@@ -257,6 +255,9 @@ viewing: `vignettes/AEGIS-overview.html`,
 - [`compute_consensus()`](https://jameswu7.github.io/AEGIS/reference/compute_consensus.md):
   integrate methods with `mean` / `weighted` / `trimmed_mean` strategies
   and return disagreement/confidence.
+- [`plot_compare()`](https://jameswu7.github.io/AEGIS/reference/plot_compare.md):
+  unified comparison visualization entry (`heatmap`, `spot_agreement`,
+  `consensus_map`, `disagreement_map`, `confidence_map`, `ranking`).
 - [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md):
   ggplot ranking summary from strongest to weakest methods.
 - [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md):

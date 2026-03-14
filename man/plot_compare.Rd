@@ -6,7 +6,8 @@
 \usage{
 plot_compare(
   x,
-  type = c("heatmap", "spot_agreement", "consensus_map"),
+  type = c("heatmap", "spot_agreement", "consensus_map", "disagreement_map",
+    "confidence_map", "ranking"),
   sample = NULL,
   palette = "nature",
   base_size = 12
@@ -15,7 +16,8 @@ plot_compare(
 \arguments{
 \item{x}{An \code{aegis} object.}
 
-\item{type}{One of \code{heatmap}, \code{spot_agreement}, \code{consensus_map}.}
+\item{type}{One of \code{heatmap}, \code{spot_agreement}, \code{consensus_map},
+\code{disagreement_map}, \code{confidence_map}, or \code{ranking}.}
 
 \item{sample}{Optional sample ID for multi-sample objects.}
 

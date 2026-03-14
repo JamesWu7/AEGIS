@@ -298,7 +298,7 @@ obj_consensus <- compute_consensus(obj_consensus, strategy = "weighted", top_n =
 obj_consensus$consensus$result$methods_used
 ```
 
-## Step 10. Visualization (plot_compare and related functions)
+## Step 10. Visualization (simplified with plot_compare + plot_audit)
 
 ```{r, fig.width=7, fig.height=5}
 plot_compare(obj_meta, type = "heatmap")
@@ -325,15 +325,15 @@ plot_audit(obj_meta, type = "smoothness", method = best_method)
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_method_ranking(obj_meta)
+plot_compare(obj_meta, type = "ranking")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_disagreement_map(obj_consensus)
+plot_compare(obj_consensus, type = "disagreement_map")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_consensus_confidence(obj_consensus)
+plot_compare(obj_consensus, type = "confidence_map")
 ```
 
 ## Step 11. Render single-sample report

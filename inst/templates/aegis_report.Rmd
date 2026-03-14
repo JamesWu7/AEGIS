@@ -95,7 +95,7 @@ if (is.list(rank_tbl)) {
   }
 }
 knitr::kable(format_report_table(rank_tbl))
-plot_method_ranking(x, palette = "nature")
+plot_compare(x, type = "ranking", palette = "nature")
 ```
 
 # Consensus
@@ -111,8 +111,8 @@ consensus_meta <- data.frame(
 )
 knitr::kable(consensus_meta)
 knitr::kable(format_report_table(x$consensus$result$celltype_stability))
-plot_disagreement_map(x, palette = "scico")
-plot_consensus_confidence(x, palette = "brewer")
+plot_compare(x, type = "disagreement_map", palette = "scico")
+plot_compare(x, type = "confidence_map", palette = "brewer")
 ```
 
 # Session Info

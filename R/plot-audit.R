@@ -20,31 +20,13 @@ plot_audit <- function(
     palette = "nature",
     point_size = NULL,
     base_size = 12) {
-  if (is_multi_sample_context(x)) {
-    sample_objs <- split_aegis_by_sample(x)
-    if (is.null(sample)) {
-      stop("Multi-sample object detected. Please provide `sample` for `plot_audit()`.", call. = FALSE)
-    }
-    if (!(sample %in% names(sample_objs))) {
-      stop(sprintf("Sample '%s' not found. Available: %s", sample, paste(names(sample_objs), collapse = ", ")), call. = FALSE)
-    }
-    return(plot_audit(
-      x = sample_objs[[sample]],
-      type = type,
-      method = method,
-      sample = NULL,
-      cell_type = cell_type,
-      palette = palette,
-      point_size = point_size,
-      base_size = base_size
-    ))
-  }
+  x <- resolve_plot_input_aegis(x, sample = sample, fun_name = "plot_audit")
 
   assert_is_aegis(x)
   type <- match.arg(type)
 
   if (is.null(point_size)) {
-    point_size <- if (ncol(x$seu) > 5000L) 0.45 else 0.7
+    point_size <- auto_spatial_point_size(ncol(x$seu))
   }
 
   if (type %in% c("sumdev", "dominance", "entropy")) {
@@ -65,38 +47,27 @@ plot_audit <- function(
       }
       dat <- dat[dat$method == method, , drop = FALSE]
     }
-    spatial_dat <- assemble_spatial_plot_data(
-      x$seu,
-      dat[, c("spot", "method", metric_col), drop = FALSE]
-    )
-
-    p <- ggplot2::ggplot(
-      spatial_dat,
-      ggplot2::aes(x = .data$x, y = .data$y, color = .data[[metric_col]])
-    ) +
-      ggplot2::geom_point(size = point_size, shape = 16, alpha = 0.95) +
-      ggplot2::coord_fixed() +
-      ggplot2::scale_y_reverse() +
-      scale_color_aegis(palette = palette, type = "continuous") +
-      theme_aegis_spatial(base_size = base_size) +
-      ggplot2::labs(
-        title = switch(type,
-          sumdev = "Row-Sum Deviation Map",
-          dominance = "Dominance Map",
-          entropy = "Entropy Map"
-        ),
-        subtitle = if (!is.null(method)) paste("Method:", method) else "Faceted by method",
-        color = switch(type,
-          sumdev = "Sum deviation",
-          dominance = "Dominance",
-          entropy = "Entropy"
-        )
+    plot_dat <- dat[, c("spot", "method", metric_col), drop = FALSE]
+    return(plot_spatial_metric_df(
+      seu = x$seu,
+      metrics = plot_dat,
+      value_col = metric_col,
+      palette = palette,
+      base_size = base_size,
+      point_size = point_size,
+      facet_col = if (is.null(method) && length(unique(plot_dat$method)) > 1L) "method" else NULL,
+      title = switch(type,
+        sumdev = "Row-Sum Deviation Map",
+        dominance = "Dominance Map",
+        entropy = "Entropy Map"
+      ),
+      subtitle = if (!is.null(method)) paste("Method:", method) else "Faceted by method",
+      legend_title = switch(type,
+        sumdev = "Sum deviation",
+        dominance = "Dominance",
+        entropy = "Entropy"
       )
-
-    if (is.null(method) && length(unique(spatial_dat$method)) > 1L) {
-      p <- p + ggplot2::facet_wrap(~method, ncol = 2)
-    }
-    return(p)
+    ))
   }
 
   if (type == "marker") {
@@ -143,6 +114,7 @@ plot_audit <- function(
       scale_color_aegis(palette = palette, type = "diverging", limits = c(-1, 1)) +
       ggplot2::scale_size_continuous(range = c(2.2, 6), breaks = c(1, 2, 3), limits = c(0, NA)) +
       theme_aegis(base_size = base_size) +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 25, hjust = 1)) +
       ggplot2::labs(
         title = "Marker Concordance Summary",
         subtitle = "Method-celltype correlation between marker score and predicted abundance",
@@ -192,27 +164,19 @@ plot_audit <- function(
       dat <- dat[dat$method == method, , drop = FALSE]
     }
 
-    spatial_dat <- assemble_spatial_plot_data(x$seu, dat[, c("spot", "method", "smoothness"), drop = FALSE])
-
-    p <- ggplot2::ggplot(
-      spatial_dat,
-      ggplot2::aes(x = .data$x, y = .data$y, color = .data$smoothness)
-    ) +
-      ggplot2::geom_point(size = point_size, shape = 16, alpha = 0.95) +
-      ggplot2::coord_fixed() +
-      ggplot2::scale_y_reverse() +
-      scale_color_aegis(palette = palette, type = "continuous") +
-      theme_aegis_spatial(base_size = base_size) +
-      ggplot2::labs(
-        title = "Spatial Smoothness Map",
-        subtitle = if (!is.null(cell_type)) paste("Cell type:", cell_type) else "Spot-level smoothness",
-        color = "Smoothness"
-      )
-
-    if (is.null(method) && length(unique(spatial_dat$method)) > 1L) {
-      p <- p + ggplot2::facet_wrap(~method, ncol = 2)
-    }
-    return(p)
+    plot_dat <- dat[, c("spot", "method", "smoothness"), drop = FALSE]
+    return(plot_spatial_metric_df(
+      seu = x$seu,
+      metrics = plot_dat,
+      value_col = "smoothness",
+      palette = palette,
+      base_size = base_size,
+      point_size = point_size,
+      facet_col = if (is.null(method) && length(unique(plot_dat$method)) > 1L) "method" else NULL,
+      title = "Spatial Smoothness Map",
+      subtitle = if (!is.null(cell_type)) paste("Cell type:", cell_type) else "Spot-level smoothness",
+      legend_title = "Smoothness"
+    ))
   }
 
   stop("Unsupported `type`.", call. = FALSE)

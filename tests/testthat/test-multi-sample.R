@@ -150,8 +150,16 @@ test_that("plot functions are safe for multi-sample objects", {
 
   expect_error(plot_audit(obj, type = "dominance"), "provide `sample`")
   expect_error(plot_compare(obj, type = "heatmap"), "provide `sample`")
+  expect_error(plot_method_ranking(obj), "provide `sample`")
+  expect_error(plot_disagreement_map(obj), "provide `sample`")
+  expect_error(plot_consensus_confidence(obj), "provide `sample`")
   expect_s3_class(plot_audit(obj, type = "dominance", sample = "sample1"), "ggplot")
   expect_s3_class(plot_compare(obj, type = "heatmap", sample = "sample1"), "ggplot")
+  expect_s3_class(plot_method_ranking(obj, sample = "sample1"), "ggplot")
+  p_dis <- plot_disagreement_map(obj, sample = "sample1")
+  p_conf <- plot_consensus_confidence(obj, sample = "sample1")
+  expect_true(inherits(p_dis, "ggplot") || inherits(p_dis, "patchwork"))
+  expect_true(inherits(p_conf, "ggplot") || inherits(p_conf, "patchwork"))
 })
 
 test_that("render_report_batch writes per-sample reports and respects overwrite", {

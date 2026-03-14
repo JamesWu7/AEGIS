@@ -90,7 +90,7 @@
 <code><a href="reference/score_methods.html">score_methods()</a></code> -&gt; <code><a href="reference/rank_methods.html">rank_methods()</a></code> -&gt; <code>compute_consensus(strategy = "weighted")</code>
 </li>
 <li>
-<code><a href="reference/plot_method_ranking.html">plot_method_ranking()</a></code> / <code><a href="reference/plot_disagreement_map.html">plot_disagreement_map()</a></code> / <code><a href="reference/plot_consensus_confidence.html">plot_consensus_confidence()</a></code> / <code><a href="reference/render_report.html">render_report()</a></code>
+<code><a href="reference/plot_compare.html">plot_compare()</a></code> / <code><a href="reference/plot_audit.html">plot_audit()</a></code> / <code><a href="reference/render_report.html">render_report()</a></code>
 </li>
 </ol>
 </div>
@@ -108,9 +108,9 @@
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj</span>, method <span class="op">=</span> <span class="st">"rra"</span><span class="op">)</span></span>
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_consensus.html">compute_consensus</a></span><span class="op">(</span><span class="va">obj</span>, strategy <span class="op">=</span> <span class="st">"weighted"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">p_rank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_method_ranking.html">plot_method_ranking</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="va">p_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_disagreement_map.html">plot_disagreement_map</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span>
-<span><span class="va">p_conf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_consensus_confidence.html">plot_consensus_confidence</a></span><span class="op">(</span><span class="va">obj</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">p_rank</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj</span>, type <span class="op">=</span> <span class="st">"ranking"</span><span class="op">)</span></span>
+<span><span class="va">p_dis</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj</span>, type <span class="op">=</span> <span class="st">"disagreement_map"</span><span class="op">)</span></span>
+<span><span class="va">p_conf</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj</span>, type <span class="op">=</span> <span class="st">"confidence_map"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="one-shot-deconvolution-p9">One-shot Deconvolution (P9)<a class="anchor" aria-label="anchor" href="#one-shot-deconvolution-p9"></a>
@@ -349,6 +349,8 @@
 <code><a href="reference/rank_methods.html">rank_methods()</a></code>: aggregate evidence into robust method rankings (<code>rra</code> or <code>mean_rank</code>).</li>
 <li>
 <code><a href="reference/compute_consensus.html">compute_consensus()</a></code>: integrate methods with <code>mean</code> / <code>weighted</code> / <code>trimmed_mean</code> strategies and return disagreement/confidence.</li>
+<li>
+<code><a href="reference/plot_compare.html">plot_compare()</a></code>: unified comparison visualization entry (<code>heatmap</code>, <code>spot_agreement</code>, <code>consensus_map</code>, <code>disagreement_map</code>, <code>confidence_map</code>, <code>ranking</code>).</li>
 <li>
 <code><a href="reference/plot_method_ranking.html">plot_method_ranking()</a></code>: ggplot ranking summary from strongest to weakest methods.</li>
 <li>

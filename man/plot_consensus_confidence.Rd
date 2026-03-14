@@ -4,10 +4,12 @@
 \alias{plot_consensus_confidence}
 \title{Plot spot-level consensus confidence map}
 \usage{
-plot_consensus_confidence(x, palette = "nature", base_size = 12)
+plot_consensus_confidence(x, sample = NULL, palette = "nature", base_size = 12)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
+
+\item{sample}{Optional sample ID for multi-sample objects.}
 
 \item{palette}{Palette family: \code{nature}, \code{viridis}, \code{scico}, or \code{brewer}.}
 

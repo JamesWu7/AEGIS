@@ -61,7 +61,7 @@ ggplot2::ggsave(
 )
 
 # Ranking summary.
-p_rank <- plot_method_ranking(obj, palette = "nature")
+p_rank <- plot_compare(obj, type = "ranking", palette = "nature")
 ggplot2::ggsave(
   filename = file.path(out_dir, "readme-ranking.png"),
   plot = p_rank,
@@ -81,7 +81,7 @@ ggplot2::ggsave(
 )
 
 # Consensus confidence map.
-p_cons <- plot_consensus_confidence(obj, palette = "brewer")
+p_cons <- plot_compare(obj, type = "confidence_map", palette = "brewer")
 ggplot2::ggsave(
   filename = file.path(out_dir, "readme-confidence.png"),
   plot = p_cons,

@@ -67,7 +67,7 @@ obj_meta <- compute_consensus(obj_meta, strategy = "weighted", top_n = 2)
 obj_meta$consensus$result$methods_used
 ```
 
-## Step 6. Visualize audits and consensus
+## Step 6. Visualize audits and consensus (simplified plotting API)
 
 ```{r, fig.width=7, fig.height=5}
 plot_audit(obj_meta, type = "dominance", method = best_method)
@@ -86,15 +86,15 @@ plot_compare(obj_meta, type = "consensus_map")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_method_ranking(obj_meta)
+plot_compare(obj_meta, type = "ranking")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_disagreement_map(obj_meta)
+plot_compare(obj_meta, type = "disagreement_map")
 ```
 
 ```{r, fig.width=7, fig.height=5}
-plot_consensus_confidence(obj_meta)
+plot_compare(obj_meta, type = "confidence_map")
 ```
 
 ## Step 7. Generate report

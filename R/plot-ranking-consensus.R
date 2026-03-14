@@ -1,6 +1,7 @@
 #' Plot method ranking summary
 #'
 #' @param x An `aegis` object.
+#' @param sample Optional sample ID for multi-sample objects.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param base_size Base font size.
 #'
@@ -8,8 +9,10 @@
 #' @export
 plot_method_ranking <- function(
     x,
+    sample = NULL,
     palette = "nature",
     base_size = 12) {
+  x <- resolve_plot_input_aegis(x, sample = sample, fun_name = "plot_method_ranking")
   assert_is_aegis(x)
   tbl <- get_method_ranking_table(x)
   if (is.null(tbl) || !is.data.frame(tbl) || nrow(tbl) == 0L) {
@@ -29,16 +32,30 @@ plot_method_ranking <- function(
 
   dat <- dat[order(dat$overall_rank), , drop = FALSE]
   dat$method <- factor(dat$method, levels = rev(dat$method))
+  dat$rank_label <- paste0("#", dat$overall_rank)
+  score_min <- min(dat$overall_score, na.rm = TRUE)
+  score_min <- if (is.finite(score_min)) min(score_min, 0) else 0
+  score_span <- diff(range(dat$overall_score, na.rm = TRUE))
+  if (!is.finite(score_span) || score_span == 0) score_span <- 1
 
   ggplot2::ggplot(dat, ggplot2::aes(x = .data$overall_score, y = .data$method, color = .data$recommendation)) +
     ggplot2::geom_segment(
-      ggplot2::aes(x = min(.data$overall_score, na.rm = TRUE), xend = .data$overall_score, y = .data$method, yend = .data$method),
-      linewidth = 0.8,
-      alpha = 0.7
+      ggplot2::aes(x = score_min, xend = .data$overall_score, y = .data$method, yend = .data$method),
+      linewidth = 1.0,
+      alpha = 0.75
     ) +
-    ggplot2::geom_point(size = 3.2, alpha = 0.95) +
+    ggplot2::geom_point(size = 3.6, alpha = 0.96) +
+    ggplot2::geom_text(
+      ggplot2::aes(label = .data$rank_label),
+      nudge_x = 0.02 * score_span,
+      hjust = 0,
+      size = base_size * 0.23,
+      color = "#222222",
+      show.legend = FALSE
+    ) +
     scale_color_aegis(palette = palette, type = "categorical") +
     theme_aegis(base_size = base_size) +
+    ggplot2::theme(panel.grid.major.y = ggplot2::element_blank()) +
     ggplot2::labs(
       title = "Method Ranking",
       subtitle = "Aggregated from marker, spatial, agreement, and stability evidence",
@@ -51,6 +68,7 @@ plot_method_ranking <- function(
 #' Plot spot-level consensus disagreement map
 #'
 #' @param x An `aegis` object.
+#' @param sample Optional sample ID for multi-sample objects.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param base_size Base font size.
 #'
@@ -58,12 +76,11 @@ plot_method_ranking <- function(
 #' @export
 plot_disagreement_map <- function(
     x,
+    sample = NULL,
     palette = "nature",
     base_size = 12) {
+  x <- resolve_plot_input_aegis(x, sample = sample, fun_name = "plot_disagreement_map")
   assert_is_aegis(x)
-  if (is_multi_sample_context(x)) {
-    stop("Multi-sample object detected. Use split_aegis_by_sample() and plot one sample at a time.", call. = FALSE)
-  }
   if (is.null(x$consensus$result$method_disagreement)) {
     stop("Consensus disagreement not found. Run compute_consensus() first.", call. = FALSE)
   }
@@ -91,6 +108,7 @@ plot_disagreement_map <- function(
 #' Plot spot-level consensus confidence map
 #'
 #' @param x An `aegis` object.
+#' @param sample Optional sample ID for multi-sample objects.
 #' @param palette Palette family: `nature`, `viridis`, `scico`, or `brewer`.
 #' @param base_size Base font size.
 #'
@@ -98,12 +116,11 @@ plot_disagreement_map <- function(
 #' @export
 plot_consensus_confidence <- function(
     x,
+    sample = NULL,
     palette = "nature",
     base_size = 12) {
+  x <- resolve_plot_input_aegis(x, sample = sample, fun_name = "plot_consensus_confidence")
   assert_is_aegis(x)
-  if (is_multi_sample_context(x)) {
-    stop("Multi-sample object detected. Use split_aegis_by_sample() and plot one sample at a time.", call. = FALSE)
-  }
   if (is.null(x$consensus$result$spot_confidence)) {
     stop("Consensus confidence not found. Run compute_consensus() first.", call. = FALSE)
   }
@@ -148,13 +165,16 @@ plot_spatial_metric <- function(
   has_image <- tryCatch(length(Seurat::Images(seu)) > 0L, error = function(e) FALSE)
 
   if (isTRUE(has_image)) {
+    pal_vals <- get_plot_palette(palette = palette, type = "continuous", n = 256L)
+    col_low <- pal_vals[[1L]]
+    col_high <- pal_vals[[length(pal_vals)]]
     p <- tryCatch(
       Seurat::SpatialFeaturePlot(
         seu,
         features = metric_name,
-        cols = get_plot_palette(palette = palette, type = "continuous", n = 2L),
+        cols = c(col_low, col_high),
         image.alpha = 0.25,
-        pt.size.factor = 1.6
+        pt.size.factor = 1.85
       ),
       error = function(e) NULL
     )
@@ -178,8 +198,9 @@ plot_spatial_metric <- function(
     stringsAsFactors = FALSE
   )
   spatial_dat <- assemble_spatial_plot_data(seu, dat)
+  point_size <- auto_spatial_point_size(nrow(spatial_dat))
   ggplot2::ggplot(spatial_dat, ggplot2::aes(x = .data$x, y = .data$y, color = .data$value)) +
-    ggplot2::geom_point(size = if (nrow(spatial_dat) > 5000L) 0.45 else 0.7, alpha = 0.95) +
+    ggplot2::geom_point(size = point_size, alpha = 0.95) +
     ggplot2::coord_fixed() +
     ggplot2::scale_y_reverse() +
     scale_color_aegis(palette = palette, type = "continuous") +

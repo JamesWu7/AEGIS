@@ -38,6 +38,12 @@ test_that("plot_compare returns ggplot objects for required types", {
   expect_s3_class(plot_compare(obj, type = "spot_agreement", palette = "viridis"), "ggplot")
   p_cons <- plot_compare(obj, type = "consensus_map", palette = "brewer")
   expect_true(inherits(p_cons, "ggplot") || inherits(p_cons, "patchwork"))
+  p_conf <- plot_compare(obj, type = "confidence_map", palette = "nature")
+  p_dis <- plot_compare(obj, type = "disagreement_map", palette = "scico")
+  p_rank <- plot_compare(obj, type = "ranking", palette = "nature")
+  expect_true(inherits(p_conf, "ggplot") || inherits(p_conf, "patchwork"))
+  expect_true(inherits(p_dis, "ggplot") || inherits(p_dis, "patchwork"))
+  expect_s3_class(p_rank, "ggplot")
 })
 
 test_that("plot_compare validates missing prerequisites and arguments", {

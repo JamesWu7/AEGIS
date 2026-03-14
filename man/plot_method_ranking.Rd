@@ -4,10 +4,12 @@
 \alias{plot_method_ranking}
 \title{Plot method ranking summary}
 \usage{
-plot_method_ranking(x, palette = "nature", base_size = 12)
+plot_method_ranking(x, sample = NULL, palette = "nature", base_size = 12)
 }
 \arguments{
 \item{x}{An \code{aegis} object.}
+
+\item{sample}{Optional sample ID for multi-sample objects.}
 
 \item{palette}{Palette family: \code{nature}, \code{viridis}, \code{scico}, or \code{brewer}.}
 

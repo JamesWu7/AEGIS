@@ -241,6 +241,98 @@ assemble_spatial_plot_data <- function(seu, metrics, spot_col = "spot") {
 }
 
 #' @keywords internal
+resolve_plot_input_aegis <- function(x, sample = NULL, fun_name = "plot") {
+  if (is_multi_sample_context(x)) {
+    sample_objs <- split_aegis_by_sample(x)
+    if (is.null(sample)) {
+      stop(
+        sprintf("Multi-sample object detected. Please provide `sample` for `%s()`.", fun_name),
+        call. = FALSE
+      )
+    }
+    if (!(sample %in% names(sample_objs))) {
+      stop(
+        sprintf("Sample '%s' not found. Available: %s", sample, paste(names(sample_objs), collapse = ", ")),
+        call. = FALSE
+      )
+    }
+    return(sample_objs[[sample]])
+  }
+  x
+}
+
+#' @keywords internal
+auto_spatial_point_size <- function(n_points) {
+  if (is.null(n_points) || !is.finite(n_points) || n_points <= 0L) {
+    return(0.7)
+  }
+  if (n_points > 12000L) return(0.33)
+  if (n_points > 8000L) return(0.40)
+  if (n_points > 5000L) return(0.48)
+  if (n_points > 2500L) return(0.60)
+  0.75
+}
+
+#' @keywords internal
+plot_spatial_metric_df <- function(
+    seu,
+    metrics,
+    value_col,
+    palette = "nature",
+    base_size = 12,
+    point_size = NULL,
+    limits = NULL,
+    facet_col = NULL,
+    title = NULL,
+    subtitle = NULL,
+    legend_title = NULL,
+    spot_col = "spot") {
+  dat <- assemble_spatial_plot_data(seu, metrics, spot_col = spot_col)
+  if (!(value_col %in% colnames(dat))) {
+    stop(sprintf("`metrics` must include `%s`.", value_col), call. = FALSE)
+  }
+  dat <- dat[is.finite(dat[[value_col]]), , drop = FALSE]
+  if (nrow(dat) == 0L) {
+    stop("No finite values are available for plotting.", call. = FALSE)
+  }
+
+  if (is.null(point_size)) {
+    point_size <- auto_spatial_point_size(nrow(dat))
+  }
+
+  p <- ggplot2::ggplot(
+    dat,
+    ggplot2::aes(x = .data$x, y = .data$y, color = .data[[value_col]])
+  ) +
+    ggplot2::geom_point(size = point_size, shape = 16, alpha = 0.95) +
+    ggplot2::coord_fixed() +
+    ggplot2::scale_y_reverse() +
+    theme_aegis_spatial(base_size = base_size) +
+    ggplot2::labs(
+      title = title %||% NULL,
+      subtitle = subtitle %||% NULL,
+      color = legend_title %||% value_col
+    )
+
+  scale_obj <- if (is.null(limits)) {
+    scale_color_aegis(palette = palette, type = "continuous")
+  } else {
+    scale_color_aegis(palette = palette, type = "continuous", limits = limits)
+  }
+  p <- p + scale_obj
+
+  if (!is.null(facet_col)) {
+    if (!(facet_col %in% colnames(dat))) {
+      stop(sprintf("Facet column `%s` not found in plotting data.", facet_col), call. = FALSE)
+    }
+    n_panels <- length(unique(dat[[facet_col]]))
+    ncol <- if (n_panels <= 3L) n_panels else 2L
+    p <- p + ggplot2::facet_wrap(stats::as.formula(paste("~", facet_col)), ncol = ncol)
+  }
+  p
+}
+
+#' @keywords internal
 get_plot_palette <- function(palette = "nature", type = c("continuous", "categorical", "diverging"), n = 256L) {
   type <- match.arg(type)
   palette <- tolower(palette)
@@ -299,18 +391,20 @@ scale_color_aegis <- function(palette = "nature", type = c("continuous", "catego
 theme_aegis <- function(base_size = 12) {
   ggplot2::theme_minimal(base_size = base_size) +
     ggplot2::theme(
-      plot.title = ggplot2::element_text(size = base_size * 1.2, face = "bold"),
-      plot.subtitle = ggplot2::element_text(size = base_size * 0.95),
-      axis.title = ggplot2::element_text(size = base_size * 0.95),
-      axis.text = ggplot2::element_text(size = base_size * 0.85, colour = "#222222"),
-      legend.title = ggplot2::element_text(size = base_size * 0.9, face = "bold"),
-      legend.text = ggplot2::element_text(size = base_size * 0.8),
+      plot.title = ggplot2::element_text(size = base_size * 1.22, face = "bold", colour = "#1A1A1A"),
+      plot.subtitle = ggplot2::element_text(size = base_size * 0.94, colour = "#3A3A3A"),
+      axis.title = ggplot2::element_text(size = base_size * 0.98, colour = "#222222"),
+      axis.text = ggplot2::element_text(size = base_size * 0.9, colour = "#2A2A2A"),
+      legend.title = ggplot2::element_text(size = base_size * 0.92, face = "bold"),
+      legend.text = ggplot2::element_text(size = base_size * 0.84),
       strip.text = ggplot2::element_text(size = base_size * 0.9, face = "bold"),
       panel.grid.minor = ggplot2::element_blank(),
-      panel.grid.major = ggplot2::element_line(linewidth = 0.2, colour = "#D9D9D9"),
+      panel.grid.major = ggplot2::element_line(linewidth = 0.24, colour = "#D9DEE5"),
       plot.background = ggplot2::element_rect(fill = "white", colour = NA),
       panel.background = ggplot2::element_rect(fill = "white", colour = NA),
-      legend.key.height = grid::unit(0.9, "lines")
+      legend.key.height = grid::unit(0.9, "lines"),
+      legend.position = "right",
+      plot.margin = grid::unit(c(5.5, 8, 5.5, 5.5), "pt")
     )
 }
 
@@ -321,7 +415,8 @@ theme_aegis_spatial <- function(base_size = 12) {
       panel.grid = ggplot2::element_blank(),
       axis.text = ggplot2::element_blank(),
       axis.title = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_blank()
+      axis.ticks = ggplot2::element_blank(),
+      legend.key.height = grid::unit(1.0, "lines")
     )
 }
 
