@@ -39,7 +39,13 @@ p_slice <- Seurat::SpatialFeaturePlot(aegis_example, features = "nCount_Spatial"
 
 ggsave(file.path(out_dir, "readme-slice.png"), p_slice, width = 7.2, height = 6.2, dpi = 160)
 ggsave(file.path(out_dir, "readme-dominance.png"), plot_audit(obj, "dominance"), width = 9, height = 5, dpi = 160)
-ggsave(file.path(out_dir, "readme-heatmap.png"), plot_compare(obj, "heatmap"), width = 15, height = 6.5, dpi = 170)
+ggsave(
+  file.path(out_dir, "readme-heatmap.png"),
+  plot_compare(obj, "heatmap", base_size = 10),
+  width = 22,
+  height = 7.2,
+  dpi = 180
+)
 ggsave(file.path(out_dir, "readme-ranking.png"), plot_compare(obj, "ranking"), width = 9, height = 6.2, dpi = 170)
 ggsave(file.path(out_dir, "readme-spot-agreement.png"), plot_compare(obj, "spot_agreement"), width = 7.2, height = 5.4, dpi = 160)
 ggsave(file.path(out_dir, "readme-confidence.png"), plot_compare(obj, "confidence_map"), width = 7.2, height = 5.4, dpi = 160)
