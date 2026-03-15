@@ -36,6 +36,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-one-step-deconvolution.html">AEGIS One-Step Deconvolution Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</a></li>
   </ul>
 </li>
@@ -221,7 +222,8 @@
 <span><span class="co">#&gt; [1] "SPOTlight" "RCTD"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-6--visualize-audits-and-consensus">Step 6. Visualize audits and consensus<a class="anchor" aria-label="anchor" href="#step-6--visualize-audits-and-consensus"></a>
+<h2 id="step-6--visualize-audits-and-consensus-simplified-plotting-api">Step 6. Visualize audits and consensus (simplified plotting
+API)<a class="anchor" aria-label="anchor" href="#step-6--visualize-audits-and-consensus-simplified-plotting-api"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"dominance"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
@@ -236,13 +238,13 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"consensus_map"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-overview_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_method_ranking.html">plot_method_ranking</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"ranking"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-overview_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_disagreement_map.html">plot_disagreement_map</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"disagreement_map"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-overview_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_consensus_confidence.html">plot_consensus_confidence</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"confidence_map"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-overview_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
@@ -252,6 +254,9 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_meta</span>, output_file <span class="op">=</span> <span class="st">"aegis_quick_start_report.html"</span><span class="op">)</span></span></code></pre></div>
 <p>This quick start shows the minimum workflow from input data to
 ranking and consensus outputs.</p>
+<p>For a full “deconvolution from scratch -&gt; downstream analysis”
+walkthrough, see:
+<code>vignettes/AEGIS-complete-tutorial.Rmd</code>.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

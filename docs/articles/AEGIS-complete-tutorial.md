@@ -1,7 +1,5 @@
 # AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)
 
-**Updated workflow note:** this tutorial now centers on `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, and full downstream analysis (audit, ranking, consensus, visualization, report). If this rendered markdown lags, open the source `vignettes/AEGIS-complete-tutorial.Rmd`.
-
 ## Step 1. Load real Human Lymph Node data
 
 If authoritative raw files are available in your repository root, load
@@ -20,7 +18,66 @@ seu <- aegis_example
 markers <- readRDS(system.file("extdata", "marker_list.rds", package = "AEGIS"))
 ```
 
-## Step 2. Prepare exported result tables from multiple methods
+## Step 2. Check method capability registry
+
+[`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md)
+is the one place to inspect whether a method is: - `run_and_import_r` -
+`run_and_import_python` - `import_only`
+
+``` r
+method_registry <- get_supported_methods()
+knitr::kable(method_registry)
+```
+
+| method_name   | support_mode          | can_run_in_r | can_run_in_python | requires_reference | requires_spatial_coords | expected_output_type | adapter_reader     | reader_function    | runner_function   | dependency_type | backend_dependency | notes                                                                                    |
+|:--------------|:----------------------|:-------------|:------------------|:-------------------|:------------------------|:---------------------|:-------------------|:-------------------|:------------------|:----------------|:-------------------|:-----------------------------------------------------------------------------------------|
+| RCTD          | run_and_import_r      | TRUE         | FALSE             | TRUE               | TRUE                    | proportion           | read_rctd          | read_rctd          | run_rctd          | r_package       | spacexr            | R-native runner; prefers spacexr pipeline when available.                                |
+| SPOTlight     | run_and_import_r      | TRUE         | FALSE             | TRUE               | TRUE                    | proportion           | read_spotlight     | read_spotlight     | run_spotlight     | r_package       | SPOTlight          | R-native runner; requires SPOTlight package and suitable reference inputs.               |
+| cell2location | run_and_import_python | FALSE        | TRUE              | TRUE               | TRUE                    | abundance            | read_cell2location | read_cell2location | run_cell2location | python_module   | cell2location,scvi | Python via reticulate; if unavailable, import exported tables with read_cell2location(). |
+| CARD          | run_and_import_r      | TRUE         | FALSE             | TRUE               | TRUE                    | proportion           | read_card          | read_card          | run_card          | r_package       | CARD               | R-native runner; requires CARD package and suitable reference inputs.                    |
+| SpatialDWLS   | import_only           | FALSE        | FALSE             | FALSE              | FALSE                   | proportion           | read_spatialdwls   | read_spatialdwls   | NA                | import_only     | NA                 | Import-only in P9. Use read_spatialdwls().                                               |
+| stereoscope   | run_and_import_python | FALSE        | TRUE              | TRUE               | TRUE                    | proportion           | read_stereoscope   | read_stereoscope   | run_stereoscope   | python_module   | scvi               | Python via reticulate (experimental wrapper).                                            |
+| DestVI        | run_and_import_python | FALSE        | TRUE              | TRUE               | TRUE                    | abundance            | read_destvi        | read_destvi        | run_destvi        | python_module   | scvi               | Python via reticulate (experimental wrapper).                                            |
+| Tangram       | run_and_import_python | FALSE        | TRUE              | TRUE               | TRUE                    | mapping              | read_tangram       | read_tangram       | run_tangram       | python_module   | tangram            | Python via reticulate (experimental wrapper).                                            |
+| STdeconvolve  | import_only           | FALSE        | FALSE             | FALSE              | FALSE                   | latent               | read_stdeconvolve  | read_stdeconvolve  | NA                | import_only     | NA                 | Import-only in P9. Use read_stdeconvolve().                                              |
+| DSTG          | import_only           | FALSE        | FALSE             | FALSE              | FALSE                   | proportion           | read_dstg          | read_dstg          | NA                | import_only     | NA                 | Import-only in P9. Use read_dstg().                                                      |
+| STRIDE        | import_only           | FALSE        | FALSE             | FALSE              | FALSE                   | proportion           | read_stride        | read_stride        | NA                | import_only     | NA                 | Import-only in P9. Use read_stride().                                                    |
+
+## Step 3. One-shot deconvolution examples from raw inputs
+
+Run directly executable methods (typically R-native methods first):
+
+``` r
+reference <- ref_object  # your single-cell reference
+
+res <- run_deconvolution(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  strict = FALSE,
+  use_python = TRUE
+)
+
+obj_from_run <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+```
+
+Full one-shot wrapper:
+
+``` r
+obj_full <- run_aegis_full(
+  seu = seu,
+  reference = reference,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  markers = markers,
+  strict = FALSE,
+  use_python = TRUE
+)
+```
+
+The rest of this tutorial is fully reproducible in vignette/CI by using
+exported result tables.
+
+## Step 4. Prepare exported result tables from multiple methods
 
 ``` r
 spots <- colnames(seu)[1:8]
@@ -132,7 +189,7 @@ utils::write.csv(data.frame(
 ), tmp_stride, row.names = FALSE)
 ```
 
-## Step 3. Import all supported adapters
+## Step 5. Import all supported adapters
 
 ``` r
 rctd <- read_rctd(tmp_rctd)
@@ -173,7 +230,7 @@ knitr::kable(adapter_overview)
 | STRIDE        |       8 |           3 |
 | generic       |       8 |           3 |
 
-## Step 4. Build a comparison object including all supported methods
+## Step 6. Build a comparison object including all supported methods
 
 ``` r
 deconv_all <- list(
@@ -193,7 +250,7 @@ deconv_all <- list(
 obj_all <- as_aegis(seu_small, deconv = deconv_all, markers = markers)
 ```
 
-## Step 5. Run audit and comparison on all methods
+## Step 7. Run audit and comparison on all methods
 
 ``` r
 obj_all <- audit_basic(obj_all)
@@ -219,7 +276,7 @@ knitr::kable(obj_all$audit$basic$summary)
 | DSTG          |       8 |           3 |             0 |                  0 |      0.5062500 |    1.0053414 |                     3 |            0 |
 | STRIDE        |       8 |           3 |             0 |                  0 |      0.5000000 |    1.0147017 |                     3 |            0 |
 
-## Step 6. Rank methods (RRA and mean-rank meta style)
+## Step 8. Rank methods (RRA and mean-rank meta style)
 
 ``` r
 obj_rra <- rank_methods(obj_all, method = "rra")
@@ -293,7 +350,7 @@ best_label
 #> [1] "preferred"
 ```
 
-## Step 7. Integrate methods into weighted consensus
+## Step 9. Integrate methods into weighted consensus
 
 `STdeconvolve` uses latent topic labels (`topic1`, `topic2`) and is kept
 in the comparison/ranking table. For integrated cell-type consensus, we
@@ -319,69 +376,69 @@ obj_consensus$consensus$result$methods_used
 #> [1] "DSTG"        "STRIDE"      "stereoscope"
 ```
 
-## Step 8. Visualization (plot_compare and related functions)
+## Step 10. Visualization (simplified with plot_compare + plot_audit)
 
 ``` r
 plot_compare(obj_meta, type = "heatmap")
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-10-1.png)
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-13-1.png)
 
 ``` r
 plot_compare(obj_meta, type = "spot_agreement")
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-11-1.png)
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-14-1.png)
 
 ``` r
 plot_compare(obj_consensus, type = "consensus_map")
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-12-1.png)
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-15-1.png)
 
 ``` r
 plot_audit(obj_meta, type = "dominance", method = best_method)
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-13-1.png)
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-16-1.png)
 
 ``` r
 plot_audit(obj_meta, type = "marker", method = best_method)
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-14-1.png)
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-17-1.png)
 
 ``` r
 plot_audit(obj_meta, type = "smoothness", method = best_method)
 ```
 
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-15-1.png)
-
-``` r
-plot_method_ranking(obj_meta)
-```
-
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-16-1.png)
-
-``` r
-plot_disagreement_map(obj_consensus)
-```
-
-![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-17-1.png)
-
-``` r
-plot_consensus_confidence(obj_consensus)
-```
-
 ![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-18-1.png)
 
-## Step 9. Render single-sample report
+``` r
+plot_compare(obj_meta, type = "ranking")
+```
+
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-19-1.png)
+
+``` r
+plot_compare(obj_consensus, type = "disagreement_map")
+```
+
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-20-1.png)
+
+``` r
+plot_compare(obj_consensus, type = "confidence_map")
+```
+
+![](AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-21-1.png)
+
+## Step 11. Render single-sample report
 
 ``` r
 render_report(obj_consensus, output_file = "aegis_real_data_report.html")
 ```
 
-## Step 10. Multi-sample workflow
+## Step 12. Multi-sample workflow
 
 A directory-based loader is supported for real projects:
 

@@ -36,6 +36,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-overview.html">AEGIS Quick Start</a></li>
+    <li><a class="dropdown-item" href="../articles/AEGIS-one-step-deconvolution.html">AEGIS One-Step Deconvolution Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/AEGIS-complete-tutorial.html">AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</a></li>
   </ul>
 </li>
@@ -60,7 +61,6 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>AEGIS Deconvolution from Scratch + Downstream Analysis (Human Lymph Node)</h1>
-      <p><strong>Updated workflow note:</strong> this tutorial now centers on <code>get_supported_methods()</code>, <code>run_deconvolution()</code>, <code>run_aegis_full()</code>, and full downstream analysis (audit, ranking, consensus, visualization, report). If page content lags, open the linked source Rmd.</p>
             
       
       <small class="dont-index">Source: <a href="https://github.com/JamesWu7/AEGIS/blob/main/vignettes/AEGIS-complete-tutorial.Rmd" class="external-link"><code>vignettes/AEGIS-complete-tutorial.Rmd</code></a></small>
@@ -84,9 +84,252 @@ built-in object:</p>
 <span><span class="va">markers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"marker_list.rds"</span>, package <span class="op">=</span> <span class="st">"AEGIS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-2--prepare-exported-result-tables-from-multiple-methods">Step 2. Prepare exported result tables from multiple methods<a class="anchor" aria-label="anchor" href="#step-2--prepare-exported-result-tables-from-multiple-methods"></a>
+<h2 id="step-2--check-method-capability-registry">Step 2. Check method capability registry<a class="anchor" aria-label="anchor" href="#step-2--check-method-capability-registry"></a>
 </h2>
+<p><code><a href="../reference/get_supported_methods.html">get_supported_methods()</a></code> is the one place to inspect
+whether a method is: - <code>run_and_import_r</code> -
+<code>run_and_import_python</code> - <code>import_only</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">method_registry</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_supported_methods.html">get_supported_methods</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">method_registry</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="4%">
+<col width="7%">
+<col width="4%">
+<col width="5%">
+<col width="6%">
+<col width="7%">
+<col width="6%">
+<col width="6%">
+<col width="6%">
+<col width="5%">
+<col width="5%">
+<col width="6%">
+<col width="28%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">method_name</th>
+<th align="left">support_mode</th>
+<th align="left">can_run_in_r</th>
+<th align="left">can_run_in_python</th>
+<th align="left">requires_reference</th>
+<th align="left">requires_spatial_coords</th>
+<th align="left">expected_output_type</th>
+<th align="left">adapter_reader</th>
+<th align="left">reader_function</th>
+<th align="left">runner_function</th>
+<th align="left">dependency_type</th>
+<th align="left">backend_dependency</th>
+<th align="left">notes</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">RCTD</td>
+<td align="left">run_and_import_r</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">proportion</td>
+<td align="left">read_rctd</td>
+<td align="left">read_rctd</td>
+<td align="left">run_rctd</td>
+<td align="left">r_package</td>
+<td align="left">spacexr</td>
+<td align="left">R-native runner; prefers spacexr pipeline when
+available.</td>
+</tr>
+<tr class="even">
+<td align="left">SPOTlight</td>
+<td align="left">run_and_import_r</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">proportion</td>
+<td align="left">read_spotlight</td>
+<td align="left">read_spotlight</td>
+<td align="left">run_spotlight</td>
+<td align="left">r_package</td>
+<td align="left">SPOTlight</td>
+<td align="left">R-native runner; requires SPOTlight package and
+suitable reference inputs.</td>
+</tr>
+<tr class="odd">
+<td align="left">cell2location</td>
+<td align="left">run_and_import_python</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">abundance</td>
+<td align="left">read_cell2location</td>
+<td align="left">read_cell2location</td>
+<td align="left">run_cell2location</td>
+<td align="left">python_module</td>
+<td align="left">cell2location,scvi</td>
+<td align="left">Python via reticulate; if unavailable, import exported
+tables with read_cell2location().</td>
+</tr>
+<tr class="even">
+<td align="left">CARD</td>
+<td align="left">run_and_import_r</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">proportion</td>
+<td align="left">read_card</td>
+<td align="left">read_card</td>
+<td align="left">run_card</td>
+<td align="left">r_package</td>
+<td align="left">CARD</td>
+<td align="left">R-native runner; requires CARD package and suitable
+reference inputs.</td>
+</tr>
+<tr class="odd">
+<td align="left">SpatialDWLS</td>
+<td align="left">import_only</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">proportion</td>
+<td align="left">read_spatialdwls</td>
+<td align="left">read_spatialdwls</td>
+<td align="left">NA</td>
+<td align="left">import_only</td>
+<td align="left">NA</td>
+<td align="left">Import-only in P9. Use read_spatialdwls().</td>
+</tr>
+<tr class="even">
+<td align="left">stereoscope</td>
+<td align="left">run_and_import_python</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">proportion</td>
+<td align="left">read_stereoscope</td>
+<td align="left">read_stereoscope</td>
+<td align="left">run_stereoscope</td>
+<td align="left">python_module</td>
+<td align="left">scvi</td>
+<td align="left">Python via reticulate (experimental wrapper).</td>
+</tr>
+<tr class="odd">
+<td align="left">DestVI</td>
+<td align="left">run_and_import_python</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">abundance</td>
+<td align="left">read_destvi</td>
+<td align="left">read_destvi</td>
+<td align="left">run_destvi</td>
+<td align="left">python_module</td>
+<td align="left">scvi</td>
+<td align="left">Python via reticulate (experimental wrapper).</td>
+</tr>
+<tr class="even">
+<td align="left">Tangram</td>
+<td align="left">run_and_import_python</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">mapping</td>
+<td align="left">read_tangram</td>
+<td align="left">read_tangram</td>
+<td align="left">run_tangram</td>
+<td align="left">python_module</td>
+<td align="left">tangram</td>
+<td align="left">Python via reticulate (experimental wrapper).</td>
+</tr>
+<tr class="odd">
+<td align="left">STdeconvolve</td>
+<td align="left">import_only</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">latent</td>
+<td align="left">read_stdeconvolve</td>
+<td align="left">read_stdeconvolve</td>
+<td align="left">NA</td>
+<td align="left">import_only</td>
+<td align="left">NA</td>
+<td align="left">Import-only in P9. Use read_stdeconvolve().</td>
+</tr>
+<tr class="even">
+<td align="left">DSTG</td>
+<td align="left">import_only</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">proportion</td>
+<td align="left">read_dstg</td>
+<td align="left">read_dstg</td>
+<td align="left">NA</td>
+<td align="left">import_only</td>
+<td align="left">NA</td>
+<td align="left">Import-only in P9. Use read_dstg().</td>
+</tr>
+<tr class="odd">
+<td align="left">STRIDE</td>
+<td align="left">import_only</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">proportion</td>
+<td align="left">read_stride</td>
+<td align="left">read_stride</td>
+<td align="left">NA</td>
+<td align="left">import_only</td>
+<td align="left">NA</td>
+<td align="left">Import-only in P9. Use read_stride().</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="step-3--one-shot-deconvolution-examples-from-raw-inputs">Step 3. One-shot deconvolution examples from raw inputs<a class="anchor" aria-label="anchor" href="#step-3--one-shot-deconvolution-examples-from-raw-inputs"></a>
+</h2>
+<p>Run directly executable methods (typically R-native methods
+first):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">reference</span> <span class="op">&lt;-</span> <span class="va">ref_object</span>  <span class="co"># your single-cell reference</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
+<span>  seu <span class="op">=</span> <span class="va">seu</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPOTlight"</span>, <span class="st">"RCTD"</span>, <span class="st">"CARD"</span><span class="op">)</span>,</span>
+<span>  strict <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_python <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">obj_from_run</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_aegis.html">run_aegis</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">seu</span>, deconv <span class="op">=</span> <span class="va">res</span><span class="op">$</span><span class="va">deconv</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
+<p>Full one-shot wrapper:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">obj_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/run_deconvolution.html">run_aegis_full</a></span><span class="op">(</span></span>
+<span>  seu <span class="op">=</span> <span class="va">seu</span>,</span>
+<span>  reference <span class="op">=</span> <span class="va">reference</span>,</span>
+<span>  methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPOTlight"</span>, <span class="st">"RCTD"</span>, <span class="st">"CARD"</span><span class="op">)</span>,</span>
+<span>  markers <span class="op">=</span> <span class="va">markers</span>,</span>
+<span>  strict <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  use_python <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The rest of this tutorial is fully reproducible in vignette/CI by
+using exported result tables.</p>
+</div>
+<div class="section level2">
+<h2 id="step-4--prepare-exported-result-tables-from-multiple-methods">Step 4. Prepare exported result tables from multiple methods<a class="anchor" aria-label="anchor" href="#step-4--prepare-exported-result-tables-from-multiple-methods"></a>
+</h2>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span>
 <span><span class="co">#&gt; Loading required namespace: SeuratObject</span></span>
 <span><span class="va">seu_small</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="va">seu</span><span class="op">[</span>, <span class="va">spots</span><span class="op">]</span><span class="op">)</span></span>
@@ -196,9 +439,9 @@ built-in object:</p>
 <span><span class="op">)</span>, <span class="va">tmp_stride</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-3--import-all-supported-adapters">Step 3. Import all supported adapters<a class="anchor" aria-label="anchor" href="#step-3--import-all-supported-adapters"></a>
+<h2 id="step-5--import-all-supported-adapters">Step 5. Import all supported adapters<a class="anchor" aria-label="anchor" href="#step-5--import-all-supported-adapters"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rctd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_rctd.html">read_rctd</a></span><span class="op">(</span><span class="va">tmp_rctd</span><span class="op">)</span></span>
 <span><span class="va">spotlight</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_spotlight.html">read_spotlight</a></span><span class="op">(</span><span class="va">tmp_spotlight</span><span class="op">)</span></span>
 <span><span class="va">cell2location</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_cell2location.html">read_cell2location</a></span><span class="op">(</span><span class="va">tmp_cell2location</span><span class="op">)</span></span>
@@ -291,10 +534,10 @@ built-in object:</p>
 </table>
 </div>
 <div class="section level2">
-<h2 id="step-4--build-a-comparison-object-including-all-supported-methods">Step 4. Build a comparison object including all supported
-methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-object-including-all-supported-methods"></a>
+<h2 id="step-6--build-a-comparison-object-including-all-supported-methods">Step 6. Build a comparison object including all supported
+methods<a class="anchor" aria-label="anchor" href="#step-6--build-a-comparison-object-including-all-supported-methods"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  RCTD <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">rctd</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
 <span>  SPOTlight <span class="op">=</span> <span class="fu"><a href="../reference/align_deconv_to_seurat.html">align_deconv_to_seurat</a></span><span class="op">(</span><span class="va">spotlight</span>, <span class="va">seu_small</span><span class="op">)</span>,</span>
@@ -312,9 +555,9 @@ methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-o
 <span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span><span class="va">seu_small</span>, deconv <span class="op">=</span> <span class="va">deconv_all</span>, markers <span class="op">=</span> <span class="va">markers</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-5--run-audit-and-comparison-on-all-methods">Step 5. Run audit and comparison on all methods<a class="anchor" aria-label="anchor" href="#step-5--run-audit-and-comparison-on-all-methods"></a>
+<h2 id="step-7--run-audit-and-comparison-on-all-methods">Step 7. Run audit and comparison on all methods<a class="anchor" aria-label="anchor" href="#step-7--run-audit-and-comparison-on-all-methods"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_basic.html">audit_basic</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
 <span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_marker.html">audit_marker</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
 <span><span class="va">obj_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/audit_spatial.html">audit_spatial</a></span><span class="op">(</span><span class="va">obj_all</span><span class="op">)</span></span>
@@ -471,9 +714,9 @@ methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-o
 </table>
 </div>
 <div class="section level2">
-<h2 id="step-6--rank-methods-rra-and-mean-rank-meta-style">Step 6. Rank methods (RRA and mean-rank meta style)<a class="anchor" aria-label="anchor" href="#step-6--rank-methods-rra-and-mean-rank-meta-style"></a>
+<h2 id="step-8--rank-methods-rra-and-mean-rank-meta-style">Step 8. Rank methods (RRA and mean-rank meta style)<a class="anchor" aria-label="anchor" href="#step-8--rank-methods-rra-and-mean-rank-meta-style"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj_rra</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_all</span>, method <span class="op">=</span> <span class="st">"rra"</span><span class="op">)</span></span>
 <span><span class="va">obj_meta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank_methods.html">rank_methods</a></span><span class="op">(</span><span class="va">obj_all</span>, method <span class="op">=</span> <span class="st">"mean_rank"</span><span class="op">)</span></span>
 <span></span>
@@ -622,7 +865,7 @@ methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-o
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">meta_tbl</span>, digits <span class="op">=</span> <span class="fl">4</span>, caption <span class="op">=</span> <span class="st">"Mean-rank (meta-style) result"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <caption>Mean-rank (meta-style) result</caption>
@@ -733,20 +976,20 @@ methods<a class="anchor" aria-label="anchor" href="#step-4--build-a-comparison-o
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">best_method</span></span>
 <span><span class="co">#&gt; [1] "DSTG"</span></span>
 <span><span class="va">best_label</span></span>
 <span><span class="co">#&gt; [1] "preferred"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-7--integrate-methods-into-weighted-consensus">Step 7. Integrate methods into weighted consensus<a class="anchor" aria-label="anchor" href="#step-7--integrate-methods-into-weighted-consensus"></a>
+<h2 id="step-9--integrate-methods-into-weighted-consensus">Step 9. Integrate methods into weighted consensus<a class="anchor" aria-label="anchor" href="#step-9--integrate-methods-into-weighted-consensus"></a>
 </h2>
 <p><code>STdeconvolve</code> uses latent topic labels
 (<code>topic1</code>, <code>topic2</code>) and is kept in the
 comparison/ranking table. For integrated cell-type consensus, we use
 methods with shared cell-type labels.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">consensus_methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">deconv_all</span><span class="op">)</span>, <span class="st">"STdeconvolve"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">obj_consensus</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/as_aegis.html">as_aegis</a></span><span class="op">(</span></span>
@@ -766,53 +1009,54 @@ methods with shared cell-type labels.</p>
 <span><span class="co">#&gt; [1] "DSTG"        "STRIDE"      "stereoscope"</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-8--visualization-plot_compare-and-related-functions">Step 8. Visualization (plot_compare and related functions)<a class="anchor" aria-label="anchor" href="#step-8--visualization-plot_compare-and-related-functions"></a>
+<h2 id="step-10--visualization-simplified-with-plot_compare-plot_audit">Step 10. Visualization (simplified with plot_compare +
+plot_audit)<a class="anchor" aria-label="anchor" href="#step-10--visualization-simplified-with-plot_compare-plot_audit"></a>
 </h2>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"spot_agreement"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_consensus</span>, type <span class="op">=</span> <span class="st">"consensus_map"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"dominance"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"heatmap"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"marker"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"spot_agreement"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"smoothness"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_consensus</span>, type <span class="op">=</span> <span class="st">"consensus_map"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_method_ranking.html">plot_method_ranking</a></span><span class="op">(</span><span class="va">obj_meta</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"dominance"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_disagreement_map.html">plot_disagreement_map</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"marker"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_consensus_confidence.html">plot_consensus_confidence</a></span><span class="op">(</span><span class="va">obj_consensus</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_audit.html">plot_audit</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"smoothness"</span>, method <span class="op">=</span> <span class="va">best_method</span><span class="op">)</span></span></code></pre></div>
 <p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_meta</span>, type <span class="op">=</span> <span class="st">"ranking"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_consensus</span>, type <span class="op">=</span> <span class="st">"disagreement_map"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="" width="672"></p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_compare.html">plot_compare</a></span><span class="op">(</span><span class="va">obj_consensus</span>, type <span class="op">=</span> <span class="st">"confidence_map"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="AEGIS-complete-tutorial_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="step-9--render-single-sample-report">Step 9. Render single-sample report<a class="anchor" aria-label="anchor" href="#step-9--render-single-sample-report"></a>
+<h2 id="step-11--render-single-sample-report">Step 11. Render single-sample report<a class="anchor" aria-label="anchor" href="#step-11--render-single-sample-report"></a>
 </h2>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report.html">render_report</a></span><span class="op">(</span><span class="va">obj_consensus</span>, output_file <span class="op">=</span> <span class="st">"aegis_real_data_report.html"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="step-10--multi-sample-workflow">Step 10. Multi-sample workflow<a class="anchor" aria-label="anchor" href="#step-10--multi-sample-workflow"></a>
+<h2 id="step-12--multi-sample-workflow">Step 12. Multi-sample workflow<a class="anchor" aria-label="anchor" href="#step-12--multi-sample-workflow"></a>
 </h2>
 <p>A directory-based loader is supported for real projects:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">seu_list_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_10x_spatial_set.html">load_10x_spatial_set</a></span><span class="op">(</span></span>
 <span>  paths <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1_dir"</span>, <span class="st">"sample2_dir"</span><span class="op">)</span>,</span>
 <span>  sample_ids <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample1"</span>, <span class="st">"sample2"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Reproducible example using one object split into two sections:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spots_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">seu</span><span class="op">)</span></span>
 <span><span class="va">n_half</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spots_all</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -917,7 +1161,7 @@ methods with shared cell-type labels.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/render_report_batch.html">render_report_batch</a></span><span class="op">(</span><span class="va">obj_multi</span>, output_dir <span class="op">=</span> <span class="st">"reports"</span><span class="op">)</span></span></code></pre></div>
 <p>This tutorial shows the real-data style pathway with explicit
 step-by-step calls and no custom helper functions.</p>

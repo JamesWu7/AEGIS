@@ -43,6 +43,18 @@
 
 - [`run_aegis()`](https://jameswu7.github.io/AEGIS/reference/run_aegis.md)
   : Run the standard AEGIS workflow with one function
+- [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_spotlight()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_card()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_rctd()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_cell2location()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_destvi()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_tangram()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  [`run_stereoscope()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
+  : Unified deconvolution orchestration and method runners
+- [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md)
+  : List supported deconvolution methods and execution modes
 - [`as_aegis()`](https://jameswu7.github.io/AEGIS/reference/as_aegis.md)
   : Construct an AEGIS object
 - [`as_aegis_multi()`](https://jameswu7.github.io/AEGIS/reference/as_aegis_multi.md)

@@ -38,11 +38,9 @@ AEGIS now supports three primary workflows:
     [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md)
     for generic spot-by-celltype tables.
 3.  One-shot deconvolution orchestration for directly runnable methods
-    through
-    [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
-    and
-    [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
-    with capability metadata from
+    ([`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+    [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)),
+    with explicit run-vs-import capability metadata from
     [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md).
 
 For day-to-day use, the recommended minimal API is:
@@ -61,6 +59,42 @@ For day-to-day use, the recommended minimal API is:
     /
     [`render_report()`](https://jameswu7.github.io/AEGIS/reference/render_report.md)
 
+## One-shot Deconvolution (P9)
+
+AEGIS now provides a unified orchestration layer that can run selected
+methods when their runtime dependencies are available, and then hand off
+standardized outputs into downstream AEGIS analysis.
+
+``` r
+seu <- load_10x_lymphnode()
+
+res <- run_deconvolution(
+  seu = seu,
+  reference = ref,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  strict = FALSE
+)
+
+obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
+```
+
+or one-shot end to end:
+
+``` r
+obj <- run_aegis_full(
+  seu = seu,
+  reference = ref,
+  methods = c("SPOTlight", "RCTD", "CARD"),
+  markers = markers,
+  strict = FALSE
+)
+```
+
+Use
+[`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md)
+to inspect exact support mode (`run_and_import_r`,
+`run_and_import_python`, `import_only`) before execution.
+
 ## Quick Start (Simulated)
 
 ``` r
@@ -78,26 +112,6 @@ p_rank <- plot_compare(obj, type = "ranking")
 p_dis <- plot_compare(obj, type = "disagreement_map")
 p_conf <- plot_compare(obj, type = "confidence_map")
 ```
-
-## One-shot Deconvolution (P9)
-
-``` r
-seu <- load_10x_lymphnode()
-
-res <- run_deconvolution(
-  seu = seu,
-  reference = ref,
-  methods = c("SPOTlight", "RCTD", "CARD"),
-  strict = FALSE
-)
-
-obj <- run_aegis(res$seu, deconv = res$deconv, markers = markers)
-```
-
-Use
-[`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md)
-to inspect support mode (`run_and_import_r`, `run_and_import_python`,
-`import_only`) before execution.
 
 ## Import Real Deconvolution Results (P8)
 
@@ -132,19 +146,19 @@ csv/tsv/txt first, then import with
 
 ### Method Support Matrix
 
-| Method | Support mode | Run in R | Run via Python | Import exported results | Notes |
-|---|---|---|---|---|---|
-| RCTD | `run_and_import_r` | Yes (`run_rctd`) | No | Yes (`read_rctd`) | Direct run requires `spacexr` |
-| SPOTlight | `run_and_import_r` | Yes (`run_spotlight`) | No | Yes (`read_spotlight`) | Direct run requires `SPOTlight` |
-| CARD | `run_and_import_r` | Yes (`run_card`) | No | Yes (`read_card`) | Direct run requires `CARD` |
-| cell2location | `run_and_import_python` | No | Optional (`run_cell2location`) | Yes (`read_cell2location`) | Python/reticulate environment required |
-| stereoscope | `run_and_import_python` | No | Optional (`run_stereoscope`) | Yes (`read_stereoscope`) | Python/reticulate environment required |
-| DestVI | `run_and_import_python` | No | Optional (`run_destvi`) | Yes (`read_destvi`) | Python/reticulate environment required |
-| Tangram | `run_and_import_python` | No | Optional (`run_tangram`) | Yes (`read_tangram`) | Mapping-style composition input |
-| SpatialDWLS | `import_only` | No | No | Yes (`read_spatialdwls`) | Table adapter |
-| STdeconvolve | `import_only` | No | No | Yes (`read_stdeconvolve`) | Latent labels allowed |
-| DSTG | `import_only` | No | No | Yes (`read_dstg`) | Table adapter |
-| STRIDE | `import_only` | No | No | Yes (`read_stride`) | Topic-only strict checks supported |
+| Method        | Support mode            | Run in R              | Run via Python                 | Import exported results    | Notes                                  |
+|---------------|-------------------------|-----------------------|--------------------------------|----------------------------|----------------------------------------|
+| RCTD          | `run_and_import_r`      | Yes (`run_rctd`)      | No                             | Yes (`read_rctd`)          | Direct run requires `spacexr`          |
+| SPOTlight     | `run_and_import_r`      | Yes (`run_spotlight`) | No                             | Yes (`read_spotlight`)     | Direct run requires `SPOTlight`        |
+| CARD          | `run_and_import_r`      | Yes (`run_card`)      | No                             | Yes (`read_card`)          | Direct run requires `CARD`             |
+| cell2location | `run_and_import_python` | No                    | Optional (`run_cell2location`) | Yes (`read_cell2location`) | Python/reticulate environment required |
+| stereoscope   | `run_and_import_python` | No                    | Optional (`run_stereoscope`)   | Yes (`read_stereoscope`)   | Python/reticulate environment required |
+| DestVI        | `run_and_import_python` | No                    | Optional (`run_destvi`)        | Yes (`read_destvi`)        | Python/reticulate environment required |
+| Tangram       | `run_and_import_python` | No                    | Optional (`run_tangram`)       | Yes (`read_tangram`)       | Mapping-style composition input        |
+| SpatialDWLS   | `import_only`           | No                    | No                             | Yes (`read_spatialdwls`)   | Table adapter                          |
+| STdeconvolve  | `import_only`           | No                    | No                             | Yes (`read_stdeconvolve`)  | Latent labels allowed                  |
+| DSTG          | `import_only`           | No                    | No                             | Yes (`read_dstg`)          | Table adapter                          |
+| STRIDE        | `import_only`           | No                    | No                             | Yes (`read_stride`)        | Topic-only strict checks supported     |
 
 ### Additional Import Examples
 
@@ -189,21 +203,27 @@ links or the source `.Rmd` links below.
 
 - [Quick Start
   tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html)
-  (includes `plot_compare` visualizations and RRA/mean-rank selection)
-  ([pkgdown
+  (includes simplified `plot_compare` visualizations and RRA/mean-rank
+  selection) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-overview.Rmd))
 - [One-step deconvolution
   tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html)
-  (focuses on `get_supported_methods()`, `run_deconvolution()`,
-  `run_aegis_full()`, and practical run-vs-import decisions) ([pkgdown
+  (focuses on
+  [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md),
+  [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  and practical run-vs-import decisions) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-one-step-deconvolution.Rmd))
 - [Deconvolution from Scratch + Real Data tutorial (Human Lymph
   Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
-  (includes `get_supported_methods()`, `run_deconvolution()`,
-  `run_aegis_full()`, all supported import adapters, method ranking,
-  weighted consensus, and `plot_compare`-based visualization) ([pkgdown
+  (includes
+  [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md),
+  [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  all supported import adapters, method ranking, weighted consensus, and
+  unified `plot_compare` visualization) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-complete-tutorial.Rmd))
 
@@ -238,6 +258,23 @@ viewing: `vignettes/AEGIS-overview.html`,
   method-specific import adapters.
 - [`read_deconv_table()`](https://jameswu7.github.io/AEGIS/reference/read_deconv_table.md):
   generic importer for spot-by-celltype exported tables.
+- [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md):
+  inspect method capability registry and support modes.
+- [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md):
+  unified deconvolution orchestrator across runnable/import-only
+  methods.
+- [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md):
+  one-shot wrapper from deconvolution dispatch to full AEGIS downstream
+  analysis.
+- [`run_spotlight()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_card()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_rctd()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md):
+  R-native runner wrappers (dependency-aware).
+- [`run_cell2location()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_destvi()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_tangram()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+  [`run_stereoscope()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md):
+  optional Python-backed runner wrappers via `reticulate`.
 - [`as_aegis()`](https://jameswu7.github.io/AEGIS/reference/as_aegis.md):
   validate inputs and create the internal `aegis` S3 object.
 - [`audit_basic()`](https://jameswu7.github.io/AEGIS/reference/audit_basic.md):
@@ -283,9 +320,9 @@ Dominance spatial map
 
 ### Cross-method agreement heatmap
 
-Figure regenerated with all methods from `get_supported_methods()$method_name`
-(11 methods). If labels look dense on small screens, open the image for
-full-size viewing.
+Figure regenerated with all methods from
+`get_supported_methods()$method_name` (11 methods); if labels look dense
+on mobile, open the image for full-size viewing.
 
 ![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
 
@@ -293,8 +330,8 @@ Method agreement heatmap
 
 ### Method ranking
 
-Ranking is aggregated across the same full method set (mean-rank meta-style
-evidence synthesis).
+Ranking is aggregated across the same full method set (mean-rank
+meta-style evidence synthesis).
 
 ![Method ranking](inst/assets/figures/readme-ranking.png)
 

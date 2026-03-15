@@ -75,7 +75,7 @@ obj_meta$consensus$result$methods_used
 #> [1] "SPOTlight" "RCTD"
 ```
 
-## Step 6. Visualize audits and consensus
+## Step 6. Visualize audits and consensus (simplified plotting API)
 
 ``` r
 plot_audit(obj_meta, type = "dominance", method = best_method)
@@ -102,19 +102,19 @@ plot_compare(obj_meta, type = "consensus_map")
 ![](AEGIS-overview_files/figure-html/unnamed-chunk-10-1.png)
 
 ``` r
-plot_method_ranking(obj_meta)
+plot_compare(obj_meta, type = "ranking")
 ```
 
 ![](AEGIS-overview_files/figure-html/unnamed-chunk-11-1.png)
 
 ``` r
-plot_disagreement_map(obj_meta)
+plot_compare(obj_meta, type = "disagreement_map")
 ```
 
 ![](AEGIS-overview_files/figure-html/unnamed-chunk-12-1.png)
 
 ``` r
-plot_consensus_confidence(obj_meta)
+plot_compare(obj_meta, type = "confidence_map")
 ```
 
 ![](AEGIS-overview_files/figure-html/unnamed-chunk-13-1.png)
@@ -127,3 +127,6 @@ render_report(obj_meta, output_file = "aegis_quick_start_report.html")
 
 This quick start shows the minimum workflow from input data to ranking
 and consensus outputs.
+
+For a full “deconvolution from scratch -\> downstream analysis”
+walkthrough, see: `vignettes/AEGIS-complete-tutorial.Rmd`.

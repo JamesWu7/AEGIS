@@ -5,7 +5,7 @@ Plot method ranking summary
 ## Usage
 
 ``` r
-plot_method_ranking(x, palette = "nature", base_size = 12)
+plot_method_ranking(x, sample = NULL, palette = "nature", base_size = 12)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ plot_method_ranking(x, palette = "nature", base_size = 12)
 - x:
 
   An `aegis` object.
+
+- sample:
+
+  Optional sample ID for multi-sample objects.
 
 - palette:
 

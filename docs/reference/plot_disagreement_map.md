@@ -5,7 +5,7 @@ Plot spot-level consensus disagreement map
 ## Usage
 
 ``` r
-plot_disagreement_map(x, palette = "nature", base_size = 12)
+plot_disagreement_map(x, sample = NULL, palette = "nature", base_size = 12)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ plot_disagreement_map(x, palette = "nature", base_size = 12)
 - x:
 
   An `aegis` object.
+
+- sample:
+
+  Optional sample ID for multi-sample objects.
 
 - palette:
 
