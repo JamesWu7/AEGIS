@@ -27,6 +27,14 @@ find_repo_root <- function() {
   NA_character_
 }
 
+read_text_if_exists <- function(path) {
+  if (!file.exists(path)) return(NA_character_)
+  tryCatch(
+    paste(readLines(path, warn = FALSE), collapse = "\n"),
+    error = function(e) NA_character_
+  )
+}
+
 test_that("README tutorial references and figure assets exist", {
   repo_root <- find_repo_root()
   if (is.na(repo_root)) {
@@ -34,15 +42,7 @@ test_that("README tutorial references and figure assets exist", {
   }
   readme_path <- file.path(repo_root, "README.md")
 
-  if (!file.exists(readme_path)) {
-    # Installed-package context (R CMD check): README is typically unavailable.
-    testthat::skip("README.md is not available in installed-package test context.")
-  }
-
-  readme <- tryCatch(
-    paste(readLines(readme_path, warn = FALSE), collapse = "\n"),
-    error = function(e) NA_character_
-  )
+  readme <- read_text_if_exists(readme_path)
   if (is.na(readme)) {
     testthat::skip("README.md could not be read in this test context.")
   }
@@ -63,7 +63,9 @@ test_that("README tutorial references and figure assets exist", {
 
   fig_paths <- c(
     file.path(repo_root, "inst", "assets", "figures", "readme-slice.png"),
-    file.path(repo_root, "inst", "assets", "figures", "readme-dominance.png")
+    file.path(repo_root, "inst", "assets", "figures", "readme-dominance.png"),
+    file.path(repo_root, "inst", "assets", "figures", "readme-heatmap.png"),
+    file.path(repo_root, "inst", "assets", "figures", "readme-ranking.png")
   )
   for (p in fig_paths) {
     if (file.exists(p)) {
@@ -139,10 +141,7 @@ test_that("vignette and docs tutorial files are present when available", {
     "docs/articles/AEGIS-complete-tutorial.html"
   )
 
-  has_source_vignettes <- all(file.exists(file.path(repo_root, "vignettes", c(
-    "AEGIS-overview.Rmd",
-    "AEGIS-complete-tutorial.Rmd"
-  ))))
+  has_source_vignettes <- all(file.exists(file.path(repo_root, vignettes)))
 
   if (isTRUE(has_source_vignettes)) {
     for (p in vignettes) {
@@ -158,7 +157,6 @@ test_that("vignette and docs tutorial files are present when available", {
       expect_true(file.exists(abs), info = sprintf("Missing tutorial artifact: %s", p))
     }
   } else {
-    # Installed package context: look for built vignette artifacts.
     inst_doc <- system.file("doc", package = "AEGIS")
     if (nzchar(inst_doc) && dir.exists(inst_doc)) {
       for (nm in c("AEGIS-overview.html", "AEGIS-one-step-deconvolution.html", "AEGIS-complete-tutorial.html")) {

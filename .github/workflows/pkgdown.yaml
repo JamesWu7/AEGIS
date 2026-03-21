@@ -25,6 +25,9 @@ jobs:
         with:
           extra-packages: any::pkgdown, any::devtools
 
+      - name: Clean knitr leftovers
+        run: rm -rf vignettes/figure figure
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = TRUE)
         shell: Rscript {0}

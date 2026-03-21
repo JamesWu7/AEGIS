@@ -150,4 +150,5 @@ plot_compare(obj, type = "confidence_map")
 1. Use direct execution when method dependencies and inputs are ready.
 2. Use importer functions (`read_*`) when methods are not executable in your environment.
 3. Treat Python-backed methods as optional unless you manage a validated Python environment.
-4. Use `run_aegis_full()` for one-step execution plus downstream AEGIS analysis.
+4. Use `plot_compare(type = "ranking")` as the primary ranking view and `render_report()` for the final output.
+5. Use `run_aegis_full()` when you want the one-step execution wrapper plus downstream AEGIS analysis.

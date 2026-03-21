@@ -41,7 +41,7 @@ AEGIS now supports three primary workflows:
     through
     [`run_deconvolution()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md)
     and
-    [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_deconvolution.md),
+    [`run_aegis_full()`](https://jameswu7.github.io/AEGIS/reference/run_aegis_full.md),
     with capability metadata from
     [`get_supported_methods()`](https://jameswu7.github.io/AEGIS/reference/get_supported_methods.md).
 
@@ -195,15 +195,16 @@ links or the source `.Rmd` links below.
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-overview.Rmd))
 - [One-step deconvolution
   tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html)
-  (focuses on `get_supported_methods()`, `run_deconvolution()`,
-  `run_aegis_full()`, and practical run-vs-import decisions) ([pkgdown
+  (step-by-step `run_deconvolution() -> run_aegis() -> plot_compare(type =
+  "ranking") -> render_report()` workflow, with explicit run-vs-import
+  decisions) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-one-step-deconvolution.Rmd))
 - [Deconvolution from Scratch + Real Data tutorial (Human Lymph
   Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html)
-  (includes `get_supported_methods()`, `run_deconvolution()`,
-  `run_aegis_full()`, all supported import adapters, method ranking,
-  weighted consensus, and `plot_compare`-based visualization) ([pkgdown
+  (step-by-step real-data workflow covering `run_deconvolution()`,
+  `run_aegis()`, `plot_compare()`, ranking, weighted consensus, and
+  `render_report()`) ([pkgdown
   page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html),
   [source](https://jameswu7.github.io/AEGIS/vignettes/AEGIS-complete-tutorial.Rmd))
 
@@ -259,7 +260,8 @@ viewing: `vignettes/AEGIS-overview.html`,
   unified comparison visualization entry (`heatmap`, `spot_agreement`,
   `consensus_map`, `disagreement_map`, `confidence_map`, `ranking`).
 - [`plot_method_ranking()`](https://jameswu7.github.io/AEGIS/reference/plot_method_ranking.md):
-  ggplot ranking summary from strongest to weakest methods.
+  optional advanced alias for ranking (primary entry remains
+  `plot_compare(type = "ranking")`).
 - [`plot_disagreement_map()`](https://jameswu7.github.io/AEGIS/reference/plot_disagreement_map.md):
   tissue-context map of spot-level cross-method disagreement.
 - [`plot_consensus_confidence()`](https://jameswu7.github.io/AEGIS/reference/plot_consensus_confidence.md):
@@ -287,9 +289,9 @@ Figure regenerated with all methods from `get_supported_methods()$method_name`
 (11 methods). If labels look dense on small screens, open the image for
 full-size viewing.
 
-![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
-
-Method agreement heatmap
+<div style="overflow-x: auto;">
+  <img src="inst/assets/figures/readme-heatmap.png" alt="Method agreement heatmap" width="3200" style="max-width: none;" />
+</div>
 
 ### Method ranking
 

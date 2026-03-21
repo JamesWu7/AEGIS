@@ -39,7 +39,37 @@ plot_compare <- function(
     n_methods <- length(unique(c(dat$method_1, dat$method_2)))
 
     pair_labels <- pair_order
-    if (n_pairs > 12L) {
+    if (n_pairs > 24L) {
+      abbreviate_method <- function(m) {
+        map <- c(
+          "RCTD" = "RCTD",
+          "SPOTlight" = "SPOT",
+          "cell2location" = "C2L",
+          "CARD" = "CARD",
+          "SpatialDWLS" = "SDWLS",
+          "stereoscope" = "Stereo",
+          "DestVI" = "DestVI",
+          "Tangram" = "Tang",
+          "STdeconvolve" = "STdec",
+          "DSTG" = "DSTG",
+          "STRIDE" = "STRIDE"
+        )
+        if (m %in% names(map)) return(map[[m]])
+        caps <- gsub("[^A-Z]", "", m)
+        if (nchar(caps) >= 2L && nchar(caps) <= 6L) return(caps)
+        plain <- gsub("[^A-Za-z0-9]", "", m)
+        substr(plain, 1L, min(6L, nchar(plain)))
+      }
+      pair_labels <- vapply(
+        pair_order,
+        function(lbl) {
+          parts <- strsplit(lbl, " vs ", fixed = TRUE)[[1]]
+          if (length(parts) != 2L) return(lbl)
+          paste0(abbreviate_method(parts[[1L]]), "-", abbreviate_method(parts[[2L]]))
+        },
+        character(1)
+      )
+    } else if (n_pairs > 12L) {
       pair_labels <- vapply(
         pair_order,
         function(lbl) gsub(" vs ", "\nvs\n", lbl, fixed = TRUE),
@@ -51,12 +81,15 @@ plot_compare <- function(
     dat$celltype <- factor(dat$celltype, levels = sort(unique(dat$celltype)))
 
     axis_x_angle <- if (n_pairs > 24L) 90 else if (n_pairs > 12L) 60 else 30
-    axis_x_size <- if (n_pairs > 36L) base_size * 0.56 else if (n_pairs > 24L) base_size * 0.62 else if (n_pairs > 12L) base_size * 0.72 else base_size * 0.82
+    axis_x_size <- if (n_pairs > 48L) base_size * 0.44 else if (n_pairs > 36L) base_size * 0.50 else if (n_pairs > 24L) base_size * 0.58 else if (n_pairs > 12L) base_size * 0.72 else base_size * 0.82
     axis_y_size <- if (length(levels(dat$celltype)) > 10L) base_size * 0.72 else base_size * 0.84
 
     p <- ggplot2::ggplot(dat, ggplot2::aes(x = .data$method_pair, y = .data$celltype, fill = .data$correlation)) +
       ggplot2::geom_tile(color = "white", linewidth = 0.25) +
       scale_fill_aegis(palette = palette, type = "diverging", limits = c(-1, 1)) +
+      ggplot2::scale_x_discrete(
+        guide = ggplot2::guide_axis(n.dodge = if (n_pairs > 48L) 4 else if (n_pairs > 24L) 3 else if (n_pairs > 12L) 2 else 1)
+      ) +
       theme_aegis(base_size = base_size) +
       ggplot2::theme(
         panel.grid = ggplot2::element_blank(),
@@ -66,7 +99,7 @@ plot_compare <- function(
       ) +
       ggplot2::labs(
         title = "Method-Pair Agreement by Cell Type",
-        subtitle = sprintf("Correlation across shared spots (%d methods, %d pairs)", n_methods, n_pairs),
+        subtitle = sprintf("Correlation across shared spots (%d methods, %d pairs)%s", n_methods, n_pairs, if (n_pairs > 24L) "; x-axis labels abbreviated" else ""),
         x = "Method pair",
         y = "Cell type",
         fill = "Correlation"

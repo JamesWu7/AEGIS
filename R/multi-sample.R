@@ -28,6 +28,11 @@ load_10x_spatial_set <- function(paths, sample_ids = NULL, section_ids = NULL, s
   if (is.null(sample_ids)) {
     if (!is.null(inferred_ids) && all(nzchar(inferred_ids))) {
       sample_ids <- inferred_ids
+    } else if (isTRUE(strict)) {
+      stop(
+        "`sample_ids` must be supplied or `paths` must be a named character vector when strict = TRUE.",
+        call. = FALSE
+      )
     } else {
       sample_ids <- basename(paths)
     }
@@ -122,8 +127,11 @@ merge_spatial_seurat_list <- function(
   if (!("sample_id" %in% colnames(merged@meta.data))) {
     if (isTRUE(add_cell_ids)) {
       prefix <- vapply(strsplit(colnames(merged), "_", fixed = TRUE), `[[`, character(1), 1L)
-      if (!all(prefix %in% sample_ids) && isTRUE(strict)) {
-        stop("Could not recover `sample_id` from merged spot names.", call. = FALSE)
+      if (!all(prefix %in% sample_ids)) {
+        if (isTRUE(strict)) {
+          stop("Could not recover `sample_id` from merged spot names.", call. = FALSE)
+        }
+        prefix[!prefix %in% sample_ids] <- sample_ids[[1L]]
       }
       merged$sample_id <- prefix
     } else {

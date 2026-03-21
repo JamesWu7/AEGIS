@@ -18,13 +18,10 @@ plot_method_ranking <- function(
   if (is.null(tbl) || !is.data.frame(tbl) || nrow(tbl) == 0L) {
     # Keep plotting ergonomic: attempt to derive ranking from available evidence.
     x <- tryCatch(
-      {
-        x2 <- x
-        if (is.null(get_method_evidence_table(x2))) {
-          x2 <- score_methods(x2)
-        }
-        rank_methods(x2, method = "mean_rank")
-      },
+      rank_methods(
+        if (is.null(get_method_evidence_table(x))) score_methods(x) else x,
+        method = "mean_rank"
+      ),
       error = function(e) {
         stop(
           sprintf("Method ranking not found and auto-ranking failed: %s", conditionMessage(e)),
@@ -32,7 +29,10 @@ plot_method_ranking <- function(
         )
       }
     )
-    tbl <- get_method_ranking_table(x)
+    tbl <- x$consensus$method_ranking
+    if (is.list(tbl)) {
+      tbl <- if (is.data.frame(tbl$summary) && nrow(tbl$summary) > 0L) tbl$summary else tbl$table
+    }
     if (is.null(tbl) || !is.data.frame(tbl) || nrow(tbl) == 0L) {
       stop("Method ranking not found. Run rank_methods() first.", call. = FALSE)
     }

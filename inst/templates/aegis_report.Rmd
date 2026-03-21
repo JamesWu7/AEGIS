@@ -84,24 +84,36 @@ plot_compare(x, type = "heatmap", palette = "nature")
 # Method Scoring and Ranking
 
 ```{r method-ranking}
-if (is.null(x$consensus$method_evidence)) x <- score_methods(x)
-if (is.null(x$consensus$method_ranking)) x <- rank_methods(x, method = "mean_rank")
+if (is.null(x$consensus$method_evidence)) {
+  x <- score_methods(x)
+}
+if (is.null(x$consensus$method_ranking)) {
+  x <- rank_methods(x, method = "mean_rank")
+}
 rank_tbl <- x$consensus$method_ranking
 if (is.list(rank_tbl)) {
   if (!is.null(rank_tbl$summary) && is.data.frame(rank_tbl$summary) && nrow(rank_tbl$summary) > 0) {
     rank_tbl <- rank_tbl$summary
-  } else {
+  } else if (!is.null(rank_tbl$table) && is.data.frame(rank_tbl$table) && nrow(rank_tbl$table) > 0) {
     rank_tbl <- rank_tbl$table
+  } else {
+    rank_tbl <- data.frame()
   }
 }
-knitr::kable(format_report_table(rank_tbl))
+if (is.data.frame(rank_tbl) && nrow(rank_tbl) > 0) {
+  knitr::kable(format_report_table(rank_tbl))
+} else {
+  cat("Method ranking is unavailable for this object.")
+}
 plot_compare(x, type = "ranking", palette = "nature")
 ```
 
 # Consensus
 
 ```{r consensus}
-if (is.null(x$consensus$result)) x <- compute_consensus(x, strategy = "weighted")
+if (is.null(x$consensus$result)) {
+  x <- compute_consensus(x, strategy = "weighted")
+}
 methods_used <- x$consensus$result$methods_used
 if (is.null(methods_used)) methods_used <- character()
 consensus_meta <- data.frame(

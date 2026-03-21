@@ -55,12 +55,21 @@ test_that("load_10x_spatial_set loads multiple sample directories", {
     expect_true(link_or_copy(file.path(raw_dir, f), file.path(d2, f)))
   }
 
+  expect_error(
+    load_10x_spatial_set(paths = c(d1, d2), strict = TRUE),
+    "must be supplied or `paths` must be a named character vector"
+  )
+
+  named_paths <- c(sample1 = d1, sample2 = d2)
   seu_list <- load_10x_spatial_set(paths = c(d1, d2), sample_ids = c("sample1", "sample2"))
   expect_true(is.list(seu_list))
   expect_true(all(vapply(seu_list, inherits, logical(1), what = "Seurat")))
   expect_identical(names(seu_list), c("sample1", "sample2"))
   expect_true(all(seu_list$sample1$sample_id == "sample1"))
   expect_true(all(seu_list$sample2$sample_id == "sample2"))
+
+  seu_list_named <- load_10x_spatial_set(paths = named_paths, strict = TRUE)
+  expect_identical(names(seu_list_named), c("sample1", "sample2"))
 
   expect_error(load_10x_spatial_set(paths = c(d1, file.path(root, "missing"))), "do not exist")
 })
@@ -123,6 +132,8 @@ test_that("split_aegis_by_sample and summarize_by_sample work for multi and sing
   obj <- as_aegis_multi(fx$seu_list, deconv = fx$deconv, markers = aegis_default_markers())
   obj <- audit_basic(obj)
   obj <- compare_methods(obj)
+  obj <- score_methods(obj)
+  obj <- rank_methods(obj, method = "mean_rank")
   obj <- compute_consensus(obj)
 
   parts <- split_aegis_by_sample(obj)
@@ -150,12 +161,11 @@ test_that("plot functions are safe for multi-sample objects", {
 
   expect_error(plot_audit(obj, type = "dominance"), "provide `sample`")
   expect_error(plot_compare(obj, type = "heatmap"), "provide `sample`")
-  expect_error(plot_method_ranking(obj), "provide `sample`")
   expect_error(plot_disagreement_map(obj), "provide `sample`")
   expect_error(plot_consensus_confidence(obj), "provide `sample`")
   expect_s3_class(plot_audit(obj, type = "dominance", sample = "sample1"), "ggplot")
   expect_s3_class(plot_compare(obj, type = "heatmap", sample = "sample1"), "ggplot")
-  expect_s3_class(plot_method_ranking(obj, sample = "sample1"), "ggplot")
+  expect_s3_class(plot_compare(obj, type = "ranking", sample = "sample1"), "ggplot")
   p_dis <- plot_disagreement_map(obj, sample = "sample1")
   p_conf <- plot_consensus_confidence(obj, sample = "sample1")
   expect_true(inherits(p_dis, "ggplot") || inherits(p_dis, "patchwork"))

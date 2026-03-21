@@ -15,6 +15,8 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck, any::devtools
+      - name: Clean knitr leftovers
+        run: rm -rf vignettes/figure figure
       - name: Integration smoke (run_aegis workflows)
         run: source("tools/ci_smoke_workflows.R")
         shell: Rscript {0}

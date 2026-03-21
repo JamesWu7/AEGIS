@@ -59,10 +59,8 @@ test_that("plot_compare validates missing prerequisites and arguments", {
 
 test_that("ranking and consensus map plotting helpers return plot objects", {
   obj <- make_plot_ready_obj()
-  obj <- score_methods(obj)
-  obj <- rank_methods(obj, method = "mean_rank")
 
-  p_rank <- plot_method_ranking(obj)
+  p_rank <- plot_compare(obj, type = "ranking")
   p_dis <- plot_disagreement_map(obj)
   p_conf <- plot_consensus_confidence(obj)
 

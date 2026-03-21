@@ -57,12 +57,12 @@ ggplot2::ggsave(
 )
 
 # Comparison heatmap.
-p_heat <- plot_compare(obj, type = "heatmap", palette = "nature", base_size = 10)
+p_heat <- plot_compare(obj, type = "heatmap", palette = "nature", base_size = 11)
 ggplot2::ggsave(
   filename = file.path(out_dir, "readme-heatmap.png"),
   plot = p_heat,
-  width = 22,
-  height = 7.2,
+  width = 28,
+  height = 9,
   dpi = 180
 )
 

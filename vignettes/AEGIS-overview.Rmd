@@ -89,6 +89,8 @@ plot_compare(obj_meta, type = "consensus_map")
 plot_compare(obj_meta, type = "ranking")
 ```
 
+`plot_compare(type = "ranking")` is the primary ranking view used throughout the tutorials.
+
 ```{r, fig.width=7, fig.height=5}
 plot_compare(obj_meta, type = "disagreement_map")
 ```

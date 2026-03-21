@@ -168,8 +168,8 @@ render_report_batch(obj_multi, output_dir = "reports")
 If GitHub Pages is temporarily unavailable, use the preview fallback links or the source `.Rmd` links below.
 
 - [Quick Start tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-overview.html) (includes simplified `plot_compare` visualizations and RRA/mean-rank selection) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html), [source](vignettes/AEGIS-overview.Rmd))
-- [One-step deconvolution tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html) (focuses on `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, and practical run-vs-import decisions) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html), [source](vignettes/AEGIS-one-step-deconvolution.Rmd))
-- [Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (includes `get_supported_methods()`, `run_deconvolution()`, `run_aegis_full()`, all supported import adapters, method ranking, weighted consensus, and unified `plot_compare` visualization) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
+- [One-step deconvolution tutorial](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-one-step-deconvolution.html) (step-by-step `run_deconvolution() -> run_aegis() -> plot_compare(type = "ranking") -> render_report()` workflow, with explicit run-vs-import decisions) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html), [source](vignettes/AEGIS-one-step-deconvolution.Rmd))
+- [Deconvolution from Scratch + Real Data tutorial (Human Lymph Node)](https://htmlpreview.github.io/?https://github.com/JamesWu7/AEGIS/blob/main/docs/articles/AEGIS-complete-tutorial.html) (step-by-step real-data workflow covering `run_deconvolution()`, `run_aegis()`, `plot_compare()`, ranking, weighted consensus, and `render_report()`) ([pkgdown page](https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html), [source](vignettes/AEGIS-complete-tutorial.Rmd))
 
 Local preview HTML files are also kept in `vignettes/` for direct viewing:
 `vignettes/AEGIS-overview.html`, `vignettes/AEGIS-one-step-deconvolution.html`, and `vignettes/AEGIS-complete-tutorial.html`.
@@ -197,7 +197,7 @@ Local preview HTML files are also kept in `vignettes/` for direct viewing:
 - `rank_methods()`: aggregate evidence into robust method rankings (`rra` or `mean_rank`).
 - `compute_consensus()`: integrate methods with `mean` / `weighted` / `trimmed_mean` strategies and return disagreement/confidence.
 - `plot_compare()`: unified comparison visualization entry (`heatmap`, `spot_agreement`, `consensus_map`, `disagreement_map`, `confidence_map`, `ranking`).
-- `plot_method_ranking()`: ggplot ranking summary from strongest to weakest methods.
+- `plot_method_ranking()`: optional advanced alias for ranking (primary entry remains `plot_compare(type = "ranking")`).
 - `plot_disagreement_map()`: tissue-context map of spot-level cross-method disagreement.
 - `plot_consensus_confidence()`: tissue-context map of spot-level consensus confidence.
 - `run_aegis()`: one-call pipeline for single-sample or multi-sample workflows.
@@ -216,7 +216,9 @@ Local preview HTML files are also kept in `vignettes/` for direct viewing:
 
 Figure regenerated with all methods from `get_supported_methods()$method_name` (11 methods); if labels look dense on mobile, open the image for full-size viewing.
 
-![Method agreement heatmap](inst/assets/figures/readme-heatmap.png)
+<div style="overflow-x: auto;">
+  <img src="inst/assets/figures/readme-heatmap.png" alt="Method agreement heatmap" width="3200" style="max-width: none;" />
+</div>
 
 ### Method ranking
 
