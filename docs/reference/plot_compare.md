@@ -7,7 +7,8 @@ Plot method comparison and consensus outputs
 ``` r
 plot_compare(
   x,
-  type = c("heatmap", "spot_agreement", "consensus_map"),
+  type = c("heatmap", "spot_agreement", "consensus_map", "disagreement_map",
+    "confidence_map", "ranking"),
   sample = NULL,
   palette = "nature",
   base_size = 12
@@ -22,7 +23,8 @@ plot_compare(
 
 - type:
 
-  One of `heatmap`, `spot_agreement`, `consensus_map`.
+  One of `heatmap`, `spot_agreement`, `consensus_map`,
+  `disagreement_map`, `confidence_map`, or `ranking`.
 
 - sample:
 

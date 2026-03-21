@@ -3,6 +3,7 @@
 <url><loc>https://jameswu7.github.io/AEGIS/LICENSE-text.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/LICENSE.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-complete-tutorial.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-one-step-deconvolution.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/AEGIS-overview.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/articles/index.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/authors.html</loc></url>
@@ -19,6 +20,7 @@
 <url><loc>https://jameswu7.github.io/AEGIS/reference/build_aegis_example_data.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/compare_methods.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/compute_consensus.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/get_supported_methods.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/index.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/is_aegis.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/is_aegis_multi.html</loc></url>
@@ -46,6 +48,7 @@
 <url><loc>https://jameswu7.github.io/AEGIS/reference/render_report.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/render_report_batch.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/run_aegis.html</loc></url>
+<url><loc>https://jameswu7.github.io/AEGIS/reference/run_deconvolution.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/score_methods.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/simulate_deconv_results.html</loc></url>
 <url><loc>https://jameswu7.github.io/AEGIS/reference/split_aegis_by_sample.html</loc></url>
